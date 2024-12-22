@@ -1,0 +1,22 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Card {
+  id: Float!
+  text: String!
+  imagePath: String!
+}
+
+type Query {
+  getCard: [Card!]!
+}
+
+type Mutation {
+  createCard(createCardsInput: CreateCardsInput!): Card!
+}
+
+input CreateCardsInput {
+  text: String!
+  imagePath: String!
+}

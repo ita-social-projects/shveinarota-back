@@ -1,7 +1,18 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity('cards')
 @ObjectType()
-export class Admin {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+export class Card {
+  @PrimaryGeneratedColumn()
+  @Field(() => Number)
+  id: number;
+
+  @Column()
+  @Field(() => String)
+  text: string;
+
+  @Column()
+  @Field(() => String)
+  imagePath: string;
 }
