@@ -10,9 +10,13 @@ export class Card {
 
   @Column()
   @Field(() => String)
-  text: string;
+  title: string; // Название карточки
 
   @Column()
   @Field(() => String)
-  imagePath: string;
+  description: string; // Описание карточки
+
+  @Column()
+  @Field(() => String)
+  imagePath: string; // Путь к изображению
 }

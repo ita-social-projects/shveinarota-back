@@ -15,10 +15,10 @@ import { AdminModule } from './admin/admin.module';
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'database.sqlite',
-      entities: [join(__dirname, '**', '*.entity{.ts,.js}')],
-      synchronize: true,
-    }),
+      database: join(__dirname, '..', 'data', 'database.sqlite'), 
+      entities: [join(__dirname, '**', '*.entity{.ts,.js}')], 
+      synchronize: true, 
+    }),    
     AdminModule,
   ],
 })
