@@ -55,8 +55,3 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# Application-specific directories to ignore
-data/*
-!data/.gitkeep
-uploads/*
-!uploads/.gitkeep
