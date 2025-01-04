@@ -1,25 +1,33 @@
 import { Module } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { AdminModule, } from './admin/admin.moudle'
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
-import { AdminModule } from './admin/admin.module';
+import { UserModule } from './user/user.module';
+import databaseConfig from './config/database.config';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver, // Указываем ApolloDriver
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      playground: true, // Для GraphQL Playground
-      debug: true,      // Включение отладки
+    ConfigModule.forRoot({
+      load: [databaseConfig], // Подгружаем файл конфигурации
+      isGlobal: true, // Делаем модуль доступным глобально
     }),
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: join(__dirname, '..', 'data', 'database.sqlite'), 
-      entities: [join(__dirname, '**', '*.entity{.ts,.js}')], 
-      synchronize: true, 
-    }),    
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('database.host'),
+        port: configService.get<number>('database.port'),
+        username: configService.get<string>('database.username'),
+        password: configService.get<string>('database.password'),
+        database: configService.get<string>('database.name'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true, // Только для разработки
+      }),
+    }),
     AdminModule,
+    UserModule,
   ],
+  
 })
 export class AppModule {}
