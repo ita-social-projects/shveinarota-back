@@ -9,7 +9,7 @@ import { SlidesModule } from './slides/slides.module'
     CardsModule, // Подключаем модуль для работы с карточками
     MarkersModule, // Подключаем модуль для работы с картой
     PartnersModule, // Подключаем модуль для работы с партёрами
-    SlidesModule,
+    SlidesModule, // Подключаем модуль для работы с cлайдером
 
   ],
 })
