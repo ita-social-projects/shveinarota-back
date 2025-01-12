@@ -14,7 +14,7 @@ import { linksService } from './links.service';
 import { CreatelinkDto } from './dto/create-links.dto';
 import { UpdatelinkDto } from './dto/update-links.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from './links-options';
+import { multerOptions } from '../../common/multer-options';
 
 @Controller('medialinks')
 export class linksController {

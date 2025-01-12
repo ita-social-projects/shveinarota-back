@@ -14,7 +14,7 @@ import { SlidesService } from './slides.service';
 import { CreateSlideDto } from './dto/create-slide.dto';
 import { UpdateSlideDto } from './dto/update-slide.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from './slides-options';
+import { multerOptions } from '../../common/multer-options';
 
 @Controller('slides')
 export class SlidesController {

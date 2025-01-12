@@ -14,7 +14,7 @@ import { PartnersService } from './partners.service';
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from './partners-options';
+import { multerOptions } from '../../common/multer-options';
 
 @Controller('partners')
 export class PartnersController {
