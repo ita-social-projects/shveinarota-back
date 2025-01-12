@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AdminModule, } from './admin/admin.moudle'
+import { AdminModule } from './admin/admin.moudle';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static'; // Импортируем модуль для статических файлов
+import { join } from 'path'; // Модуль для работы с путями
 import { UserModule } from './user/user.module';
 import databaseConfig from './config/database.config';
 
@@ -25,9 +27,12 @@ import databaseConfig from './config/database.config';
         synchronize: true, // Только для разработки
       }),
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), // Указываем путь к папке uploads
+      serveRoot: '/uploads', // Указываем префикс для URL
+    }),
     AdminModule,
     UserModule,
   ],
-  
 })
 export class AppModule {}

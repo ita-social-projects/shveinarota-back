@@ -13,5 +13,4 @@ export class UpdatelinkDto {
   @IsString()
   @IsOptional() // Путь может быть необязательным
   url?: string;
-
 }

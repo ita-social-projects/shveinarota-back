@@ -11,4 +11,6 @@ export class link{
   @Column({ type: 'varchar', length: 255 })
   title: string; // Путь
 
+  @Column({ type: 'varchar', length: 255 })
+  url: string; // Путь
 }
