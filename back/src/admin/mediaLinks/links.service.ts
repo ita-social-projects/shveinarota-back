@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { link } from './entities/links.entity';
+import { Link } from './entities/links.entity';
 import { CreatelinkDto } from './dto/create-links.dto';
 import { UpdatelinkDto } from './dto/update-links.dto';
 import * as fs from 'fs';
@@ -10,20 +10,20 @@ import * as path from 'path';
 @Injectable()
 export class linksService {
   constructor(
-    @InjectRepository(link)
-    private readonly linkRepository: Repository<link>,
+    @InjectRepository(Link)
+    private readonly linkRepository: Repository<Link>,
   ) {}
 
-  async getAlllinks(): Promise<link[]> {
+  async getAlllinks(): Promise<Link[]> {
     return this.linkRepository.find({ cache: false });
   }
 
-  async createlink(createlinkDto: CreatelinkDto): Promise<link> {
+  async createlink(createlinkDto: CreatelinkDto): Promise<Link> {
     const newlink = this.linkRepository.create(createlinkDto);
     return this.linkRepository.save(newlink);
   }
 
-  async getlinkById(id: number): Promise<link> {
+  async getlinkById(id: number): Promise<Link> {
     const link = await this.linkRepository.findOneBy({ id });
     if (!link) {
       throw new NotFoundException(`link with ID ${id} not found`);
@@ -31,7 +31,7 @@ export class linksService {
     return link;
   }
 
-  async updatelink(id: number, updatelinkDto: UpdatelinkDto): Promise<link> {
+  async updatelink(id: number, updatelinkDto: UpdatelinkDto): Promise<Link> {
     const link = await this.linkRepository.findOneBy({ id });
     if (!link) {
       throw new NotFoundException(`link with ID ${id} not found`);
