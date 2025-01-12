@@ -3,6 +3,7 @@ import { CardsModule } from './cards/cards.module';
 import { MarkersModule } from './markers/markers.module';
 import { PartnersModule } from './partners/partners.module';
 import { SlidesModule } from './slides/slides.module'
+import { LinksModule} from './mediaLinks/links.module'
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { SlidesModule } from './slides/slides.module'
     MarkersModule, // Подключаем модуль для работы с картой
     PartnersModule, // Подключаем модуль для работы с партёрами
     SlidesModule, // Подключаем модуль для работы с cлайдером
+    LinksModule,
 
   ],
 })

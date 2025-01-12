@@ -14,7 +14,7 @@ import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from './multer-options';
+import { multerOptions } from './cards-options';
 
 @Controller('cards')
 export class CardsController {

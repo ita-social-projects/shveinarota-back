@@ -14,7 +14,7 @@ import { MarkersService } from './markers.service';
 import { CreateMarkerDto } from './dto/create-marker.dto';
 import { UpdateMarkerDto } from './dto/update-marker.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from './multer-options';
+import { multerOptions } from './markers-options';
 
 @Controller('markers')
 export class MarkersController {
