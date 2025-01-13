@@ -26,7 +26,7 @@ export class PartnersController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('path', multerOptions)) // Указываем 'path' как имя файла
+  @UseInterceptors(FileInterceptor('path', multerOptions("partners"))) // Указываем 'path' как имя файла
   async createPartner(
     @Body() createPartnerDto: CreatePartnerDto,
     @UploadedFile() file: Express.Multer.File,
@@ -46,7 +46,7 @@ export class PartnersController {
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('path', multerOptions))
+  @UseInterceptors(FileInterceptor('path', multerOptions("partners")))
   async updatePartner(
     @Param('id') id: number,
     @Body() UpdatePartnerDto: UpdatePartnerDto,

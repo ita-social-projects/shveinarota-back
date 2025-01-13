@@ -26,7 +26,7 @@ export class SlidesController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('path', multerOptions)) // Указываем 'path' как имя файла
+  @UseInterceptors(FileInterceptor('path', multerOptions("slides"))) // Указываем 'path' как имя файла
   async createSlide(
     @Body() createSlideDto: CreateSlideDto,
     @UploadedFile() file: Express.Multer.File,
@@ -46,7 +46,7 @@ export class SlidesController {
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('path', multerOptions))
+  @UseInterceptors(FileInterceptor('path', multerOptions("slides")))
   async updateSlide(
     @Param('id') id: number,
     @Body() UpdateSlideDto: UpdateSlideDto,

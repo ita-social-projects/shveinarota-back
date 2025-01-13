@@ -26,7 +26,7 @@ export class MarkersController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('path', multerOptions)) // Указываем 'path' как имя файла
+  @UseInterceptors(FileInterceptor('path', multerOptions('markers'))) // Указываем 'path' как имя файла
   async createMarker(
     @Body() createMarkerDto: CreateMarkerDto,
     @UploadedFile() file: Express.Multer.File,
@@ -46,7 +46,7 @@ export class MarkersController {
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('path', multerOptions))
+  @UseInterceptors(FileInterceptor('path', multerOptions("markers")))
   async updateMarker(
     @Param('id') id: number,
     @Body() UpdateMarkerDto: UpdateMarkerDto,

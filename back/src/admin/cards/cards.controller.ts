@@ -14,8 +14,7 @@ import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../../common/multer-options';
-
+import { multerOptions } from '../../common/multer-options'; // Обновленный multerOptions
 
 @Controller('cards')
 export class CardsController {
@@ -27,7 +26,7 @@ export class CardsController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('path', multerOptions))
+  @UseInterceptors(FileInterceptor('path', multerOptions('cards'))) // Динамически задаем папку
   async createCard(
     @Body() createCardDto: CreateCardDto,
     @UploadedFile() file: Express.Multer.File,
@@ -46,7 +45,7 @@ export class CardsController {
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('path', multerOptions))
+  @UseInterceptors(FileInterceptor('path', multerOptions('cards'))) // Динамически задаем папку
   async updateCard(
     @Param('id') id: number,
     @Body() updateCardDto: UpdateCardDto,
@@ -64,7 +63,6 @@ export class CardsController {
       data: updatedCard,
     };
   }
-
 
   @Delete(':id')
   async deleteCard(@Param('id') id: number) {

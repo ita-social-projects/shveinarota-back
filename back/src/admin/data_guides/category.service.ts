@@ -6,6 +6,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { Detail } from './entities/detail.entity';
 import { Subcategory } from './entities/subcategory.entity';
 import { CreateDetailDto } from './dto/create-detail.dto';
+import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -34,6 +35,39 @@ export class CategoriesService {
         category_name: subcategory.category_name,
       })),
     }));
+  }
+
+  // Создание подкатегории и детали одновременно
+  async createSubcategoryWithDetail(
+    categoryId: number,
+    createSubcategoryDto: CreateSubcategoryDto,
+  ): Promise<Subcategory> {
+    // Найти категорию
+    const category = await this.categoryRepository.findOne({
+      where: { id: categoryId },
+      relations: ['subcategories'],
+    });
+
+    if (!category) {
+      throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
+    }
+
+    // Создать подкатегорию
+    const subcategory = this.categoryRepository.manager.create(Subcategory, {
+      category_name: createSubcategoryDto.category_name,
+      category: category,
+    });
+
+    // Если есть деталь, добавить её
+    if (createSubcategoryDto.detail) {
+      const detail = this.categoryRepository.manager.create(Detail, {
+        ...createSubcategoryDto.detail,
+      });
+      subcategory.detail = detail;
+    }
+
+    // Сохранить подкатегорию и связанные сущности
+    return this.categoryRepository.manager.save(subcategory);
   }
 
   // Создание детали для подкатегории

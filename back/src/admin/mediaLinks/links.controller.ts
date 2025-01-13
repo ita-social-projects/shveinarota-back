@@ -26,7 +26,7 @@ export class linksController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('path', multerOptions)) // Указываем 'path' как имя файла
+  @UseInterceptors(FileInterceptor('path', multerOptions("links"))) // Указываем 'path' как имя файла
   async createlink(
     @Body() createlinkDto: CreatelinkDto,
     @UploadedFile() file: Express.Multer.File,
@@ -46,7 +46,7 @@ export class linksController {
   }
 
   @Put(':id')
-  @UseInterceptors(FileInterceptor('path', multerOptions))
+  @UseInterceptors(FileInterceptor('path', multerOptions("links")))
   async updatelink(
     @Param('id') id: number,
     @Body() UpdatelinkDto: UpdatelinkDto,
