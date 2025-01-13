@@ -5,6 +5,7 @@ import { PartnersModule } from './partners/partners.module';
 import { SlidesModule } from './slides/slides.module'
 import { LinksModule} from './mediaLinks/links.module'
 import { StatisticsModule } from './statistic/statistic.module'
+import { CategoriesModule } from './data_guides/categories.module'
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { StatisticsModule } from './statistic/statistic.module'
     SlidesModule, // Подключаем модуль для работы с cлайдером
     LinksModule, // Подключаем модуль для работы с сылками на соц сети
     StatisticsModule, // Подключаем модуль для работы с статистикой
-
+    CategoriesModule, // Подключаем модуль для работы с Guides
   ],
 })
 export class AdminModule {}
