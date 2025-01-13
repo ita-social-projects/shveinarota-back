@@ -1,27 +1,34 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateMarkerDto {
+  @ApiPropertyOptional({ description: 'Широта', example: '50.4501' })
   @IsString()
-  @IsOptional() // Широта может быть необязательной
+  @IsOptional()
   lat?: string;
 
+  @ApiPropertyOptional({ description: 'Долгота', example: '30.5234' })
   @IsString()
-  @IsOptional() // Долгота может быть необязательной
+  @IsOptional()
   lng?: string;
 
+  @ApiPropertyOptional({ description: 'Заголовок', example: 'Updated Marker' })
   @IsString()
-  @IsOptional() // Заголовок может быть необязательным
+  @IsOptional()
   title?: string;
 
+  @ApiPropertyOptional({ description: 'Адрес', example: 'ул. Крещатик, 2' })
   @IsString()
-  @IsOptional() // Адрес может быть необязательным
+  @IsOptional()
   adress?: string;
 
+  @ApiPropertyOptional({ description: 'Телефон', example: '+380987654321' })
   @IsString()
-  @IsOptional() // Телефон может быть необязательным
+  @IsOptional()
   phone?: string;
 
+  @ApiPropertyOptional({ description: 'Путь к файлу', example: 'uploads/markers/new_image.png' })
   @IsString()
-  @IsOptional() // Путь может быть необязательным
+  @IsOptional()
   path?: string;
 }

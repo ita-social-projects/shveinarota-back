@@ -1,15 +1,19 @@
-import { IsString, IsOptional, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatelinkDto {
+  @ApiPropertyOptional({ description: 'Путь к файлу', example: 'uploads/links/image.png' })
   @IsString()
-  @IsOptional() // Путь будет задаваться автоматически
-  path: string; // Путь
+  @IsOptional()
+  path: string;
 
+  @ApiPropertyOptional({ description: 'Название ссылки', example: 'My Link' })
   @IsString()
-  @IsOptional() // Путь будет задаваться автоматически
-  title: string; // Путь
+  @IsOptional()
+  title: string;
 
+  @ApiPropertyOptional({ description: 'URL ссылки', example: 'https://example.com' })
   @IsString()
-  @IsOptional() // Путь будет задаваться автоматически
-  url: string; // Путь
+  @IsOptional()
+  url: string;
 }

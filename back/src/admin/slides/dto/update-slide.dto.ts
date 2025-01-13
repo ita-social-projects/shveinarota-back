@@ -1,17 +1,19 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateSlideDto {
-  
+  @ApiPropertyOptional({ description: 'Updated path to the slide image', example: 'uploads/slides/new_image.png' })
   @IsString()
-  @IsOptional() // Путь может быть необязательным
-  path?: string;
+  @IsOptional()
+  path?: string; // Path
 
+  @ApiPropertyOptional({ description: 'Updated title of the slide', example: 'Explore new updates!' })
   @IsString()
-  @IsOptional() // Путь может быть необязательным
-  title?: string;
+  @IsOptional()
+  title?: string; // Title
 
+  @ApiPropertyOptional({ description: 'Updated text content of the slide', example: 'Learn more about our services' })
   @IsString()
-  @IsOptional() // Путь может быть необязательным
-  text?: string;
-
+  @IsOptional()
+  text?: string; // Text
 }

@@ -1,7 +1,9 @@
-import { IsString, IsOptional, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePartnerDto {
+  @ApiPropertyOptional({ description: 'Path to the partner logo', example: 'uploads/partners/logo.png' })
   @IsString()
-  @IsOptional() // Путь будет задаваться автоматически
-  path: string; // Путь
+  @IsOptional()
+  path: string; // Path
 }
