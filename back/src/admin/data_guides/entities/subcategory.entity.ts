@@ -8,7 +8,7 @@ export class Subcategory {
   id: number;
 
   @Column({ type: 'varchar', length: 255 })
-  categoryname: string;
+  subcategory_name: string;
 
   @ManyToOne(() => Category, (category) => category.subcategories, {
     onDelete: 'CASCADE',

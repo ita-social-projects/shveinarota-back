@@ -31,7 +31,7 @@ export class CategoriesService {
       category_name: category.categoryname,
       subcategories: category.subcategories.map((subcategory) => ({
         id: subcategory.id,
-        category_name: subcategory.categoryname,
+        category_name: subcategory.subcategory_name,
       })),
     }));
   }
