@@ -15,11 +15,11 @@ import {
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SubcategoriesService } from '../services/subcategories.service';
 import { CreateSubcategoryDto } from '../dto/create-subcategory.dto';
-import { UpdateSubcategoryDto } from '../dto/update-dto/update-subcategory.dto';
 import { SubcategoryResponseDto } from '../dto/response-dto/subcategory-response.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../../common/multer-options';
 import { CreateDetailDto } from '../dto/create-detail.dto';
+import { UpdateSubcategoryDto } from '../dto/update-dto/update-subcategory.dto';  // Импортируем DTO для обновления
 
 @ApiTags('Subcategories')
 @Controller('categories/:categoryId/subcategories')
@@ -98,14 +98,42 @@ export class SubcategoriesController {
   @ApiResponse({ status: 404, description: 'Подкатегория не найдена.' })
   @Put(':subcategoryId')
   @UsePipes(ValidationPipe)
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'lekala', maxCount: 10 }, // Файлы лекал
+        { name: 'example', maxCount: 10 }, // Примеры
+      ],
+      multerOptions('details'), // Папка для загрузки файлов
+    ),
+  )
   async updateSubcategory(
+    @Param('categoryId') categoryId: number,
     @Param('subcategoryId') subcategoryId: number,
-    @Body() updateSubcategoryDto: UpdateSubcategoryDto,
+    @Body() body: Record<string, any>, // Данные из FormData
+    @UploadedFiles() files: Record<string, Express.Multer.File[]>, // Файлы (если они есть)
   ) {
-    return this.subcategoriesService.updateSubcategory(
-      subcategoryId,
-      updateSubcategoryDto,
-    );
+    try {
+      const updateSubcategoryDto: UpdateSubcategoryDto = {
+        subcategory_name: body.subcategory_name,
+      };
+
+      // Обрабатываем обновление подкатегории через сервис
+      const updatedSubcategory = await this.subcategoriesService.updateSubcategory(
+        subcategoryId,
+        updateSubcategoryDto,
+      );
+
+      return {
+        id: updatedSubcategory.id,
+        subcategory_name: updatedSubcategory.subcategory_name,
+      };
+    } catch (error) {
+      throw new HttpException(
+        `Failed to update subcategory: ${error.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   @ApiOperation({ summary: 'Удаление подкатегории' })

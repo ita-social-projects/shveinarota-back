@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Category } from '../entities/category.entity';
 import { Subcategory } from '../entities/subcategory.entity';
 import { CreateCategoryDto } from '../dto/create-category.dto';
+import { UpdateCategoryDto } from '../dto/update-dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -14,13 +15,11 @@ export class CategoriesService {
     private readonly subcategoryRepository: Repository<Subcategory>,
   ) {}
 
-  // Создание категории
   async createCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const newCategory = this.categoryRepository.create(createCategoryDto);
     return this.categoryRepository.save(newCategory);
   }
 
-  // Получение всех категорий
   async getAllCategories(): Promise<any[]> {
     const categories = await this.categoryRepository.find({
       relations: ['subcategories'],
@@ -28,27 +27,51 @@ export class CategoriesService {
 
     return categories.map((category) => ({
       id: category.id,
-      category_name: category.categoryname,
+      categoryname: category.categoryname,
       subcategories: category.subcategories.map((subcategory) => ({
         id: subcategory.id,
-        category_name: subcategory.subcategory_name,
+        subcategory_name: subcategory.subcategory_name,
       })),
     }));
   }
 
-  // Обновление только поля category_name
-  async updateCategoryName(categoryId: number, categoryName: string): Promise<Category> {
+  async updateCategory(
+    categoryId: number,
+    updateData: UpdateCategoryDto,
+    file?: Express.Multer.File,
+  ): Promise<Category> {
     const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
 
     if (!category) {
       throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
     }
 
-    category.categoryname = categoryName;
-    return this.categoryRepository.save(category);
+    console.log('Before Update:', category);
+    console.log('Received update data:', updateData);
+
+    // Проверяем, что хотя бы одно поле изменилось
+    let updated = false;
+    if (updateData.categoryname && updateData.categoryname !== category.categoryname) {
+      category.categoryname = updateData.categoryname;
+      updated = true;
+    }
+
+    // Дополнительная логика с файлом (если требуется)
+    if (file) {
+      console.log('File uploaded:', file);
+    }
+
+    if (!updated) {
+      throw new HttpException('No changes to update', HttpStatus.BAD_REQUEST);
+    }
+
+    const updatedCategory = await this.categoryRepository.save(category);
+
+    console.log('After Update:', updatedCategory);
+
+    return updatedCategory;
   }
 
-  // Удаление категории по ID
   async deleteCategoryById(categoryId: number): Promise<string> {
     const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
 
@@ -60,7 +83,6 @@ export class CategoriesService {
     return `Category with ID ${categoryId} has been deleted`;
   }
 
-  // Получение подкатегории с деталью
   async getSubcategoryWithDetail(categoryId: number, subcategoryId: number): Promise<Subcategory> {
     const category = await this.categoryRepository.findOne({
       where: { id: categoryId },

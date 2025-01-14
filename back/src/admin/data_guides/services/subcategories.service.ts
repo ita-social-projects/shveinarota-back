@@ -5,7 +5,7 @@ import { Subcategory } from '../entities/subcategory.entity';
 import { Category } from '../entities/category.entity';
 import { Detail } from '../entities/detail.entity';
 import { CreateSubcategoryDto } from '../dto/create-subcategory.dto';
-import { UpdateSubcategoryDto } from '../dto/update-dto/update-subcategory.dto';
+import { UpdateSubcategoryDto } from '../dto/update-dto/update-subcategory.dto'; // Импортируем DTO для обновления
 
 @Injectable()
 export class SubcategoriesService {
@@ -18,6 +18,7 @@ export class SubcategoriesService {
     private readonly detailRepository: Repository<Detail>,
   ) {}
 
+  // Метод для создания подкатегории с деталью
   async createSubcategoryWithDetail(
     categoryId: number,
     createSubcategoryDto: CreateSubcategoryDto,
@@ -61,49 +62,36 @@ export class SubcategoriesService {
     return subcategory;
   }
 
+  // Метод для обновления подкатегории, поддерживающий только subcategory_name
   async updateSubcategory(
     subcategoryId: number,
     updateSubcategoryDto: UpdateSubcategoryDto,
   ): Promise<Subcategory> {
+    // Находим подкатегорию по ID
     const subcategory = await this.subcategoryRepository.findOne({
       where: { id: subcategoryId },
-      relations: ['detail'],
+      relations: ['category', 'detail'], // При необходимости подгружаем связанные сущности
     });
 
     if (!subcategory) {
       throw new HttpException('Subcategory not found', HttpStatus.NOT_FOUND);
     }
 
-    if (updateSubcategoryDto.detail) {
-      if (subcategory.detail) {
-        // Обновление существующей детали
-        const detail = await this.detailRepository.findOne({
-          where: { id: subcategory.detail.id },
-        });
-        if (detail) {
-          Object.assign(detail, updateSubcategoryDto.detail);
-          console.log('Updating detail:', detail); // Логирование
-          await this.detailRepository.save(detail);
-        }
-      } else {
-        // Создание новой детали, если ее не было
-        if (!updateSubcategoryDto.detail.title) {
-          throw new HttpException(
-            "Field 'title' is required in detail",
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-        const detail = this.detailRepository.create(updateSubcategoryDto.detail);
-        console.log('Creating new detail:', detail); // Логирование
-        await this.detailRepository.save(detail);
-        subcategory.detail = detail;
-      }
+    // Логируем данные, передаваемые в запрос
+    console.log('Update data:', updateSubcategoryDto);
+
+    // Если передано новое название подкатегории, обновляем его
+    if (updateSubcategoryDto.subcategory_name) {
+      subcategory.subcategory_name = updateSubcategoryDto.subcategory_name;
     }
 
-    Object.assign(subcategory, updateSubcategoryDto);
+    console.log('Subcategory after update:', subcategory); // Логируем подкатегорию перед сохранением
+
+    // Сохраняем изменения
     return this.subcategoryRepository.save(subcategory);
   }
 
+  // Метод для удаления подкатегории
   async deleteSubcategoryById(subcategoryId: number): Promise<string> {
     const subcategory = await this.subcategoryRepository.findOne({
       where: { id: subcategoryId },
