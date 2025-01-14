@@ -11,7 +11,7 @@ export class UpdateSubcategoryDto {
   })
   @IsString()
   @IsOptional()
-  category_name?: string;
+  categoryname?: string;
 
   @ApiProperty({
     description: 'Заголовок подкатегории',

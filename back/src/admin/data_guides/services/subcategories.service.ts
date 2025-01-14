@@ -27,25 +27,30 @@ export class SubcategoriesService {
       where: { id: categoryId },
       relations: ['subcategories'],
     });
-
+  
     if (!category) {
       throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
     }
-
+  
+    // Создаем подкатегорию и связываем ее с категорией
     const subcategory = this.subcategoryRepository.create({
-      category_name: createSubcategoryDto.category_name,
-      category,
+      categoryname: createSubcategoryDto.category_name,
+      category, // Устанавливаем связь с категорией
     });
-
+  
     if (createSubcategoryDto.detail) {
+      // Создаем деталь и связываем с подкатегорией
       const detail = this.detailRepository.create({
         ...createSubcategoryDto.detail,
       });
-      subcategory.detail = detail;
+      await this.detailRepository.save(detail); // Сохраняем деталь отдельно
+  
+      subcategory.detail = detail; // Связываем деталь с подкатегорией
     }
-
+  
     return this.subcategoryRepository.save(subcategory);
   }
+  
 
   // Обновление подкатегории
   async updateSubcategory(

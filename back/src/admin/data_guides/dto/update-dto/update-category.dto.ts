@@ -1,4 +1,4 @@
-import { IsString, IsOptional, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, ValidateNested, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UpdateSubcategoryDto } from './update-subcategory.dto';
 import { ApiProperty } from '@nestjs/swagger';
@@ -21,5 +21,6 @@ export class UpdateCategoryDto {
   @ValidateNested({ each: true })
   @Type(() => UpdateSubcategoryDto)
   @IsOptional()
+  @IsArray()
   subcategories?: UpdateSubcategoryDto[];
 }

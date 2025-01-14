@@ -28,10 +28,10 @@ export class CategoriesService {
 
     return categories.map((category) => ({
       id: category.id,
-      category_name: category.category_name,
+      category_name: category.categoryname,
       subcategories: category.subcategories.map((subcategory) => ({
         id: subcategory.id,
-        category_name: subcategory.category_name,
+        category_name: subcategory.categoryname,
       })),
     }));
   }
@@ -44,7 +44,7 @@ export class CategoriesService {
       throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
     }
 
-    category.category_name = categoryName;
+    category.categoryname = categoryName;
     return this.categoryRepository.save(category);
   }
 

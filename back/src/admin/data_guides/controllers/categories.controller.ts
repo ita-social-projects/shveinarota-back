@@ -8,7 +8,10 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
@@ -23,10 +26,15 @@ export class CategoriesController {
   @ApiResponse({ status: 400, description: 'Некорректные данные.' })
   @Post()
   @UsePipes(ValidationPipe)
-  async createCategory(@Body() createCategoryDto: CreateCategoryDto) {
+  @UseInterceptors(FileInterceptor('file')) // Если ожидается файл
+  async createCategory(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @UploadedFile() file: Express.Multer.File, // Обработка файла
+  ) {
+    console.log(file); // Логируем файл для отладки
     return this.categoriesService.createCategory(createCategoryDto);
   }
- 
+
   // Получение всех категорий
   @ApiOperation({ summary: 'Получение всех категорий' })
   @ApiResponse({ status: 200, description: 'Список всех категорий.' })

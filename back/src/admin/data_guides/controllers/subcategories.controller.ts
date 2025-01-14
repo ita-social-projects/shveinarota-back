@@ -31,7 +31,6 @@ export class SubcategoriesController {
     FileFieldsInterceptor(
       [
         { name: 'lekala', maxCount: 10 },
-        { name: 'authors', maxCount: 10 },
         { name: 'example', maxCount: 10 },
       ],
       multerOptions('details'),
@@ -49,7 +48,6 @@ export class SubcategoriesController {
     const detailDto = {
       title: createSubcategoryDto.title,
       lekala: mapFilesToPaths(files.lekala),
-      authors: mapFilesToPaths(files.authors),
       example: mapFilesToPaths(files.example),
     };
 
@@ -60,7 +58,6 @@ export class SubcategoriesController {
       createSubcategoryDto,
     );
   }
-
 
   @ApiOperation({ summary: 'Обновление подкатегории' })
   @ApiResponse({ status: 200, description: 'Подкатегория успешно обновлена.' })
@@ -84,6 +81,4 @@ export class SubcategoriesController {
   async deleteSubcategoryById(@Param('subcategoryId') subcategoryId: number) {
     return this.subcategoriesService.deleteSubcategoryById(subcategoryId);
   }
-
-  
 }
