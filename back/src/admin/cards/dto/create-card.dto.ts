@@ -8,7 +8,7 @@ export class CreateCardDto {
   })
   @IsString()
   @IsNotEmpty({ message: 'Название карточки (title) не может быть пустым' })
-  title: string; // Название карточки
+  title: string;
 
   @ApiProperty({
     description: 'Описание карточки',
@@ -17,14 +17,14 @@ export class CreateCardDto {
   })
   @IsString()
   @IsOptional()
-  description?: string; // Описание карточки (опционально)
+  description?: string;
 
   @ApiProperty({
     description: 'Путь к файлу изображения',
     example: '/uploads/cards/card-image.jpg',
-    required: false,
+    required: true, // Теперь обязательное поле
   })
   @IsString()
-  @IsOptional()
-  path?: string; // Путь к файлу изображения (опционально)
+  @IsNotEmpty({ message: 'Путь к изображению обязателен' })
+  path: string; // Поле сделано обязательным
 }

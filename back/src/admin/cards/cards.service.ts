@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Card } from './entities/card.entity';
@@ -19,6 +19,10 @@ export class CardsService {
   }
 
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
+    if (!createCardDto.path) {
+      throw new BadRequestException('Путь к изображению обязателен');
+    }
+
     const newCard = this.cardRepository.create(createCardDto);
     return this.cardRepository.save(newCard);
   }
@@ -26,7 +30,7 @@ export class CardsService {
   async getCardById(id: number): Promise<Card> {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
-      throw new NotFoundException(`Card with ID ${id} not found`);
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
     return card;
   }
@@ -34,11 +38,11 @@ export class CardsService {
   async updateCard(id: number, updateCardDto: UpdateCardDto): Promise<Card> {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
-      throw new NotFoundException(`Card with ID ${id} not found`);
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Удаляем старый файл изображения, если загружено новое
-    if (updateCardDto.path && card.path !== updateCardDto.path) {
+    // Если загружен новый файл, удаляем старый файл
+    if (updateCardDto.path && updateCardDto.path !== card.path) {
       const oldFilePath = path.resolve(card.path);
       try {
         if (fs.existsSync(oldFilePath)) {
@@ -57,10 +61,10 @@ export class CardsService {
   async deleteCard(id: number): Promise<void> {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
-      throw new NotFoundException(`Card with ID ${id} not found`);
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Удаляем файл изображения с диска
+    // Удаляем файл изображения, если он существует
     if (card.path) {
       const filePath = path.resolve(card.path);
       try {
