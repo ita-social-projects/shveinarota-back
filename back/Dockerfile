@@ -4,14 +4,14 @@ FROM node:18-alpine
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем только файлы package.json и package-lock.json для установки зависимостей
-COPY package*.json ./
+# Копируем только файлы package.json и package-lock.json из back
+COPY back/package*.json ./
 
 # Устанавливаем все зависимости (включая devDependencies)
 RUN npm install
 
-# Копируем весь проект в контейнер
-COPY . .
+# Копируем весь проект из back в контейнер
+COPY back ./
 
 # Сборка TypeScript проекта
 RUN npm run build
