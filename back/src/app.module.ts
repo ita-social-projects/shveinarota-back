@@ -16,16 +16,21 @@ import databaseConfig from './config/database.config';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get<string>('database.host'),
-        port: configService.get<number>('database.port'),
-        username: configService.get<string>('database.username'),
-        password: configService.get<string>('database.password'),
-        database: configService.get<string>('database.name'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // Только для разработки
-      }),
+      useFactory: (configService: ConfigService) => {
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        return {
+          type: 'mysql',
+          host: configService.get<string>('database.host'),
+          port: configService.get<number>('database.port'),
+          username: configService.get<string>('database.username'),
+          password: configService.get<string>('database.password'),
+          database: configService.get<string>('database.name'),
+          entities: isDevelopment
+            ? [__dirname + '/../**/*.entity.ts']
+            : [__dirname + '/../**/*.entity.js'],
+          synchronize: true, // Только для разработки
+        };
+      },      
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'), // Указываем путь к папке uploads

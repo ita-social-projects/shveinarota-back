@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: user
+      DB_PASSWORD: password
+      DB_NAME: app_db
+      PORT: 3000
+    depends_on:
+      - mysql
+    restart: always
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306" # Убедитесь, что порт 3306 свободен на вашей системе
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

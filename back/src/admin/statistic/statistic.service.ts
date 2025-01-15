@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Marker } from '../markers/entities/markers.entity';
 import { Card } from '../cards/entities/card.entity';
-import { Link } from '../medialinks/entities/links.entity';
+import { Link } from '../mediaLinks/entities/links.entity';
 import { Partner } from '../partners/entities/partners.entity';
 import { Slide } from '../slides/entities/slide.entity';
 

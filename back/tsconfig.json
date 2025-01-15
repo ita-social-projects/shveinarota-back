@@ -6,16 +6,21 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "paths": {
+      "@entities/*": [
+        "src/entities/*.entity.ts",
+        "src/entities/*.entity.js"
+      ]
+    },
+    "forceConsistentCasingInFileNames": true
+  },
+  "incremental": true,
+  "skipLibCheck": true,
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
