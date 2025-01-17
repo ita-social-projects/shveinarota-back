@@ -17,10 +17,12 @@
         "src/entities/*.entity.js"
       ]
     },
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["node_modules/@types"], // Добавлено
+    "types": ["node", "express", "multer"] // Добавлено
   },
   "incremental": true,
   "skipLibCheck": true,
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "custom.d.ts"], // Добавлено custom.d.ts, если понадобится
   "exclude": ["node_modules", "dist"]
 }

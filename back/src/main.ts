@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+console.log('Current working directory:', process.cwd());
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
