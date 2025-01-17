@@ -22,7 +22,8 @@
     "typeorm:generate": "typeorm migration:generate -d src/database/data-source.ts -n",
     "typeorm:create": "typeorm migration:create -d src/database/migrations -n",
     "typeorm:revert": "typeorm migration:revert -d dist/src/database/data-source.js",
-    "start:migrate": "npm run build && npm run typeorm:migrate && npm run start:prod"
+    "start:migrate": "npm run build && npm run typeorm:migrate && npm run start:prod",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
