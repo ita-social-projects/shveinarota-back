@@ -18,7 +18,7 @@ import databaseConfig from './config/database.config';
       host: 'autorack.proxy.rlwy.net',  // Указываем хост напрямую
       port: 39084,         // Указываем порт напрямую
       username: 'root',   // Указываем имя пользователя напрямую
-      password: 'sNrRccvRjaEQVcpmYBqVJaLXkqkwIkiVsNrRccvRjaEQVcpmYBqVJaLXkqkwIkiV',  // Указываем пароль напрямую
+      password: 'sNrRccvRjaEQVcpmYBqVJaLXkqkwIkiV',  // Указываем пароль напрямую
       database: 'railway',  // Указываем имя базы данных напрямую
       entities: [__dirname + '/../**/*.entity.js'],
       synchronize: true, // Только для разработки
