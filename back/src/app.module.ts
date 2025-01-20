@@ -13,24 +13,15 @@ import databaseConfig from './config/database.config';
       load: [databaseConfig], // Подгружаем файл конфигурации
       isGlobal: true, // Делаем модуль доступным глобально
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const isDevelopment = process.env.NODE_ENV === 'development';
-        return {
-          type: 'mysql',
-          host: configService.get<string>('database.host'),
-          port: configService.get<number>('database.port'),
-          username: configService.get<string>('database.username'),
-          password: configService.get<string>('database.password'),
-          database: configService.get<string>('database.name'),
-          entities: isDevelopment
-            ? [__dirname + '/../**/*.entity.ts']
-            : [__dirname + '/../**/*.entity.js'],
-          synchronize: true, // Только для разработки
-        };
-      },      
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'autorack.proxy.rlwy.net',  // Указываем хост напрямую
+      port: 39084,         // Указываем порт напрямую
+      username: 'root',   // Указываем имя пользователя напрямую
+      password: 'sNrRccvRjaEQVcpmYBqVJaLXkqkwIkiVsNrRccvRjaEQVcpmYBqVJaLXkqkwIkiV',  // Указываем пароль напрямую
+      database: 'railway',  // Указываем имя базы данных напрямую
+      entities: [__dirname + '/../**/*.entity.js'],
+      synchronize: true, // Только для разработки
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'), // Указываем путь к папке uploads
