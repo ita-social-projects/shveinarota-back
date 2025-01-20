@@ -16,9 +16,9 @@ import databaseConfig from './config/database.config';
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'autorack.proxy.rlwy.net',  // Указываем хост напрямую
-      port: 39084,         // Указываем порт напрямую
+      port: 57804,         // Указываем порт напрямую
       username: 'root',   // Указываем имя пользователя напрямую
-      password: 'sNrRccvRjaEQVcpmYBqVJaLXkqkwIkiV',  // Указываем пароль напрямую
+      password: 'VnkEzYPxNPukeFnOdtqAGtCbKysiyXSa',  // Указываем пароль напрямую
       database: 'railway',  // Указываем имя базы данных напрямую
       entities: [__dirname + '/../**/*.entity.js'],
       synchronize: true, // Только для разработки
