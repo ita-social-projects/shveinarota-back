@@ -6,16 +6,12 @@ import {
   Param,
   Body,
   Delete,
-  UploadedFile,
-  UseInterceptors,
   BadRequestException,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../../common/multer-options';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('Cards') // Группировка эндпоинтов в Swagger
 @Controller('cards')
@@ -31,18 +27,10 @@ export class CardsController {
 
   @Post()
   @ApiOperation({ summary: 'Создать новую карточку' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreateCardDto })
   @ApiResponse({ status: 201, description: 'Карточка успешно создана' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('cards')))
-  async createCard(
-    @Body() createCardDto: CreateCardDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (file) {
-      createCardDto.path = file.path.replace(/\\/g, '/'); // Универсальный вид пути
-    } else {
-      throw new BadRequestException('Файл изображения обязателен');
+  async createCard(@Body() createCardDto: CreateCardDto) {
+    if (!createCardDto.path) {
+      throw new BadRequestException('Ссылка на изображение обязательна');
     }
     return this.cardsService.createCard(createCardDto);
   }
@@ -58,17 +46,10 @@ export class CardsController {
   @Put(':id')
   @ApiOperation({ summary: 'Обновить карточку по ID' })
   @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: UpdateCardDto })
   @ApiResponse({ status: 200, description: 'Карточка успешно обновлена' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('cards')))
-  async updateCard(
-    @Param('id') id: number,
-    @Body() updateCardDto: UpdateCardDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (file) {
-      updateCardDto.path = file.path.replace(/\\/g, '/'); // Универсальный вид пути
+  async updateCard(@Param('id') id: number, @Body() updateCardDto: UpdateCardDto) {
+    if (!updateCardDto.path) {
+      throw new BadRequestException('Ссылка на изображение обязательна');
     }
     const updatedCard = await this.cardsService.updateCard(id, updateCardDto);
     return {

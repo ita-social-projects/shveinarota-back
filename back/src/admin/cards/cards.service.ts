@@ -4,8 +4,6 @@ import { Repository } from 'typeorm';
 import { Card } from './entities/card.entity';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class CardsService {
@@ -15,20 +13,25 @@ export class CardsService {
   ) {}
 
   async getAllCards(): Promise<Card[]> {
-    return this.cardRepository.find({ cache: false });
+    return this.cardRepository.find({ cache: true }); // Включено кэширование для производительности
   }
 
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
     if (!createCardDto.path) {
-      throw new BadRequestException('Путь к изображению обязателен');
+      throw new BadRequestException('Ссылка на изображение обязательна');
     }
 
     const newCard = this.cardRepository.create(createCardDto);
-    return this.cardRepository.save(newCard);
+
+    try {
+      return await this.cardRepository.save(newCard);
+    } catch (error) {
+      throw new BadRequestException('Ошибка при сохранении карточки');
+    }
   }
 
   async getCardById(id: number): Promise<Card> {
-    const card = await this.cardRepository.findOneBy({ id });
+    const card = await this.cardRepository.findOne({ where: { id } });
     if (!card) {
       throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
@@ -36,44 +39,20 @@ export class CardsService {
   }
 
   async updateCard(id: number, updateCardDto: UpdateCardDto): Promise<Card> {
-    const card = await this.cardRepository.findOneBy({ id });
+    const card = await this.cardRepository.findOne({ where: { id } });
     if (!card) {
       throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Если загружен новый файл, удаляем старый файл
-    if (updateCardDto.path && updateCardDto.path !== card.path) {
-      const oldFilePath = path.resolve(card.path);
-      try {
-        if (fs.existsSync(oldFilePath)) {
-          fs.unlinkSync(oldFilePath);
-        }
-      } catch (err) {
-        console.error(`Ошибка при удалении файла: ${oldFilePath}`, err);
-      }
-    }
-
     // Обновляем данные карточки
-    Object.assign(card, updateCardDto);
+    this.cardRepository.merge(card, updateCardDto);
     return this.cardRepository.save(card);
   }
 
   async deleteCard(id: number): Promise<void> {
-    const card = await this.cardRepository.findOneBy({ id });
+    const card = await this.cardRepository.findOne({ where: { id } });
     if (!card) {
       throw new NotFoundException(`Карточка с ID ${id} не найдена`);
-    }
-
-    // Удаляем файл изображения, если он существует
-    if (card.path) {
-      const filePath = path.resolve(card.path);
-      try {
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      } catch (err) {
-        console.error(`Ошибка при удалении файла: ${filePath}`, err);
-      }
     }
 
     // Удаляем запись о карточке из базы данных
