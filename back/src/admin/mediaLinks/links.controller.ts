@@ -1,85 +1,72 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Param,
-  Body,
-  Delete,
-  UploadedFile,
-  UseInterceptors,
+import { 
+  Controller, Get, Post, Put, Param, Body, Delete, 
+  BadRequestException, NotFoundException, UseInterceptors, UploadedFile, 
+  ParseIntPipe 
 } from '@nestjs/common';
-import { linksService } from './links.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { LinksService } from './links.service';
 import { CreatelinkDto } from './dto/create-links.dto';
 import { UpdatelinkDto } from './dto/update-links.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../../common/multer-options';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
-@ApiTags('Media Links') // Group under 'Media Links' in Swagger UI
+@ApiTags('Links')
 @Controller('medialinks')
-export class linksController {
-  constructor(private readonly linksService: linksService) {}
+export class LinksController {
+  constructor(private readonly LinksService: LinksService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Получить все ссылки' })
-  @ApiResponse({ status: 200, description: 'Ссылки успешно получены' })
-  async getAlllinks() {
-    return this.linksService.getAlllinks();
+  @ApiOperation({ summary: 'Получить все карточки' })
+  @ApiResponse({ status: 200, description: 'Карточки успешно получены' })
+  async getAllLinks() {
+    return this.LinksService.getAllLinks();
   }
 
   @Post()
-  @ApiOperation({ summary: 'Создать новую ссылку' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreatelinkDto })
-  @ApiResponse({ status: 201, description: 'Ссылка успешно создана' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('links')))
-  async createlink(
-    @Body() createlinkDto: CreatelinkDto,
-    @UploadedFile() file: Express.Multer.File,
+  @UseInterceptors(FileInterceptor('image')) // Обработка файлов
+  @ApiOperation({ summary: 'Создать новую карточку' })
+  @ApiResponse({ status: 201, description: 'Карточка успешно создана' })
+  async createLink(
+    @Body() createLinkDto: CreatelinkDto, 
+    @UploadedFile() image?: Express.Multer.File
   ) {
-    if (file) {
-      createlinkDto.path = file.path.replace(/\\/g, '/'); // Универсальный вид пути
+    if (!createLinkDto.path && !image) {
+      throw new BadRequestException('Ссылка на изображение обязательна');
     }
-    return this.linksService.createlink(createlinkDto);
+
+    // Если файл загружен, сохраняем его путь в DTO
+    if (image) {
+      createLinkDto.path = image.path; // Если храните файлы локально
+      // createLinkDto.path = `https://your-storage.com/${image.filename}`; // Если храните в облаке
+    }
+
+    return this.LinksService.createLinks(createLinkDto);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Получить ссылку по ID' })
-  @ApiParam({ name: 'id', description: 'ID ссылки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Ссылка успешно получена' })
-  async getlinkById(@Param('id') id: number) {
-    return this.linksService.getlinkById(id);
+  @ApiOperation({ summary: 'Получить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Карточка успешно получена' })
+  async getLinkById(@Param('id', ParseIntPipe) id: number) {
+    return this.LinksService.getLinksById(id);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Обновить ссылку по ID' })
-  @ApiParam({ name: 'id', description: 'ID ссылки', example: 1 })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: UpdatelinkDto })
-  @ApiResponse({ status: 200, description: 'Ссылка успешно обновлена' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('links')))
-  async updatelink(
-    @Param('id') id: number,
-    @Body() updatelinkDto: UpdatelinkDto,
-    @UploadedFile() file: Express.Multer.File,
+  @ApiOperation({ summary: 'Обновить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Карточка успешно обновлена' })
+  async updateLink(
+    @Param('id', ParseIntPipe) id: number, 
+    @Body() updateLinkDto: UpdatelinkDto
   ) {
-    if (file) {
-      updatelinkDto.path = file.path.replace(/\\/g, '/'); // Универсальный вид пути
-    }
-    const updatedlink = await this.linksService.updatelink(id, updatelinkDto);
-    return {
-      message: 'Link updated successfully',
-      data: updatedlink,
-    };
+    return this.LinksService.updateLinks(id, updateLinkDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Удалить ссылку по ID' })
-  @ApiParam({ name: 'id', description: 'ID ссылки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Ссылка успешно удалена' })
-  async deletelink(@Param('id') id: number) {
-    await this.linksService.deletelink(id);
-    return { message: 'Link deleted successfully' };
+  @ApiOperation({ summary: 'Удалить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Карточка успешно удалена' })
+  async deleteLink(@Param('id', ParseIntPipe) id: number) {
+    await this.LinksService.deleteLinks(id);
+    return { message: 'Карточка успешно удалена' };
   }
 }

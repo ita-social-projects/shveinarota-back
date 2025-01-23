@@ -1,11 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Marker } from './entities/markers.entity';
 import { CreateMarkerDto } from './dto/create-marker.dto';
 import { UpdateMarkerDto } from './dto/update-marker.dto';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class MarkersService {
@@ -15,64 +13,47 @@ export class MarkersService {
   ) {}
 
   async getAllMarkers(): Promise<Marker[]> {
-    return this.MarkerRepository.find({ cache: false });
+    return this.MarkerRepository.find({ cache: true });
   }
 
   async createMarker(createMarkerDto: CreateMarkerDto): Promise<Marker> {
+    if (!createMarkerDto.path) {
+      throw new BadRequestException('Ссылка на изображение обязательна');
+    }
+
     const newMarker = this.MarkerRepository.create(createMarkerDto);
-    return this.MarkerRepository.save(newMarker);
+
+    try {
+      return await this.MarkerRepository.save(newMarker);
+    } catch (error) {
+      throw new BadRequestException('Ошибка при сохранении карточки');
+    }
   }
 
   async getMarkerById(id: number): Promise<Marker> {
-    const Marker = await this.MarkerRepository.findOneBy({ id });
+    const Marker = await this.MarkerRepository.findOne({ where: { id } });
     if (!Marker) {
-      throw new NotFoundException(`Marker with ID ${id} not found`);
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
     return Marker;
   }
 
   async updateMarker(id: number, updateMarkerDto: UpdateMarkerDto): Promise<Marker> {
-    const Marker = await this.MarkerRepository.findOneBy({ id });
+    const Marker = await this.MarkerRepository.findOne({ where: { id } });
     if (!Marker) {
-      throw new NotFoundException(`Marker with ID ${id} not found`);
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Удаляем старый файл изображения, если загружено новое
-    if (updateMarkerDto.path && Marker.path !== updateMarkerDto.path) {
-      const oldFilePath = path.resolve(Marker.path);
-      try {
-        if (fs.existsSync(oldFilePath)) {
-          fs.unlinkSync(oldFilePath);
-        }
-      } catch (err) {
-        console.error(`Ошибка при удалении файла: ${oldFilePath}`, err);
-      }
-    }
-
-    // Обновляем данные карточки
-    Object.assign(Marker, updateMarkerDto);
+    this.MarkerRepository.merge(Marker, updateMarkerDto);
     return this.MarkerRepository.save(Marker);
   }
 
   async deleteMarker(id: number): Promise<void> {
-    const Marker = await this.MarkerRepository.findOneBy({ id });
+    const Marker = await this.MarkerRepository.findOne({ where: { id } });
     if (!Marker) {
-      throw new NotFoundException(`Marker with ID ${id} not found`);
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Удаляем файл изображения с диска
-    if (Marker.path) {
-      const filePath = path.resolve(Marker.path);
-      try {
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      } catch (err) {
-        console.error(`Ошибка при удалении файла: ${filePath}`, err);
-      }
-    }
-
-    // Удаляем запись о карточке из базы данных
     await this.MarkerRepository.remove(Marker);
   }
 }

@@ -13,7 +13,7 @@ export class CardsService {
   ) {}
 
   async getAllCards(): Promise<Card[]> {
-    return this.cardRepository.find({ cache: true }); // Включено кэширование для производительности
+    return this.cardRepository.find({ cache: true });
   }
 
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
@@ -44,7 +44,6 @@ export class CardsService {
       throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Обновляем данные карточки
     this.cardRepository.merge(card, updateCardDto);
     return this.cardRepository.save(card);
   }
@@ -55,7 +54,6 @@ export class CardsService {
       throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Удаляем запись о карточке из базы данных
     await this.cardRepository.remove(card);
   }
 }

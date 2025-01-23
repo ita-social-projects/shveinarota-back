@@ -1,86 +1,72 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Param,
-  Body,
-  Delete,
-  UploadedFile,
-  UseInterceptors,
+import { 
+  Controller, Get, Post, Put, Param, Body, Delete, 
+  BadRequestException, NotFoundException, UseInterceptors, UploadedFile, 
+  ParseIntPipe 
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PartnersService } from './partners.service';
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../../common/multer-options';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
-@ApiTags('Partners') // Group under 'Partners' in Swagger UI
-@Controller('partners')
+@ApiTags('Partners')
+@Controller('Partners')
 export class PartnersController {
   constructor(private readonly PartnersService: PartnersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all partners' })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved all partners' })
-  async getAllPartners() {
+  @ApiOperation({ summary: 'Получить все карточки' })
+  @ApiResponse({ status: 200, description: 'Карточки успешно получены' })
+  async getAllPartnerss() {
     return this.PartnersService.getAllPartners();
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new partner' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreatePartnerDto })
-  @ApiResponse({ status: 201, description: 'Partner created successfully' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('partners')))
-  async createPartner(
-    @Body() createPartnerDto: CreatePartnerDto,
-    @UploadedFile() file: Express.Multer.File,
+  @UseInterceptors(FileInterceptor('image')) // Обработка файлов
+  @ApiOperation({ summary: 'Создать новую карточку' })
+  @ApiResponse({ status: 201, description: 'Карточка успешно создана' })
+  async createPartners(
+    @Body() createPartnersDto: CreatePartnerDto, 
+    @UploadedFile() image?: Express.Multer.File
   ) {
-    if (file) {
-      createPartnerDto.path = file.path.replace(/\\/g, '/'); // Normalize file path
+    if (!createPartnersDto.path && !image) {
+      throw new BadRequestException('Ссылка на изображение обязательна');
     }
-    return this.PartnersService.createPartner(createPartnerDto);
+
+    // Если файл загружен, сохраняем его путь в DTO
+    if (image) {
+      createPartnersDto.path = image.path; // Если храните файлы локально
+      // createPartnersDto.path = `https://your-storage.com/${image.filename}`; // Если храните в облаке
+    }
+
+    return this.PartnersService.createPartners(createPartnersDto);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get partner by ID' })
-  @ApiParam({ name: 'id', description: 'Partner ID', example: 1 })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved the partner' })
-  async getPartnerById(@Param('id') id: number) {
-    return this.PartnersService.getPartnerById(id);
+  @ApiOperation({ summary: 'Получить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Карточка успешно получена' })
+  async getPartnersById(@Param('id', ParseIntPipe) id: number) {
+    return this.PartnersService.getPartnersById(id);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update a partner by ID' })
-  @ApiParam({ name: 'id', description: 'Partner ID', example: 1 })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: UpdatePartnerDto })
-  @ApiResponse({ status: 200, description: 'Partner updated successfully' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('partners')))
-  async updatePartner(
-    @Param('id') id: number,
-    @Body() updatePartnerDto: UpdatePartnerDto,
-    @UploadedFile() file: Express.Multer.File,
+  @ApiOperation({ summary: 'Обновить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Карточка успешно обновлена' })
+  async updatePartners(
+    @Param('id', ParseIntPipe) id: number, 
+    @Body() updatePartnersDto: UpdatePartnerDto
   ) {
-    if (file) {
-      updatePartnerDto.path = file.path.replace(/\\/g, '/'); // Normalize file path
-    }
-
-    const updatedPartner = await this.PartnersService.updatePartner(id, updatePartnerDto);
-    return {
-      message: 'Partner updated successfully',
-      data: updatedPartner,
-    };
+    return this.PartnersService.updatePartners(id, updatePartnersDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a partner by ID' })
-  @ApiParam({ name: 'id', description: 'Partner ID', example: 1 })
-  @ApiResponse({ status: 200, description: 'Partner deleted successfully' })
-  async deletePartner(@Param('id') id: number) {
-    await this.PartnersService.deletePartner(id);
-    return { message: 'Partner deleted successfully' };
+  @ApiOperation({ summary: 'Удалить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Карточка успешно удалена' })
+  async deletePartners(@Param('id', ParseIntPipe) id: number) {
+    await this.PartnersService.deletePartners(id);
+    return { message: 'Карточка успешно удалена' };
   }
 }

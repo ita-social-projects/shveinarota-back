@@ -1,78 +1,59 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Link } from './entities/links.entity';
 import { CreatelinkDto } from './dto/create-links.dto';
 import { UpdatelinkDto } from './dto/update-links.dto';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
-export class linksService {
+export class LinksService {
   constructor(
     @InjectRepository(Link)
-    private readonly linkRepository: Repository<Link>,
+    private readonly LinksRepository: Repository<Link>,
   ) {}
 
-  async getAlllinks(): Promise<Link[]> {
-    return this.linkRepository.find({ cache: false });
+  async getAllLinks(): Promise<Link[]> {
+    return this.LinksRepository.find({ cache: true });
   }
 
-  async createlink(createlinkDto: CreatelinkDto): Promise<Link> {
-    const newlink = this.linkRepository.create(createlinkDto);
-    return this.linkRepository.save(newlink);
+  async createLinks(createLinksDto: CreatelinkDto): Promise<Link> {
+    if (!createLinksDto.path) {
+      throw new BadRequestException('Ссылка на изображение обязательна');
+    }
+
+    const newLinks = this.LinksRepository.create(createLinksDto);
+
+    try {
+      return await this.LinksRepository.save(newLinks);
+    } catch (error) {
+      throw new BadRequestException('Ошибка при сохранении карточки');
+    }
   }
 
-  async getlinkById(id: number): Promise<Link> {
-    const link = await this.linkRepository.findOneBy({ id });
-    if (!link) {
-      throw new NotFoundException(`link with ID ${id} not found`);
+  async getLinksById(id: number): Promise<Link> {
+    const Links = await this.LinksRepository.findOne({ where: { id } });
+    if (!Links) {
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
-    return link;
+    return Links;
   }
 
-  async updatelink(id: number, updatelinkDto: UpdatelinkDto): Promise<Link> {
-    const link = await this.linkRepository.findOneBy({ id });
-    if (!link) {
-      throw new NotFoundException(`link with ID ${id} not found`);
+  async updateLinks(id: number, updateLinksDto: UpdatelinkDto): Promise<Link> {
+    const Links = await this.LinksRepository.findOne({ where: { id } });
+    if (!Links) {
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Удаляем старый файл изображения, если загружено новое
-    if (updatelinkDto.path && link.path !== updatelinkDto.path) {
-      const oldFilePath = path.resolve(link.path);
-      try {
-        if (fs.existsSync(oldFilePath)) {
-          fs.unlinkSync(oldFilePath);
-        }
-      } catch (err) {
-        console.error(`Ошибка при удалении файла: ${oldFilePath}`, err);
-      }
-    }
-
-    // Обновляем данные карточки
-    Object.assign(link, updatelinkDto);
-    return this.linkRepository.save(link);
+    this.LinksRepository.merge(Links, updateLinksDto);
+    return this.LinksRepository.save(Links);
   }
 
-  async deletelink(id: number): Promise<void> {
-    const link = await this.linkRepository.findOneBy({ id });
-    if (!link) {
-      throw new NotFoundException(`link with ID ${id} not found`);
+  async deleteLinks(id: number): Promise<void> {
+    const Links = await this.LinksRepository.findOne({ where: { id } });
+    if (!Links) {
+      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
     }
 
-    // Удаляем файл изображения с диска
-    if (link.path) {
-      const filePath = path.resolve(link.path);
-      try {
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      } catch (err) {
-        console.error(`Ошибка при удалении файла: ${filePath}`, err);
-      }
-    }
-
-    // Удаляем запись о links из базы данных
-    await this.linkRepository.remove(link);
+    await this.LinksRepository.remove(Links);
   }
 }
