@@ -86,18 +86,20 @@ export class SubcategoryController {
         }
       };
 
+      // Создаем DTO для обновления с учетом возможных отсутствующих полей
       const updateSubcategoryDto: UpdateSubcategoryDto = {
-        subcategory: req.body.subcategory,
-        url: req.body.url,
-        details: req.body.details,
-        summary: req.body.summary,
+        subcategory: req.body.subcategory || undefined,
+        url: req.body.url || undefined,
+        details: req.body.details || undefined,
+        summary: req.body.summary || undefined,
         categoryId: categoryId,
-        categoryname: req.body.categoryname || null,
-        lekala: parseJson(req.body.lekala, []),
-        authors: parseJson(req.body.authors, []),
-        example: parseJson(req.body.example, []),
+        categoryname: req.body.categoryname || null,  // Если нет, то присваиваем null
+        lekala: req.body.lekala ? parseJson(req.body.lekala, []) : [], // Обрабатываем JSON, если поле пустое
+        authors: req.body.authors ? parseJson(req.body.authors, []) : [], // Тоже для authors
+        example: req.body.example ? parseJson(req.body.example, []) : [] // И для примера
       };
 
+      // Вызов сервиса для обновления подкатегории
       return await this.subcategoryService.update(subcategoryId, updateSubcategoryDto);
     } catch (error) {
       console.error('Помилка при оновленні підкатегорії:', error);

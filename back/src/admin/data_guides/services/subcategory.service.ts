@@ -54,27 +54,38 @@ export class SubcategoryService {
 
   async update(subcategoryId: number, dto: UpdateSubcategoryDto): Promise<Subcategory> {
     const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
-
+  
     if (!subcategory) {
       throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
     }
-
+  
+    // Обновляем только те поля, которые были переданы в запросе
     if (dto.categoryId) {
       const category = await this.categoryRepository.findOne({ where: { id: dto.categoryId } });
       if (!category) {
         throw new BadRequestException(`Категорія з ID ${dto.categoryId} не існує.`);
       }
-      subcategory.category = category;
+      subcategory.category = category; // Обновляем категорию, если передана новая
     }
-
+  
+    // Обновляем другие поля
+    subcategory.subcategory = dto.subcategory ?? subcategory.subcategory;
+    subcategory.url = dto.url ?? subcategory.url;
+    subcategory.details = dto.details ?? subcategory.details;
+    subcategory.summary = dto.summary ?? subcategory.summary;
+    subcategory.categoryname = dto.categoryname ?? subcategory.categoryname; // Если нет, оставляем старое
+    subcategory.lekala = dto.lekala && dto.lekala.length > 0 ? dto.lekala : subcategory.lekala;
+    subcategory.authors = dto.authors && dto.authors.length > 0 ? dto.authors : subcategory.authors;
+    subcategory.example = dto.example && dto.example.length > 0 ? dto.example : subcategory.example;
+  
     try {
-      Object.assign(subcategory, dto);
-      return await this.subcategoryRepository.save(subcategory);
+      return await this.subcategoryRepository.save(subcategory); // Сохраняем обновленную подкатегорию
     } catch (error) {
       console.error('Помилка при оновленні підкатегорії:', error);
       throw new BadRequestException('Не вдалося оновити підкатегорію.');
     }
-  }
+  }  
+  
 
   async delete(subcategoryId: number): Promise<void> {
     const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
