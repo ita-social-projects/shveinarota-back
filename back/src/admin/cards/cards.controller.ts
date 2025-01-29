@@ -9,51 +9,51 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
-@ApiTags('Cards')
+@ApiTags('Карточки')
 @Controller('cards')
 export class CardsController {
   constructor(private readonly cardsService: CardsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Получить все карточки' })
-  @ApiResponse({ status: 200, description: 'Карточки успешно получены' })
+  @ApiOperation({ summary: 'Отримати всі картки' })
+  @ApiResponse({ status: 200, description: 'Картки успішно отримані' })
   async getAllCards() {
     return this.cardsService.getAllCards();
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image')) // Обработка файлов
-  @ApiOperation({ summary: 'Создать новую карточку' })
-  @ApiResponse({ status: 201, description: 'Карточка успешно создана' })
+  @UseInterceptors(FileInterceptor('image')) // Обробка файлів
+  @ApiOperation({ summary: 'Створити нову картку' })
+  @ApiResponse({ status: 201, description: 'Картка успішно створена' })
   async createCard(
     @Body() createCardDto: CreateCardDto, 
     @UploadedFile() image?: Express.Multer.File
   ) {
     if (!createCardDto.path && !image) {
-      throw new BadRequestException('Ссылка на изображение обязательна');
+      throw new BadRequestException('Посилання на зображення є обов’язковим');
     }
 
-    // Если файл загружен, сохраняем его путь в DTO
+    // Якщо файл завантажено, зберігаємо його шлях у DTO
     if (image) {
-      createCardDto.path = image.path; // Если храните файлы локально
-      // createCardDto.path = `https://your-storage.com/${image.filename}`; // Если храните в облаке
+      createCardDto.path = image.path; // Якщо зберігаєте файли локально
+      // createCardDto.path = `https://your-storage.com/${image.filename}`; // Якщо зберігаєте у хмарі
     }
 
     return this.cardsService.createCard(createCardDto);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Получить карточку по ID' })
-  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Карточка успешно получена' })
+  @ApiOperation({ summary: 'Отримати картку за ID' })
+  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Картка успішно отримана' })
   async getCardById(@Param('id', ParseIntPipe) id: number) {
     return this.cardsService.getCardById(id);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Обновить карточку по ID' })
-  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Карточка успешно обновлена' })
+  @ApiOperation({ summary: 'Оновити картку за ID' })
+  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Картка успішно оновлена' })
   async updateCard(
     @Param('id', ParseIntPipe) id: number, 
     @Body() updateCardDto: UpdateCardDto
@@ -62,11 +62,11 @@ export class CardsController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Удалить карточку по ID' })
-  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Карточка успешно удалена' })
+  @ApiOperation({ summary: 'Видалити картку за ID' })
+  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Картка успішно видалена' })
   async deleteCard(@Param('id', ParseIntPipe) id: number) {
     await this.cardsService.deleteCard(id);
-    return { message: 'Карточка успешно удалена' };
+    return { message: 'Картка успішно видалена' };
   }
 }

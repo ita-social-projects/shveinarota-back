@@ -1,15 +1,12 @@
-import { IsString, IsNotEmpty, IsOptional, IsArray, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-import { CreateSubcategoryDto } from './create-subcategory.dto';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCategoryDto {
-  @IsString()
-  @IsNotEmpty()
-  categoryname: string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateSubcategoryDto)
-  subcategories?: CreateSubcategoryDto[];
+  @ApiProperty({
+    description: 'Назва категорії',
+    example: 'Швейне обладнання',
+  })
+  @IsNotEmpty({ message: 'Поле "category" є обовʼязковим для заповнення' })
+  @IsString({ message: 'Поле "category" повинно бути рядком' })
+  category: string;
 }

@@ -1,23 +1,35 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
-import { Category } from './category.entity';
-import { Detail } from './detail.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Category } from "./category.entity";
 
-@Entity('subcategories')
+@Entity()
 export class Subcategory {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
-  subcategory_name: string;
+  @Column({ type: 'varchar', length: 20, nullable: false })
+  subcategory: string;
 
-  @ManyToOne(() => Category, (category) => category.subcategories, {
-    onDelete: 'CASCADE',
-  })
-  category: Category;
+  @Column({ type: 'varchar', length: 50, nullable: false })
+  url: string;
 
-  @OneToOne(() => Detail, (detail) => detail.subcategory, {
-    cascade: true,
-  })
-  @JoinColumn()
-  detail: Detail;
+  @Column('json')
+  lekala: { path: string; text: string }[];
+
+  @Column('json')
+  authors: string[];
+
+  @Column('json')
+  example: string[];
+
+  @Column({ type: 'varchar', length: 600, nullable: false })
+  details: string;
+
+  @Column({ type: 'varchar', length: 600, nullable: false })
+  summary: string;
+
+  @Column({ type: 'varchar', length: 20, nullable: false })
+  categoryname: string; // Дублирующее название категории (для удобства)
+
+  @ManyToOne(() => Category, (category) => category.subcategories, { nullable: false })
+  category: Category; // Связь с категорией
 }

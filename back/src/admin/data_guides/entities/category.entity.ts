@@ -1,16 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Subcategory } from './subcategory.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Subcategory } from "./subcategory.entity";
 
-@Entity('categories')
+@Entity()
 export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
-  categoryname: string;
+  @Column({ type: 'varchar', length: 20, nullable: false })
+  category: string;
 
-  @OneToMany(() => Subcategory, (subcategory) => subcategory.category, {
-    cascade: true,
-  })
+  @OneToMany(() => Subcategory, (subcategory) => subcategory.category)
   subcategories: Subcategory[];
 }

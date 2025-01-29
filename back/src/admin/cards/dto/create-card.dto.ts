@@ -3,15 +3,15 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCardDto {
   @ApiProperty({
-    description: 'Название карточки',
+    description: 'Назва картки',
     example: 'My New Card',
   })
   @IsString()
-  @IsNotEmpty({ message: 'Название карточки (title) не может быть пустым' })
+  @IsNotEmpty({ message: 'Назва картки (title) не може бути порожньою' })
   title: string;
 
   @ApiProperty({
-    description: 'Описание карточки',
+    description: 'Опис картки',
     example: 'This is a detailed description of the card.',
     required: false,
   })
@@ -20,11 +20,11 @@ export class CreateCardDto {
   description?: string;
 
   @ApiProperty({
-    description: 'Путь к файлу изображения',
+    description: 'URL зображення',
     example: '/uploads/cards/card-image.jpg',
-    required: true, // Теперь обязательное поле
+    required: true, // Тепер обов’язкове поле
   })
   @IsString()
-  @IsNotEmpty({ message: 'Путь к изображению обязателен' })
-  path: string; // Поле сделано обязательным
+  @IsNotEmpty({ message: 'Шлях до зображення є обов’язковим' })
+  path: string; // Поле зроблено обов’язковим
 }

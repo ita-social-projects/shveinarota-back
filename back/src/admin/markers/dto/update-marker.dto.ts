@@ -7,17 +7,17 @@ export class UpdateMarkerDto {
   @IsOptional()
   lat?: string;
 
-  @ApiPropertyOptional({ description: 'Долгота', example: '30.5234' })
+  @ApiPropertyOptional({ description: 'Довгота', example: '30.5234' })
   @IsString()
   @IsOptional()
   lng?: string;
 
-  @ApiPropertyOptional({ description: 'Заголовок', example: 'Updated Marker' })
+  @ApiPropertyOptional({ description: 'Заголовок', example: 'Оновлений маркер' })
   @IsString()
   @IsOptional()
   title?: string;
 
-  @ApiPropertyOptional({ description: 'Адрес', example: 'ул. Крещатик, 2' })
+  @ApiPropertyOptional({ description: 'Адреса', example: 'вул. Хрещатик, 2' })
   @IsString()
   @IsOptional()
   adress?: string;
@@ -27,7 +27,7 @@ export class UpdateMarkerDto {
   @IsOptional()
   phone?: string;
 
-  @ApiPropertyOptional({ description: 'Путь к файлу', example: 'uploads/markers/new_image.png' })
+  @ApiPropertyOptional({ description: 'Шлях до файлу', example: 'uploads/markers/new_image.png' })
   @IsString()
   @IsOptional()
   path?: string;

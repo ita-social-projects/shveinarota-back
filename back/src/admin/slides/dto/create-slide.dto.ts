@@ -2,18 +2,18 @@ import { IsString, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateSlideDto {
-  @ApiPropertyOptional({ description: 'Path to the slide image', example: 'uploads/slides/image.png' })
+  @ApiPropertyOptional({ description: 'Шлях до зображення слайду', example: 'uploads/slides/image.png' })
   @IsString()
   @IsOptional()
-  path: string; // Path
+  path: string; // Шлях
 
-  @ApiPropertyOptional({ description: 'Title of the slide', example: 'Welcome to our platform!' })
+  @ApiPropertyOptional({ description: 'Заголовок слайду', example: 'Ласкаво просимо на нашу платформу!' })
   @IsString()
   @IsOptional()
-  title: string; // Title
+  title: string; // Заголовок
 
-  @ApiPropertyOptional({ description: 'Text content of the slide', example: 'Discover our latest features' })
+  @ApiPropertyOptional({ description: 'Текстовий вміст слайду', example: 'Дізнайтеся про наші останні функції' })
   @IsString()
   @IsOptional()
-  text: string; // Text
+  text: string; // Текст
 }

@@ -3,24 +3,24 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateCardDto {
   @ApiPropertyOptional({
-    description: 'Название карточки',
-    example: 'Updated Card Title',
+    description: 'Назва картки',
+    example: 'Оновлена назва картки',
   })
   @IsString()
   @IsOptional()
-  @IsNotEmpty({ message: 'Название карточки (title) не может быть пустым' })
+  @IsNotEmpty({ message: 'Назва картки (title) не може бути порожньою' })
   title?: string;
 
   @ApiPropertyOptional({
-    description: 'Описание карточки',
-    example: 'Updated description for the card.',
+    description: 'Опис картки',
+    example: 'Оновлений опис картки.',
   })
   @IsString()
   @IsOptional()
   description?: string;
 
   @ApiPropertyOptional({
-    description: 'Путь к файлу изображения',
+    description: 'Додайте URL фото',
     example: '/uploads/cards/updated-image.jpg',
   })
   @IsString()

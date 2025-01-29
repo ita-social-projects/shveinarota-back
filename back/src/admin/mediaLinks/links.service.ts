@@ -2,8 +2,8 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Link } from './entities/links.entity';
-import { CreatelinkDto } from './dto/create-links.dto';
-import { UpdatelinkDto } from './dto/update-links.dto';
+import { CreateLinkDto } from './dto/create-links.dto';
+import { UpdateLinkDto } from './dto/update-links.dto';
 
 @Injectable()
 export class LinksService {
@@ -16,7 +16,7 @@ export class LinksService {
     return this.LinksRepository.find({ cache: true });
   }
 
-  async createLinks(createLinksDto: CreatelinkDto): Promise<Link> {
+  async createLinks(createLinksDto: CreateLinkDto): Promise<Link> {
     if (!createLinksDto.path) {
       throw new BadRequestException('Ссылка на изображение обязательна');
     }
@@ -38,7 +38,7 @@ export class LinksService {
     return Links;
   }
 
-  async updateLinks(id: number, updateLinksDto: UpdatelinkDto): Promise<Link> {
+  async updateLinks(id: number, updateLinksDto: UpdateLinkDto): Promise<Link> {
     const Links = await this.LinksRepository.findOne({ where: { id } });
     if (!Links) {
       throw new NotFoundException(`Карточка с ID ${id} не найдена`);

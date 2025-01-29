@@ -9,51 +9,51 @@ import { CreateSlideDto } from './dto/create-slide.dto';
 import { UpdateSlideDto } from './dto/update-slide.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
-@ApiTags('Slides')
+@ApiTags('Слайди')
 @Controller('slides')
 export class SlidesController {
   constructor(private readonly SlidesService: SlidesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Получить все карточки' })
-  @ApiResponse({ status: 200, description: 'Карточки успешно получены' })
+  @ApiOperation({ summary: 'Отримати всі слайди' })
+  @ApiResponse({ status: 200, description: 'Слайди успішно отримані' })
   async getAllSlidess() {
     return this.SlidesService.getAllSlides();
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image')) // Обработка файлов
-  @ApiOperation({ summary: 'Создать новую карточку' })
-  @ApiResponse({ status: 201, description: 'Карточка успешно создана' })
+  @UseInterceptors(FileInterceptor('image')) // Обробка файлів
+  @ApiOperation({ summary: 'Створити новий слайд' })
+  @ApiResponse({ status: 201, description: 'Слайд успішно створений' })
   async createSlides(
     @Body() createSlidesDto: CreateSlideDto, 
     @UploadedFile() image?: Express.Multer.File
   ) {
     if (!createSlidesDto.path && !image) {
-      throw new BadRequestException('Ссылка на изображение обязательна');
+      throw new BadRequestException('Посилання на зображення є обов’язковим');
     }
 
-    // Если файл загружен, сохраняем его путь в DTO
+    // Якщо файл завантажено, зберігаємо його шлях у DTO
     if (image) {
-      createSlidesDto.path = image.path; // Если храните файлы локально
-      // createSlidesDto.path = `https://your-storage.com/${image.filename}`; // Если храните в облаке
+      createSlidesDto.path = image.path; // Якщо зберігаєте файли локально
+      // createSlidesDto.path = `https://your-storage.com/${image.filename}`; // Якщо зберігаєте у хмарі
     }
 
     return this.SlidesService.createSlides(createSlidesDto);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Получить карточку по ID' })
-  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Карточка успешно получена' })
+  @ApiOperation({ summary: 'Отримати слайд за ID' })
+  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
+  @ApiResponse({ status: 200, description: 'Слайд успішно отриманий' })
   async getSlidesById(@Param('id', ParseIntPipe) id: number) {
     return this.SlidesService.getSlidesById(id);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Обновить карточку по ID' })
-  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Карточка успешно обновлена' })
+  @ApiOperation({ summary: 'Оновити слайд за ID' })
+  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
+  @ApiResponse({ status: 200, description: 'Слайд успішно оновлений' })
   async updateSlides(
     @Param('id', ParseIntPipe) id: number, 
     @Body() updateSlidesDto: UpdateSlideDto
@@ -62,11 +62,11 @@ export class SlidesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Удалить карточку по ID' })
-  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Карточка успешно удалена' })
+  @ApiOperation({ summary: 'Видалити слайд за ID' })
+  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
+  @ApiResponse({ status: 200, description: 'Слайд успішно видалений' })
   async deleteSlides(@Param('id', ParseIntPipe) id: number) {
     await this.SlidesService.deleteSlides(id);
-    return { message: 'Карточка успешно удалена' };
+    return { message: 'Слайд успішно видалений' };
   }
 }

@@ -18,7 +18,7 @@ export class CardsService {
 
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
     if (!createCardDto.path) {
-      throw new BadRequestException('Ссылка на изображение обязательна');
+      throw new BadRequestException('Посилання на картинку обовязкове');
     }
 
     const newCard = this.cardRepository.create(createCardDto);
@@ -26,14 +26,14 @@ export class CardsService {
     try {
       return await this.cardRepository.save(newCard);
     } catch (error) {
-      throw new BadRequestException('Ошибка при сохранении карточки');
+      throw new BadRequestException('Помилка при створенні');
     }
   }
 
   async getCardById(id: number): Promise<Card> {
     const card = await this.cardRepository.findOne({ where: { id } });
     if (!card) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+      throw new NotFoundException(`Карточка з ID ${id} не знайдена`);
     }
     return card;
   }
@@ -41,7 +41,7 @@ export class CardsService {
   async updateCard(id: number, updateCardDto: UpdateCardDto): Promise<Card> {
     const card = await this.cardRepository.findOne({ where: { id } });
     if (!card) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+      throw new NotFoundException(`Карточка з ID ${id} не знайдена`);
     }
 
     this.cardRepository.merge(card, updateCardDto);
@@ -51,7 +51,7 @@ export class CardsService {
   async deleteCard(id: number): Promise<void> {
     const card = await this.cardRepository.findOne({ where: { id } });
     if (!card) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+      throw new NotFoundException(`Карточка з ID ${id} не знайдена`);
     }
 
     await this.cardRepository.remove(card);
