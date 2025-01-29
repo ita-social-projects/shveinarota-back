@@ -37,19 +37,20 @@ export class SubcategoryService {
     }
   }
 
-  async getSubcategoriesByCategoryId(categoryId: number): Promise<{ id: number; subcategory: string }[]> {
+  async getSubcategoriesByCategoryId(categoryId: number): Promise<Subcategory[]> {
     try {
       const subcategories = await this.subcategoryRepository.find({
         where: { category: { id: categoryId } },
-        select: ['id', 'subcategory'],
+        relations: ['category'], // Подгружаем связанную категорию
       });
-
+  
       return subcategories;
     } catch (error) {
       console.error('Помилка при отриманні підкатегорій:', error);
       throw new BadRequestException('Не вдалося отримати підкатегорії.');
     }
   }
+  
 
   async update(subcategoryId: number, dto: UpdateSubcategoryDto): Promise<Subcategory> {
     const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
