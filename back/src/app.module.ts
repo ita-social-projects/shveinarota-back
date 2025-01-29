@@ -22,7 +22,7 @@ import databaseConfig from './config/database.config';
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.name'),
         entities: [__dirname + '/../**/*.entity.js'],
-        synchronize: false, // Только для разработки
+        synchronize: true, // Только для разработки
       }),
       inject: [ConfigService],
     }),
