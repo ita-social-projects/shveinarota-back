@@ -1,33 +1,48 @@
 import { 
   Controller, Post, Param, Req, Get, Put, Delete, BadRequestException, 
-  NotFoundException, UseInterceptors, Body 
+  NotFoundException, UseInterceptors 
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { SubcategoryService } from '../services/subcategory.service';
 import { CreateSubcategoryDto } from '../dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from '../dto/update_dto/update-subcategory.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
-@ApiTags('Підкатегорії') // Група для Swagger
+@ApiTags('Підкатегорії') // Група в Swagger
 @Controller('categories')
 export class SubcategoryController {
   constructor(private readonly subcategoryService: SubcategoryService) {}
 
   @ApiOperation({ summary: 'Створення підкатегорії' })
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
-  @ApiResponse({ status: 201, description: 'Підкатегорію успішно створено' })
+  @ApiResponse({ status: 201, description: 'Підкатегорію успішно створено', type: CreateSubcategoryDto })
   @ApiResponse({ status: 400, description: 'Помилка при створенні підкатегорії' })
-  @ApiBody({ type: CreateSubcategoryDto })
   @Post(':categoryId/subcategories')
   @UseInterceptors(AnyFilesInterceptor()) 
-  async create(
-    @Param('categoryId') categoryId: number,
-    @Req() req: Request,
-    @Body() createSubcategoryDto: CreateSubcategoryDto
-  ) {
+  async create(@Param('categoryId') categoryId: number, @Req() req: Request) {
     try {
-      return await this.subcategoryService.create({ ...createSubcategoryDto, categoryId });
+      const parseJson = (data: string, defaultValue: any) => {
+        try {
+          return JSON.parse(data.trim());
+        } catch {
+          return defaultValue;
+        }
+      };
+
+      const createSubcategoryDto: CreateSubcategoryDto = {
+        subcategory: req.body.subcategory,
+        url: req.body.url,
+        details: req.body.details,
+        summary: req.body.summary,
+        categoryId: categoryId,
+        categoryname: req.body.categoryname || null,
+        lekala: parseJson(req.body.lekala, []),
+        authors: parseJson(req.body.authors, []),
+        example: parseJson(req.body.example, []),
+      };
+
+      return await this.subcategoryService.create(createSubcategoryDto);
     } catch (error) {
       console.error('Помилка при створенні підкатегорії:', error);
       throw new BadRequestException('Не вдалося створити підкатегорію');
@@ -36,12 +51,16 @@ export class SubcategoryController {
 
   @ApiOperation({ summary: 'Отримання всіх підкатегорій за категорією' })
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
-  @ApiResponse({ status: 200, description: 'Підкатегорії успішно отримані' })
+  @ApiResponse({ status: 200, description: 'Список підкатегорій' })
   @ApiResponse({ status: 400, description: 'Помилка при отриманні підкатегорій' })
   @Get(':categoryId/subcategories')
   async getSubcategories(@Param('categoryId') categoryId: number) {
     try {
-      return await this.subcategoryService.getSubcategoriesByCategoryId(categoryId);
+      const subcategories = await this.subcategoryService.getSubcategoriesByCategoryId(categoryId);
+      return subcategories.map(subcat => ({
+        id: subcat.id,
+        subcategory: subcat.subcategory,
+      }));
     } catch (error) {
       console.error('Помилка при отриманні підкатегорій:', error);
       throw new BadRequestException('Не вдалося отримати підкатегорії');
@@ -51,20 +70,38 @@ export class SubcategoryController {
   @ApiOperation({ summary: 'Оновлення підкатегорії' })
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
   @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
-  @ApiResponse({ status: 200, description: 'Підкатегорію успішно оновлено' })
+  @ApiResponse({ status: 200, description: 'Підкатегорію успішно оновлено', type: UpdateSubcategoryDto })
   @ApiResponse({ status: 400, description: 'Помилка при оновленні підкатегорії' })
   @ApiResponse({ status: 404, description: 'Підкатегорію не знайдено' })
-  @ApiBody({ type: UpdateSubcategoryDto })
   @Put(':categoryId/subcategories/:subcategoryId')
   @UseInterceptors(AnyFilesInterceptor()) 
   async update(
     @Param('categoryId') categoryId: number,
     @Param('subcategoryId') subcategoryId: number,
-    @Req() req: Request,
-    @Body() updateSubcategoryDto: UpdateSubcategoryDto
+    @Req() req: Request
   ) {
     try {
-      return await this.subcategoryService.update(subcategoryId, { ...updateSubcategoryDto, categoryId });
+      const parseJson = (data: string, defaultValue: any) => {
+        try {
+          return JSON.parse(data.trim());
+        } catch {
+          return defaultValue;
+        }
+      };
+
+      const updateSubcategoryDto: UpdateSubcategoryDto = {
+        subcategory: req.body.subcategory,
+        url: req.body.url,
+        details: req.body.details,
+        summary: req.body.summary,
+        categoryId: categoryId,
+        categoryname: req.body.categoryname || null,
+        lekala: parseJson(req.body.lekala, []),
+        authors: parseJson(req.body.authors, []),
+        example: parseJson(req.body.example, []),
+      };
+
+      return await this.subcategoryService.update(subcategoryId, updateSubcategoryDto);
     } catch (error) {
       console.error('Помилка при оновленні підкатегорії:', error);
       throw new BadRequestException('Не вдалося оновити підкатегорію');
