@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AdminModule } from './admin/admin.moudle';
-import { UserModule } from './user/user.module';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -28,7 +27,6 @@ import databaseConfig from './config/database.config';
       inject: [ConfigService],
     }),
     AdminModule,
-    UserModule,
   ],
 })
 export class AppModule {}
