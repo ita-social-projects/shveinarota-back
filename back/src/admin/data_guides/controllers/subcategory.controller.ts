@@ -56,16 +56,13 @@ export class SubcategoryController {
   @Get(':categoryId/subcategories')
   async getSubcategories(@Param('categoryId') categoryId: number) {
     try {
-      const subcategories = await this.subcategoryService.getSubcategoriesByCategoryId(categoryId);
-      return subcategories.map(subcat => ({
-        id: subcat.id,
-        subcategory: subcat.subcategory,
-      }));
+      return await this.subcategoryService.getSubcategoriesByCategoryId(categoryId);
     } catch (error) {
       console.error('Помилка при отриманні підкатегорій:', error);
       throw new BadRequestException('Не вдалося отримати підкатегорії');
     }
   }
+
 
   @ApiOperation({ summary: 'Оновлення підкатегорії' })
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
