@@ -5,6 +5,7 @@ export class CreateCategoryDto {
   @ApiProperty({
     description: 'Назва категорії',
     example: 'Швейне обладнання',
+    required: true,
   })
   @IsNotEmpty({ message: 'Поле "category" є обовʼязковим для заповнення' })
   @IsString({ message: 'Поле "category" повинно бути рядком' })

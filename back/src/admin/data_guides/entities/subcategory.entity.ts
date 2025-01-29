@@ -9,7 +9,7 @@ export class Subcategory {
   @Column({ type: 'varchar', length: 20, nullable: false })
   subcategory: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Column({ type: 'varchar', length: 600, nullable: false })
   url: string;
 
   @Column('json')
