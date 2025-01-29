@@ -17,18 +17,17 @@ export class MarkersService {
   }
 
   async createMarker(createMarkerDto: CreateMarkerDto): Promise<Marker> {
-    if (!createMarkerDto.path) {
-      throw new BadRequestException('Ссылка на изображение обязательна');
-    }
-
     const newMarker = this.MarkerRepository.create(createMarkerDto);
-
+  
     try {
       return await this.MarkerRepository.save(newMarker);
     } catch (error) {
-      throw new BadRequestException('Ошибка при сохранении карточки');
+      console.error(error);  // Логирование ошибки
+      throw new BadRequestException('Ошибка при сохранении маркера');
     }
   }
+  
+  
 
   async getMarkerById(id: number): Promise<Marker> {
     const Marker = await this.MarkerRepository.findOne({ where: { id } });

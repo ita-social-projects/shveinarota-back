@@ -1,16 +1,19 @@
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateMarkerDto {
-  @ApiProperty({ description: 'Широта', example: '50.4501' })
-  @IsString()
+  @ApiProperty({ description: 'Широта', example: 50.4501 })
+  @Transform(({ value }) => parseFloat(value)) // Конвертация из строки в число
+  @IsNumber()
   @IsNotEmpty({ message: 'Поле lat не може бути порожнім' })
-  lat: string;
+  lat: number;
 
-  @ApiProperty({ description: 'Довгота', example: '30.5234' })
-  @IsString()
+  @ApiProperty({ description: 'Довгота', example: 30.5234 })
+  @Transform(({ value }) => parseFloat(value))
+  @IsNumber()
   @IsNotEmpty({ message: 'Поле lng не може бути порожнім' })
-  lng: string;
+  lng: number;
 
   @ApiProperty({ description: 'Заголовок', example: 'My Marker' })
   @IsString()

@@ -5,11 +5,11 @@ export class Marker {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', precision: 9, scale: 6 })
-  lat: string; // Широта
+  @Column({ type: 'double', precision: 9, scale: 6 })
+  lat: number; // Широта
 
-  @Column({ type: 'varchar', precision: 9, scale: 6 })
-  lng: string; // Долгота
+  @Column({ type: 'double', precision: 9, scale: 6 })
+  lng: number; // Долгота
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   title: string; // Заголовок
