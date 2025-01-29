@@ -23,13 +23,9 @@ import databaseConfig from './config/database.config';
         password: configService.get<string>('database.password'),
         database: configService.get<string>('database.name'),
         entities: [__dirname + '/../**/*.entity.js'],
-        synchronize: true, // Только для разработки
+        synchronize: false, // Только для разработки
       }),
       inject: [ConfigService],
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads',
     }),
     AdminModule,
     UserModule,
