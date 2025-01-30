@@ -36,7 +36,6 @@ export class SubcategoryController {
         url: req.body.url,
         details: req.body.details,
         summary: req.body.summary,
-        categoryId: categoryId,
         categoryname: req.body.categoryname || null,
         lekala: parseJson(req.body.lekala, []),
         authors: parseJson(req.body.authors, []),
@@ -65,16 +64,14 @@ export class SubcategoryController {
   }
 
   @ApiOperation({ summary: 'Оновлення підкатегорії' })
-  @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
   @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
   @ApiResponse({ status: 200, description: 'Підкатегорію успішно оновлено', type: UpdateSubcategoryDto })
   @ApiResponse({ status: 400, description: 'Помилка при оновленні підкатегорії' })
   @ApiResponse({ status: 404, description: 'Підкатегорію не знайдено' })
   @ApiBody({ type: UpdateSubcategoryDto })
-  @Put(':categoryId/subcategories/:subcategoryId')
+  @Put('subcategories/:subcategoryId')
   @UseInterceptors(AnyFilesInterceptor()) 
   async update(
-    @Param('categoryId') categoryId: number,
     @Param('subcategoryId') subcategoryId: number,
     @Req() req: Request
   ) {
@@ -92,7 +89,6 @@ export class SubcategoryController {
         url: req.body.url || undefined,
         details: req.body.details || undefined,
         summary: req.body.summary || undefined,
-        categoryId: categoryId,
         categoryname: req.body.categoryname || null,
         lekala: req.body.lekala ? parseJson(req.body.lekala, []) : [],
         authors: req.body.authors ? parseJson(req.body.authors, []) : [],
@@ -107,12 +103,11 @@ export class SubcategoryController {
   }
 
   @ApiOperation({ summary: 'Видалення підкатегорії' })
-  @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
   @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
   @ApiResponse({ status: 200, description: 'Підкатегорію успішно видалено' })
   @ApiResponse({ status: 400, description: 'Помилка при видаленні підкатегорії' })
   @ApiResponse({ status: 404, description: 'Підкатегорію не знайдено' })
-  @Delete(':categoryId/subcategories/:subcategoryId')
+  @Delete('subcategories/:subcategoryId')
   async delete(@Param('subcategoryId') subcategoryId: number) {
     try {
       await this.subcategoryService.delete(subcategoryId);

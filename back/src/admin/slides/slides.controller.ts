@@ -1,9 +1,9 @@
 import { 
   Controller, Get, Post, Put, Param, Body, Delete, 
-  BadRequestException, NotFoundException, UseInterceptors, UploadedFile, 
+  BadRequestException, NotFoundException, UseInterceptors, 
   ParseIntPipe 
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { SlidesService } from './slides.service';
 import { CreateSlideDto } from './dto/create-slide.dto';
 import { UpdateSlideDto } from './dto/update-slide.dto';
@@ -17,20 +17,20 @@ export class SlidesController {
   @Get()
   @ApiOperation({ summary: 'Отримати всі слайди' })
   @ApiResponse({ status: 200, description: 'Слайди успішно отримані' })
-  async getAllSlidess() {
+  async getAllSlides() {
     return this.SlidesService.getAllSlides();
   }
 
   @Post()
   @ApiOperation({ summary: 'Створити новий слайд' })
   @ApiResponse({ status: 201, description: 'Слайд успішно створений' })
+  @UseInterceptors(AnyFilesInterceptor())
   async createSlides(
-    @Body() createSlidesDto: CreateSlideDto, 
+    @Body() createSlidesDto: CreateSlideDto
   ) {
-    if (!createSlidesDto.path ) {
+    if (!createSlidesDto.path) {
       throw new BadRequestException('Посилання на зображення є обов’язковим');
     }
-
     return this.SlidesService.createSlides(createSlidesDto);
   }
 
@@ -46,6 +46,7 @@ export class SlidesController {
   @ApiOperation({ summary: 'Оновити слайд за ID' })
   @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
   @ApiResponse({ status: 200, description: 'Слайд успішно оновлений' })
+  @UseInterceptors(AnyFilesInterceptor())
   async updateSlides(
     @Param('id', ParseIntPipe) id: number, 
     @Body() updateSlidesDto: UpdateSlideDto

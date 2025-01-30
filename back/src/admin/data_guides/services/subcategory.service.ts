@@ -16,20 +16,11 @@ export class SubcategoryService {
   ) {}
 
   async create(dto: CreateSubcategoryDto): Promise<Subcategory> {
-    const category = await this.categoryRepository.findOne({
-      where: { id: dto.categoryId },
-    });
-
-    if (!category) {
-      throw new BadRequestException(`Категорія з ID ${dto.categoryId} не існує.`);
-    }
-
     try {
       const subcategory = this.subcategoryRepository.create({
         ...dto,
-        category,
       });
-
+  
       return await this.subcategoryRepository.save(subcategory);
     } catch (error) {
       console.error('Помилка при збереженні підкатегорії:', error);
@@ -60,31 +51,22 @@ export class SubcategoryService {
     }
   
     // Обновляем только те поля, которые были переданы в запросе
-    if (dto.categoryId) {
-      const category = await this.categoryRepository.findOne({ where: { id: dto.categoryId } });
-      if (!category) {
-        throw new BadRequestException(`Категорія з ID ${dto.categoryId} не існує.`);
-      }
-      subcategory.category = category; // Обновляем категорию, если передана новая
-    }
-  
-    // Обновляем другие поля
     subcategory.subcategory = dto.subcategory ?? subcategory.subcategory;
     subcategory.url = dto.url ?? subcategory.url;
     subcategory.details = dto.details ?? subcategory.details;
     subcategory.summary = dto.summary ?? subcategory.summary;
-    subcategory.categoryname = dto.categoryname ?? subcategory.categoryname; // Если нет, оставляем старое
+    subcategory.categoryname = dto.categoryname ?? subcategory.categoryname;
     subcategory.lekala = dto.lekala && dto.lekala.length > 0 ? dto.lekala : subcategory.lekala;
     subcategory.authors = dto.authors && dto.authors.length > 0 ? dto.authors : subcategory.authors;
     subcategory.example = dto.example && dto.example.length > 0 ? dto.example : subcategory.example;
   
     try {
-      return await this.subcategoryRepository.save(subcategory); // Сохраняем обновленную подкатегорию
+      return await this.subcategoryRepository.save(subcategory);
     } catch (error) {
       console.error('Помилка при оновленні підкатегорії:', error);
       throw new BadRequestException('Не вдалося оновити підкатегорію.');
     }
-  }  
+  }
   
 
   async delete(subcategoryId: number): Promise<void> {

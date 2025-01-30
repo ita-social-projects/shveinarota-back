@@ -1,9 +1,9 @@
 import { 
   Controller, Get, Post, Put, Param, Body, Delete, 
-  BadRequestException, NotFoundException, UseInterceptors, UploadedFile, 
+  BadRequestException, NotFoundException, UseInterceptors, 
   ParseIntPipe 
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { LinksService } from './links.service';
 import { CreateLinkDto } from './dto/create-links.dto';
 import { UpdateLinkDto } from './dto/update-links.dto';
@@ -24,6 +24,7 @@ export class LinksController {
   @Post()
   @ApiOperation({ summary: 'Створити нову медиа линк' })
   @ApiResponse({ status: 201, description: 'медиа линк успішно створено' })
+  @UseInterceptors(AnyFilesInterceptor())
   async createLink(
     @Body() createLinkDto: CreateLinkDto
   ) {
@@ -33,7 +34,6 @@ export class LinksController {
 
     return this.LinksService.createLinks(createLinkDto);
   }
-
 
   @Get(':id')
   @ApiOperation({ summary: 'Отримати медиа линк за ID' })
@@ -47,6 +47,7 @@ export class LinksController {
   @ApiOperation({ summary: 'Оновити медиа линк за ID' })
   @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
   @ApiResponse({ status: 200, description: 'медиа линк успішно оновлено' })
+  @UseInterceptors(AnyFilesInterceptor())
   async updateLink(
     @Param('id', ParseIntPipe) id: number, 
     @Body() updateLinkDto: UpdateLinkDto

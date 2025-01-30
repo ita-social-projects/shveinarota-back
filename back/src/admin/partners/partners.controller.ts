@@ -1,9 +1,8 @@
 import { 
   Controller, Get, Post, Put, Param, Body, Delete, 
-  BadRequestException, NotFoundException, UseInterceptors, UploadedFile, 
-  ParseIntPipe 
+  BadRequestException, UseInterceptors, ParseIntPipe 
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { PartnersService } from './partners.service';
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
@@ -22,30 +21,28 @@ export class PartnersController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Створити нову партнера' })
-  @ApiResponse({ status: 201, description: 'Картка успішно створена' })
+  @ApiOperation({ summary: 'Створити нового партнера' })
+  @ApiResponse({ status: 201, description: 'Партнер успішно створений' })
+  @UseInterceptors(AnyFilesInterceptor())
   async createPartners(
-    @Body() createPartnersDto: CreatePartnerDto, 
+    @Body() createPartnersDto: CreatePartnerDto
   ) {
-    if (!createPartnersDto.path) {
-      throw new BadRequestException('Посилання на зображення є обов’язковим');
-    }
-
     return this.PartnersService.createPartners(createPartnersDto);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Отримати партнера за ID' })
-  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Картка успішно отримана' })
+  @ApiParam({ name: 'id', description: 'ID партнера', example: 1 })
+  @ApiResponse({ status: 200, description: 'Партнер успішно отриманий' })
   async getPartnersById(@Param('id', ParseIntPipe) id: number) {
     return this.PartnersService.getPartnersById(id);
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Оновити партнера за ID' })
-  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Картка успішно оновлена' })
+  @ApiParam({ name: 'id', description: 'ID партнера', example: 1 })
+  @ApiResponse({ status: 200, description: 'Партнер успішно оновлений' })
+  @UseInterceptors(AnyFilesInterceptor())
   async updatePartners(
     @Param('id', ParseIntPipe) id: number, 
     @Body() updatePartnersDto: UpdatePartnerDto
@@ -55,10 +52,10 @@ export class PartnersController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Видалити партнера за ID' })
-  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Картка успішно видалена' })
+  @ApiParam({ name: 'id', description: 'ID партнера', example: 1 })
+  @ApiResponse({ status: 200, description: 'Партнер успішно видалений' })
   async deletePartners(@Param('id', ParseIntPipe) id: number) {
     await this.PartnersService.deletePartners(id);
-    return { message: 'Картка успішно видалена' };
+    return { message: 'Партнер успішно видалений' };
   }
 }

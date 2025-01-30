@@ -1,9 +1,9 @@
 import { 
   Controller, Get, Post, Put, Param, Body, Delete, 
-  BadRequestException, NotFoundException, UseInterceptors, UploadedFile, 
+  BadRequestException, NotFoundException, UseInterceptors, 
   ParseIntPipe 
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
@@ -32,8 +32,8 @@ export class CardsController {
   @Post()
   @ApiOperation({ summary: 'Створити нову картку' })
   @ApiResponse({ status: 201, description: 'Картка успішно створена' })
+  @UseInterceptors(AnyFilesInterceptor())
   async createCard(@Body() createCardDto: CreateCardDto) {
-    // Проверяем, не пришли ли JSON-строки
     if (typeof createCardDto === 'string') {
       try {
         createCardDto = JSON.parse(createCardDto);
@@ -41,21 +41,14 @@ export class CardsController {
         throw new BadRequestException('Невірний формат даних');
       }
     }
-
-    if (!createCardDto.path) {
-      throw new BadRequestException('Посилання на зображення є обов’язковим');
-    }
-
     return this.cardsService.createCard(createCardDto);
   }
-
-  
-
 
   @Put(':id')
   @ApiOperation({ summary: 'Оновити картку за ID' })
   @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
   @ApiResponse({ status: 200, description: 'Картка успішно оновлена' })
+  @UseInterceptors(AnyFilesInterceptor())
   async updateCard(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCardDto: UpdateCardDto
@@ -67,11 +60,8 @@ export class CardsController {
         throw new BadRequestException('Невірний формат даних');
       }
     }
-
     return this.cardsService.updateCard(id, updateCardDto);
   }
-
-
 
   @Delete(':id')
   @ApiOperation({ summary: 'Видалити картку за ID' })
