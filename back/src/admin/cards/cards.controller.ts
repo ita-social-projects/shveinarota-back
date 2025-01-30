@@ -21,27 +21,6 @@ export class CardsController {
     return this.cardsService.getAllCards();
   }
 
-  @Post()
-  @UseInterceptors(FileInterceptor('image')) // Обробка файлів
-  @ApiOperation({ summary: 'Створити нову картку' })
-  @ApiResponse({ status: 201, description: 'Картка успішно створена' })
-  async createCard(
-    @Body() createCardDto: CreateCardDto, 
-    @UploadedFile() image?: Express.Multer.File
-  ) {
-    if (!createCardDto.path && !image) {
-      throw new BadRequestException('Посилання на зображення є обов’язковим');
-    }
-
-    // Якщо файл завантажено, зберігаємо його шлях у DTO
-    if (image) {
-      createCardDto.path = image.path; // Якщо зберігаєте файли локально
-      // createCardDto.path = `https://your-storage.com/${image.filename}`; // Якщо зберігаєте у хмарі
-    }
-
-    return this.cardsService.createCard(createCardDto);
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Отримати картку за ID' })
   @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
@@ -50,16 +29,49 @@ export class CardsController {
     return this.cardsService.getCardById(id);
   }
 
+  @Post()
+  @ApiOperation({ summary: 'Створити нову картку' })
+  @ApiResponse({ status: 201, description: 'Картка успішно створена' })
+  async createCard(@Body() createCardDto: CreateCardDto) {
+    // Проверяем, не пришли ли JSON-строки
+    if (typeof createCardDto === 'string') {
+      try {
+        createCardDto = JSON.parse(createCardDto);
+      } catch (error) {
+        throw new BadRequestException('Невірний формат даних');
+      }
+    }
+
+    if (!createCardDto.path) {
+      throw new BadRequestException('Посилання на зображення є обов’язковим');
+    }
+
+    return this.cardsService.createCard(createCardDto);
+  }
+
+  
+
+
   @Put(':id')
   @ApiOperation({ summary: 'Оновити картку за ID' })
   @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
   @ApiResponse({ status: 200, description: 'Картка успішно оновлена' })
   async updateCard(
-    @Param('id', ParseIntPipe) id: number, 
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateCardDto: UpdateCardDto
   ) {
+    if (typeof updateCardDto === 'string') {
+      try {
+        updateCardDto = JSON.parse(updateCardDto);
+      } catch (error) {
+        throw new BadRequestException('Невірний формат даних');
+      }
+    }
+
     return this.cardsService.updateCard(id, updateCardDto);
   }
+
+
 
   @Delete(':id')
   @ApiOperation({ summary: 'Видалити картку за ID' })

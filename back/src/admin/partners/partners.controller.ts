@@ -22,21 +22,13 @@ export class PartnersController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image')) // Обробка файлів
   @ApiOperation({ summary: 'Створити нову партнера' })
   @ApiResponse({ status: 201, description: 'Картка успішно створена' })
   async createPartners(
     @Body() createPartnersDto: CreatePartnerDto, 
-    @UploadedFile() image?: Express.Multer.File
   ) {
-    if (!createPartnersDto.path && !image) {
+    if (!createPartnersDto.path) {
       throw new BadRequestException('Посилання на зображення є обов’язковим');
-    }
-
-    // Якщо файл завантажено, зберігаємо його шлях у DTO
-    if (image) {
-      createPartnersDto.path = image.path; // Якщо зберігаєте файли локально
-      // createPartnersDto.path = `https://your-storage.com/${image.filename}`; // Якщо зберігаєте у хмарі
     }
 
     return this.PartnersService.createPartners(createPartnersDto);

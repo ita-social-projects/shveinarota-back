@@ -22,25 +22,18 @@ export class LinksController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image')) // Обробка файлів
   @ApiOperation({ summary: 'Створити нову медиа линк' })
   @ApiResponse({ status: 201, description: 'медиа линк успішно створено' })
   async createLink(
-    @Body() createLinkDto: CreateLinkDto, 
-    @UploadedFile() image?: Express.Multer.File
+    @Body() createLinkDto: CreateLinkDto
   ) {
-    if (!createLinkDto.path && !image) {
+    if (!createLinkDto.path) {
       throw new BadRequestException('Посилання на зображення є обов’язковим');
-    }
-
-    // Якщо файл завантажено, зберігаємо його шлях у DTO
-    if (image) {
-      createLinkDto.path = image.path; // Якщо файли зберігаються локально
-      // createLinkDto.path = `https://your-storage.com/${image.filename}`; // Якщо файли зберігаються в хмарі
     }
 
     return this.LinksService.createLinks(createLinkDto);
   }
+
 
   @Get(':id')
   @ApiOperation({ summary: 'Отримати медиа линк за ID' })

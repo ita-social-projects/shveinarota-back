@@ -3,31 +3,31 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSubcategoryDto {
   @ApiProperty({
-    description: 'Название подкатегории',
-    example: 'Швейные машины',
+    description: 'Назва підкатегорії',
+    example: 'Швейні машини',
   })
   @IsString()
   @IsNotEmpty()
   subcategory: string;
 
   @ApiProperty({
-    description: 'Детали подкатегории',
-    example: 'Описание особенностей швейных машин',
+    description: 'Деталі підкатегорії',
+    example: 'Опис особливостей швейних машин',
   })
   @IsString()
   @IsNotEmpty()
   details: string;
 
   @ApiProperty({
-    description: 'Краткое описание подкатегории',
-    example: 'Краткая информация о швейных машинах',
+    description: 'Короткий опис підкатегорії',
+    example: 'Коротка інформація про швейні машини',
   })
   @IsString()
   @IsNotEmpty()
   summary: string;
 
   @ApiProperty({
-    description: 'URL страницы подкатегории',
+    description: 'URL сторінки підкатегорії',
     example: 'https://example.com/sewing-machines',
   })
   @IsString()
@@ -35,8 +35,8 @@ export class CreateSubcategoryDto {
   url: string;
 
   @ApiProperty({
-    description: 'Список авторов',
-    example: ['Иван Иванов', 'Мария Петрова'],
+    description: 'Список авторів',
+    example: ['Іван Іванов', 'Марія Петрова'],
     type: [String],
   })
   @IsArray()
@@ -45,7 +45,7 @@ export class CreateSubcategoryDto {
   authors: string[];
 
   @ApiProperty({
-    description: 'Массив объектов лекал',
+    description: 'Масив об’єктів лекал',
     example: [
       { path: '/lekala1.pdf', text: 'Лекало 1' },
       { path: '/lekala2.pdf', text: 'Лекало 2' },
@@ -65,8 +65,8 @@ export class CreateSubcategoryDto {
   lekala: { path: string; text: string }[];
 
   @ApiProperty({
-    description: 'Примеры использования',
-    example: ['Пример 1', 'Пример 2'],
+    description: 'Приклади використання',
+    example: ['Приклад 1', 'Приклад 2'],
     type: [String],
   })
   @IsArray()
@@ -75,15 +75,15 @@ export class CreateSubcategoryDto {
   example: string[];
 
   @ApiProperty({
-    description: 'Название категории',
-    example: 'Швейное оборудование',
+    description: 'Назва категорії',
+    example: 'Швейне обладнання',
   })
   @IsString()
   @IsNotEmpty()
   categoryname: string;
 
   @ApiProperty({
-    description: 'ID категории, к которой относится подкатегория',
+    description: 'ID категорії, до якої належить підкатегорія',
     example: 1,
   })
   @IsInt()

@@ -7,9 +7,9 @@ import { Request } from 'express';
 import { SubcategoryService } from '../services/subcategory.service';
 import { CreateSubcategoryDto } from '../dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from '../dto/update_dto/update-subcategory.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Підкатегорії') // Група в Swagger
+@ApiTags('Підкатегорії')
 @Controller('categories')
 export class SubcategoryController {
   constructor(private readonly subcategoryService: SubcategoryService) {}
@@ -18,6 +18,7 @@ export class SubcategoryController {
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
   @ApiResponse({ status: 201, description: 'Підкатегорію успішно створено', type: CreateSubcategoryDto })
   @ApiResponse({ status: 400, description: 'Помилка при створенні підкатегорії' })
+  @ApiBody({ type: CreateSubcategoryDto })
   @Post(':categoryId/subcategories')
   @UseInterceptors(AnyFilesInterceptor()) 
   async create(@Param('categoryId') categoryId: number, @Req() req: Request) {
@@ -63,13 +64,13 @@ export class SubcategoryController {
     }
   }
 
-
   @ApiOperation({ summary: 'Оновлення підкатегорії' })
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
   @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
   @ApiResponse({ status: 200, description: 'Підкатегорію успішно оновлено', type: UpdateSubcategoryDto })
   @ApiResponse({ status: 400, description: 'Помилка при оновленні підкатегорії' })
   @ApiResponse({ status: 404, description: 'Підкатегорію не знайдено' })
+  @ApiBody({ type: UpdateSubcategoryDto })
   @Put(':categoryId/subcategories/:subcategoryId')
   @UseInterceptors(AnyFilesInterceptor()) 
   async update(
@@ -86,20 +87,18 @@ export class SubcategoryController {
         }
       };
 
-      // Создаем DTO для обновления с учетом возможных отсутствующих полей
       const updateSubcategoryDto: UpdateSubcategoryDto = {
         subcategory: req.body.subcategory || undefined,
         url: req.body.url || undefined,
         details: req.body.details || undefined,
         summary: req.body.summary || undefined,
         categoryId: categoryId,
-        categoryname: req.body.categoryname || null,  // Если нет, то присваиваем null
-        lekala: req.body.lekala ? parseJson(req.body.lekala, []) : [], // Обрабатываем JSON, если поле пустое
-        authors: req.body.authors ? parseJson(req.body.authors, []) : [], // Тоже для authors
-        example: req.body.example ? parseJson(req.body.example, []) : [] // И для примера
+        categoryname: req.body.categoryname || null,
+        lekala: req.body.lekala ? parseJson(req.body.lekala, []) : [],
+        authors: req.body.authors ? parseJson(req.body.authors, []) : [],
+        example: req.body.example ? parseJson(req.body.example, []) : []
       };
 
-      // Вызов сервиса для обновления подкатегории
       return await this.subcategoryService.update(subcategoryId, updateSubcategoryDto);
     } catch (error) {
       console.error('Помилка при оновленні підкатегорії:', error);

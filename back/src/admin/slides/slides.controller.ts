@@ -22,21 +22,13 @@ export class SlidesController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image')) // Обробка файлів
   @ApiOperation({ summary: 'Створити новий слайд' })
   @ApiResponse({ status: 201, description: 'Слайд успішно створений' })
   async createSlides(
     @Body() createSlidesDto: CreateSlideDto, 
-    @UploadedFile() image?: Express.Multer.File
   ) {
-    if (!createSlidesDto.path && !image) {
+    if (!createSlidesDto.path ) {
       throw new BadRequestException('Посилання на зображення є обов’язковим');
-    }
-
-    // Якщо файл завантажено, зберігаємо його шлях у DTO
-    if (image) {
-      createSlidesDto.path = image.path; // Якщо зберігаєте файли локально
-      // createSlidesDto.path = `https://your-storage.com/${image.filename}`; // Якщо зберігаєте у хмарі
     }
 
     return this.SlidesService.createSlides(createSlidesDto);
