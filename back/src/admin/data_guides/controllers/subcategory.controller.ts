@@ -1,6 +1,6 @@
 import { 
   Controller, Post, Param, Req, Get, Put, Delete, BadRequestException, 
-  NotFoundException, UseInterceptors 
+  NotFoundException, UseInterceptors, ParseIntPipe
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
@@ -14,6 +14,19 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/s
 export class SubcategoryController {
   constructor(private readonly subcategoryService: SubcategoryService) {}
 
+  /**
+   * Утилита для безопасного парсинга JSON-строк
+   */
+  private parseJson(data: string | undefined, defaultValue: any) {
+    if (!data) return defaultValue; 
+    try {
+      return JSON.parse(data.trim());
+    } catch (error) {
+      console.error(`Помилка парсингу JSON: ${data}`, error);
+      return defaultValue;
+    }
+  }
+
   @ApiOperation({ summary: 'Створення підкатегорії' })
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
   @ApiResponse({ status: 201, description: 'Підкатегорію успішно створено', type: CreateSubcategoryDto })
@@ -21,28 +34,20 @@ export class SubcategoryController {
   @ApiBody({ type: CreateSubcategoryDto })
   @Post(':categoryId/subcategories')
   @UseInterceptors(AnyFilesInterceptor()) 
-  async create(@Param('categoryId') categoryId: number, @Req() req: Request) {
+  async create(@Param('categoryId', ParseIntPipe) categoryId: number, @Req() req: Request) {
     try {
-      const parseJson = (data: string, defaultValue: any) => {
-        try {
-          return JSON.parse(data.trim());
-        } catch {
-          return defaultValue;
-        }
-      };
-
       const createSubcategoryDto: CreateSubcategoryDto = {
         subcategory: req.body.subcategory,
         url: req.body.url,
         details: req.body.details,
         summary: req.body.summary,
         categoryname: req.body.categoryname || null,
-        lekala: parseJson(req.body.lekala, []),
-        authors: parseJson(req.body.authors, []),
-        example: parseJson(req.body.example, []),
+        lekala: this.parseJson(req.body.lekala, []),  // Парсим JSON-строку в массив
+        authors: this.parseJson(req.body.authors, []),
+        example: this.parseJson(req.body.example, []),
       };
 
-      return await this.subcategoryService.create(createSubcategoryDto);
+      return await this.subcategoryService.create(categoryId, createSubcategoryDto);
     } catch (error) {
       console.error('Помилка при створенні підкатегорії:', error);
       throw new BadRequestException('Не вдалося створити підкатегорію');
@@ -54,7 +59,7 @@ export class SubcategoryController {
   @ApiResponse({ status: 200, description: 'Список підкатегорій' })
   @ApiResponse({ status: 400, description: 'Помилка при отриманні підкатегорій' })
   @Get(':categoryId/subcategories')
-  async getSubcategories(@Param('categoryId') categoryId: number) {
+  async getSubcategories(@Param('categoryId', ParseIntPipe) categoryId: number) {
     try {
       return await this.subcategoryService.getSubcategoriesByCategoryId(categoryId);
     } catch (error) {
@@ -69,30 +74,23 @@ export class SubcategoryController {
   @ApiResponse({ status: 400, description: 'Помилка при оновленні підкатегорії' })
   @ApiResponse({ status: 404, description: 'Підкатегорію не знайдено' })
   @ApiBody({ type: UpdateSubcategoryDto })
-  @Put('subcategories/:subcategoryId')
+  @Put(':categoryId/subcategories/:subcategoryId')
   @UseInterceptors(AnyFilesInterceptor()) 
   async update(
-    @Param('subcategoryId') subcategoryId: number,
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+    @Param('subcategoryId', ParseIntPipe) subcategoryId: number,
     @Req() req: Request
   ) {
     try {
-      const parseJson = (data: string, defaultValue: any) => {
-        try {
-          return JSON.parse(data.trim());
-        } catch {
-          return defaultValue;
-        }
-      };
-
       const updateSubcategoryDto: UpdateSubcategoryDto = {
         subcategory: req.body.subcategory || undefined,
         url: req.body.url || undefined,
         details: req.body.details || undefined,
         summary: req.body.summary || undefined,
         categoryname: req.body.categoryname || null,
-        lekala: req.body.lekala ? parseJson(req.body.lekala, []) : [],
-        authors: req.body.authors ? parseJson(req.body.authors, []) : [],
-        example: req.body.example ? parseJson(req.body.example, []) : []
+        lekala: this.parseJson(req.body.lekala, []), // Парсим JSON-строку в массив
+        authors: this.parseJson(req.body.authors, []),
+        example: this.parseJson(req.body.example, []),
       };
 
       return await this.subcategoryService.update(subcategoryId, updateSubcategoryDto);
@@ -107,8 +105,8 @@ export class SubcategoryController {
   @ApiResponse({ status: 200, description: 'Підкатегорію успішно видалено' })
   @ApiResponse({ status: 400, description: 'Помилка при видаленні підкатегорії' })
   @ApiResponse({ status: 404, description: 'Підкатегорію не знайдено' })
-  @Delete('subcategories/:subcategoryId')
-  async delete(@Param('subcategoryId') subcategoryId: number) {
+  @Delete(':categoryId/subcategories/:subcategoryId')
+  async delete(@Param('subcategoryId', ParseIntPipe) subcategoryId: number) {
     try {
       await this.subcategoryService.delete(subcategoryId);
       return { message: `Підкатегорію з ID ${subcategoryId} успішно видалено.` };
