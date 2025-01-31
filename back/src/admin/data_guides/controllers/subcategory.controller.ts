@@ -10,7 +10,7 @@ import { UpdateSubcategoryDto } from '../dto/update_dto/update-subcategory.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Підкатегорії')
-@Controller('categories')
+@Controller('subcategories')
 export class SubcategoryController {
   constructor(private readonly subcategoryService: SubcategoryService) {}
 
@@ -32,7 +32,7 @@ export class SubcategoryController {
   @ApiResponse({ status: 201, description: 'Підкатегорію успішно створено', type: CreateSubcategoryDto })
   @ApiResponse({ status: 400, description: 'Помилка при створенні підкатегорії' })
   @ApiBody({ type: CreateSubcategoryDto })
-  @Post(':categoryId/subcategories')
+  @Post('category/:categoryId')
   @UseInterceptors(AnyFilesInterceptor()) 
   async create(@Param('categoryId', ParseIntPipe) categoryId: number, @Req() req: Request) {
     try {
@@ -55,13 +55,13 @@ export class SubcategoryController {
   }
 
   @ApiOperation({ summary: 'Отримання всіх підкатегорій за категорією' })
-  @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
+  @ApiParam({ name: 'subcategoryId', required: true, description: 'ID категорії' })
   @ApiResponse({ status: 200, description: 'Список підкатегорій' })
   @ApiResponse({ status: 400, description: 'Помилка при отриманні підкатегорій' })
-  @Get(':categoryId/subcategories')
-  async getSubcategories(@Param('categoryId', ParseIntPipe) categoryId: number) {
+  @Get(':subcategoryId')
+  async getSubcategories(@Param('subcategoryId', ParseIntPipe) subcategoryId: number) {
     try {
-      return await this.subcategoryService.getSubcategoriesByCategoryId(categoryId);
+      return await this.subcategoryService.getSubcategoryById(subcategoryId);
     } catch (error) {
       console.error('Помилка при отриманні підкатегорій:', error);
       throw new BadRequestException('Не вдалося отримати підкатегорії');
@@ -74,7 +74,7 @@ export class SubcategoryController {
   @ApiResponse({ status: 400, description: 'Помилка при оновленні підкатегорії' })
   @ApiResponse({ status: 404, description: 'Підкатегорію не знайдено' })
   @ApiBody({ type: UpdateSubcategoryDto })
-  @Put(':categoryId/subcategories/:subcategoryId')
+  @Put(':subcategoryId')
   @UseInterceptors(AnyFilesInterceptor()) 
   async update(
     @Param('categoryId', ParseIntPipe) categoryId: number,

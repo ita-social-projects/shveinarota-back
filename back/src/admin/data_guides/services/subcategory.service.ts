@@ -37,19 +37,20 @@ export class SubcategoryService {
   }
 
   // Метод для получения всех подкатегорий по категории
-  async getSubcategoriesByCategoryId(categoryId: number): Promise<Subcategory[]> {
-    try {
-      const subcategories = await this.subcategoryRepository.find({
-        where: { category: { id: categoryId } },
-        relations: ['category'], // Подгружаем связанную категорию
-      });
+  // Метод для получения подкатегории по ID
+  async getSubcategoryById(subcategoryId: number): Promise<Subcategory> {
+    const subcategory = await this.subcategoryRepository.findOne({
+      where: { id: subcategoryId },
+      relations: ['category'], // Подгружаем связанную категорию
+    });
 
-      return subcategories;
-    } catch (error) {
-      console.error('Помилка при отриманні підкатегорій:', error);
-      throw new BadRequestException('Не вдалося отримати підкатегорії.');
+    if (!subcategory) {
+      throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
     }
+
+    return subcategory;
   }
+
 
   // Метод для обновления подкатегории
   async update(subcategoryId: number, dto: UpdateSubcategoryDto): Promise<Subcategory> {
