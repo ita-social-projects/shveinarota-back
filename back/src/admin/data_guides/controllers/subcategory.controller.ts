@@ -88,4 +88,37 @@ export class SubcategoryController {
       throw new BadRequestException('Не вдалося оновити підкатегорію');
     }
   }
+
+  @ApiOperation({ summary: 'Отримання всіх підкатегорій за категорією' })
+  @ApiParam({ name: 'subcategoryId', required: true, description: 'ID категорії' })
+  @ApiResponse({ status: 200, description: 'Список підкатегорій' })
+  @ApiResponse({ status: 400, description: 'Помилка при отриманні підкатегорій' })
+  @Get(':subcategoryId')
+  async getSubcategories(@Param('subcategoryId', ParseIntPipe) subcategoryId: number) {
+    try {
+      return await this.subcategoryService.getSubcategoryById(subcategoryId);
+    } catch (error) {
+      console.error('Помилка при отриманні підкатегорій:', error);
+      throw new BadRequestException('Не вдалося отримати підкатегорії');
+    }
+  }
+
+  @ApiOperation({ summary: 'Видалення підкатегорії' })
+  @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
+  @ApiResponse({ status: 200, description: 'Підкатегорію успішно видалено' })
+  @ApiResponse({ status: 400, description: 'Помилка при видаленні підкатегорії' })
+  @ApiResponse({ status: 404, description: 'Підкатегорію не знайдено' })
+  @Delete(':subcategoryId')
+  async delete(@Param('subcategoryId', ParseIntPipe) subcategoryId: number) {
+    try {
+      await this.subcategoryService.delete(subcategoryId);
+      return { message: `Підкатегорію з ID ${subcategoryId} успішно видалено.` };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      console.error('Помилка при видаленні підкатегорії:', error);
+      throw new BadRequestException('Не вдалося видалити підкатегорію');
+    }
+  }
 }
