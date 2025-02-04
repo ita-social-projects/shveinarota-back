@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
-export class Link{
+@Unique(['url']) // Указываем массив полей, которые должны быть уникальными
+export class Link {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -9,8 +10,8 @@ export class Link{
   path: string; // Путь
 
   @Column({ type: 'varchar', length: 255 })
-  title: string; // Путь
+  title: string; // Название
 
-  @Column({ type: 'varchar', length: 255 })
-  url: string; // Путь
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  url: string; // URL (уникальное поле)
 }

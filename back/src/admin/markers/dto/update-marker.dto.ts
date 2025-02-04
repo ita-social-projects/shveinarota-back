@@ -20,11 +20,6 @@ export class UpdateMarkerDto {
   @IsOptional()
   title?: string;
 
-  @ApiPropertyOptional({ description: 'Адреса', example: 'вул. Хрещатик, 2' })
-  @IsString()
-  @IsOptional()
-  adress?: string;
-
   @ApiPropertyOptional({ description: 'Телефон', example: '+380987654321' })
   @IsString()
   @IsOptional()

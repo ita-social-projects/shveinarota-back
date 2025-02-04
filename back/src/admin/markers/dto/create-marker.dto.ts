@@ -20,10 +20,6 @@ export class CreateMarkerDto {
   @IsNotEmpty({ message: 'Поле title не може бути порожнім' })
   title: string;
 
-  @ApiPropertyOptional({ description: 'Адреса', example: 'вул. Хрещатик, 1' })
-  @IsString()
-  @IsOptional()
-  adress?: string;
 
   @ApiPropertyOptional({ description: 'Телефон', example: '+380123456789' })
   @IsString()

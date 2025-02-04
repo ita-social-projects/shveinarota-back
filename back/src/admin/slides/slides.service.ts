@@ -1,59 +1,108 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Slide } from './entities/slide.entity';
 import { CreateSlideDto } from './dto/create-slide.dto';
 import { UpdateSlideDto } from './dto/update-slide.dto';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class SlidesService {
   constructor(
     @InjectRepository(Slide)
-    private readonly SlidesRepository: Repository<Slide>,
+    private readonly slideRepository: Repository<Slide>,
   ) {}
 
   async getAllSlides(): Promise<Slide[]> {
-    return this.SlidesRepository.find({ cache: true });
-  }
-
-  async createSlides(createSlidesDto: CreateSlideDto): Promise<Slide> {
-    if (!createSlidesDto.path) {
-      throw new BadRequestException('Ссылка на изображение обязательна');
-    }
-
-    const newSlides = this.SlidesRepository.create(createSlidesDto);
-
     try {
-      return await this.SlidesRepository.save(newSlides);
+      return await this.slideRepository.find({ cache: false });
     } catch (error) {
-      throw new BadRequestException('Ошибка при сохранении карточки');
+      throw new InternalServerErrorException('Failed to fetch slides');
     }
   }
 
-  async getSlidesById(id: number): Promise<Slide> {
-    const Slides = await this.SlidesRepository.findOne({ where: { id } });
-    if (!Slides) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+  async createSlide(createSlideDto: CreateSlideDto): Promise<Slide> {
+    const newSlide = this.slideRepository.create(createSlideDto);
+    try {
+      return await this.slideRepository.save(newSlide);
+    } catch (error) {
+      if (createSlideDto.path) {
+        this.deleteFile(createSlideDto.path);
+      }
+      if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
+        throw new ConflictException('Slide with this URL already exists');
+      }
+      throw new InternalServerErrorException('Failed to create slide');
     }
-    return Slides;
   }
 
-  async updateSlides(id: number, updateSlidesDto: UpdateSlideDto): Promise<Slide> {
-    const Slides = await this.SlidesRepository.findOne({ where: { id } });
-    if (!Slides) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+  async getSlideById(id: number): Promise<Slide> {
+    try {
+      const slide = await this.slideRepository.findOneBy({ id });
+      if (!slide) {
+        throw new NotFoundException(`Slide with ID ${id} not found`);
+      }
+      return slide;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch slide');
     }
-
-    this.SlidesRepository.merge(Slides, updateSlidesDto);
-    return this.SlidesRepository.save(Slides);
   }
 
-  async deleteSlides(id: number): Promise<void> {
-    const Slides = await this.SlidesRepository.findOne({ where: { id } });
-    if (!Slides) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
-    }
+  async updateSlide(id: number, updateSlideDto: UpdateSlideDto): Promise<Slide> {
+    try {
+      const slide = await this.slideRepository.findOneBy({ id });
+      if (!slide) {
+        throw new NotFoundException(`Slide with ID ${id} not found`);
+      }
 
-    await this.SlidesRepository.remove(Slides);
+      // Удаляем старый файл изображения, если загружено новое
+      if (updateSlideDto.path && slide.path !== updateSlideDto.path) {
+        this.deleteFile(slide.path);
+      }
+
+      // Обновляем данные слайда
+      Object.assign(slide, updateSlideDto);
+      return await this.slideRepository.save(slide);
+    } catch (error) {
+      if (updateSlideDto.path) {
+        this.deleteFile(updateSlideDto.path);
+      }
+      if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
+        throw new ConflictException('Slide with this URL already exists');
+      }
+      throw new InternalServerErrorException('Failed to update slide');
+    }
+  }
+
+  async deleteSlide(id: number): Promise<void> {
+    try {
+      const slide = await this.slideRepository.findOneBy({ id });
+      if (!slide) {
+        throw new NotFoundException(`Slide with ID ${id} not found`);
+      }
+
+      // Удаляем файл изображения с диска
+      if (slide.path) {
+        this.deleteFile(slide.path);
+      }
+
+      // Удаляем запись о слайде из базы данных
+      await this.slideRepository.remove(slide);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to delete slide');
+    }
+  }
+
+  private deleteFile(filePath: string): void {
+    if (!filePath) return;
+    const absolutePath = path.resolve(filePath);
+    try {
+      if (fs.existsSync(absolutePath)) {
+        fs.unlinkSync(absolutePath);
+      }
+    } catch (err) {
+      console.error(`Ошибка при удалении файла: ${absolutePath}`, err);
+    }
   }
 }

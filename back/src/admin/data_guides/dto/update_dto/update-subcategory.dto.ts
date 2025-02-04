@@ -1,52 +1,55 @@
-import { IsString, IsOptional, IsArray, IsObject, IsInt } from 'class-validator';
+import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class UpdateSubcategoryDto {
-  @ApiProperty({ description: 'Назва підкатегорії', example: 'Швейне обладнання' })
+  @ApiProperty({ description: 'Назва підкатегорії', example: 'Швейні машини' })
   @IsString()
   @IsOptional()
   subcategory?: string;
 
-  @ApiProperty({ description: 'Деталі', example: 'Додаткова інформація про підкатегорію' })
+  @ApiProperty({ description: 'Деталі підкатегорії', example: 'Опис особливостей швейних машин' })
   @IsString()
   @IsOptional()
   details?: string;
 
-  @ApiProperty({ description: 'Резюме', example: 'Короткий опис підкатегорії' })
+  @ApiProperty({ description: 'Короткий опис підкатегорії', example: 'Коротка інформація про швейні машини' })
   @IsString()
   @IsOptional()
   summary?: string;
 
-  @ApiProperty({ description: 'URL-адреса', example: 'https://example.com' })
+  @ApiProperty({ description: 'URL сторінки підкатегорії', example: 'https://example.com/sewing-machines' })
   @IsString()
   @IsOptional()
   url?: string;
 
-  @ApiProperty({ description: 'Автори', example: ['Автор 1', 'Автор 2'] })
+  @ApiProperty({ description: 'Список авторів', example: ['Іван Іванов', 'Марія Петрова'] })
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
   authors?: string[];
 
-  @ApiProperty({ description: 'Лекала', example: [{ path: '/lekala1', text: 'Опис лекала' }] })
+  @ApiProperty({
+    description: 'Масив об’єктів лекал',
+    example: [
+      { path: '/lekala1.pdf', text: 'Лекало 1' },
+      { path: '/lekala2.pdf', text: 'Лекало 2' },
+    ],
+  })
   @IsArray()
   @IsOptional()
-  @IsObject({ each: true })
+  @ValidateNested({ each: true })
+  @Type(() => Object)
   lekala?: { path: string; text: string }[];
 
-  @ApiProperty({ description: 'Приклади', example: ['Приклад 1', 'Приклад 2'] })
+  @ApiProperty({ description: 'Приклади використання', example: ['Приклад 1', 'Приклад 2'] })
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
   example?: string[];
 
-  @ApiProperty({ description: 'Назва категорії', example: 'Текстиль' })
+  @ApiProperty({ description: 'Назва категорії', example: 'Швейне обладнання' })
   @IsString()
   @IsOptional()
   categoryname?: string;
-
-  @ApiProperty({ description: 'ID категорії для звʼязку', example: 1 })
-  @IsInt()
-  @IsOptional()
-  categoryId?: number;
 }

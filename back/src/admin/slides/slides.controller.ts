@@ -1,65 +1,98 @@
-import { 
-  Controller, Get, Post, Put, Param, Body, Delete, 
-  BadRequestException, NotFoundException, UseInterceptors, 
-  ParseIntPipe 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Param,
+  Body,
+  Delete,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { SlidesService } from './slides.service';
 import { CreateSlideDto } from './dto/create-slide.dto';
 import { UpdateSlideDto } from './dto/update-slide.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from '../../common/multer-options';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Слайди')
+@ApiTags('Slides')
 @Controller('slides')
 export class SlidesController {
   constructor(private readonly SlidesService: SlidesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Отримати всі слайди' })
-  @ApiResponse({ status: 200, description: 'Слайди успішно отримані' })
+  @ApiOperation({ summary: 'Get all slides' })
+  @ApiResponse({ status: 200, description: 'Successfully retrieved all slides' })
   async getAllSlides() {
     return this.SlidesService.getAllSlides();
   }
 
   @Post()
-  @ApiOperation({ summary: 'Створити новий слайд' })
-  @ApiResponse({ status: 201, description: 'Слайд успішно створений' })
-  @UseInterceptors(AnyFilesInterceptor())
-  async createSlides(
-    @Body() createSlidesDto: CreateSlideDto
+  @ApiOperation({ summary: 'Create a new slide' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: CreateSlideDto })
+  @ApiResponse({ status: 201, description: 'Slide created successfully' })
+  @UseInterceptors(FileInterceptor('path', multerOptions('slides')))
+  async createSlide(
+    @Body() createSlideDto: CreateSlideDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!createSlidesDto.path) {
-      throw new BadRequestException('Посилання на зображення є обов’язковим');
+    if (!createSlideDto.title) {
+      throw new BadRequestException('Title is required');
     }
-    return this.SlidesService.createSlides(createSlidesDto);
+
+    if (!file) {
+      throw new BadRequestException('Slide image file is required');
+    }
+
+    createSlideDto.path = file.path.replace(/\\/g, '/');
+    return this.SlidesService.createSlide(createSlideDto);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Отримати слайд за ID' })
-  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
-  @ApiResponse({ status: 200, description: 'Слайд успішно отриманий' })
-  async getSlidesById(@Param('id', ParseIntPipe) id: number) {
-    return this.SlidesService.getSlidesById(id);
+  @ApiOperation({ summary: 'Get slide by ID' })
+  @ApiParam({ name: 'id', description: 'Slide ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'Successfully retrieved the slide' })
+  async getSlideById(@Param('id', ParseIntPipe) id: number) {
+    return this.SlidesService.getSlideById(id);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Оновити слайд за ID' })
-  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
-  @ApiResponse({ status: 200, description: 'Слайд успішно оновлений' })
-  @UseInterceptors(AnyFilesInterceptor())
-  async updateSlides(
-    @Param('id', ParseIntPipe) id: number, 
-    @Body() updateSlidesDto: UpdateSlideDto
+  @ApiOperation({ summary: 'Update a slide by ID' })
+  @ApiParam({ name: 'id', description: 'Slide ID', example: 1 })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateSlideDto })
+  @ApiResponse({ status: 200, description: 'Slide updated successfully' })
+  @UseInterceptors(FileInterceptor('path', multerOptions('slides')))
+  async updateSlide(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSlideDto: UpdateSlideDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.SlidesService.updateSlides(id, updateSlidesDto);
+    if (!updateSlideDto.title) {
+      throw new BadRequestException('Title is required');
+    }
+
+    if (file) {
+      updateSlideDto.path = file.path.replace(/\\/g, '/');
+    }
+
+    const updatedSlide = await this.SlidesService.updateSlide(id, updateSlideDto);
+    return {
+      message: 'Slide updated successfully',
+      data: updatedSlide,
+    };
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Видалити слайд за ID' })
-  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
-  @ApiResponse({ status: 200, description: 'Слайд успішно видалений' })
-  async deleteSlides(@Param('id', ParseIntPipe) id: number) {
-    await this.SlidesService.deleteSlides(id);
-    return { message: 'Слайд успішно видалений' };
+  @ApiOperation({ summary: 'Delete a slide by ID' })
+  @ApiParam({ name: 'id', description: 'Slide ID', example: 1 })
+  @ApiResponse({ status: 200, description: 'Slide deleted successfully' })
+  async deleteSlide(@Param('id', ParseIntPipe) id: number) {
+    await this.SlidesService.deleteSlide(id);
+    return { message: 'Slide deleted successfully' };
   }
 }

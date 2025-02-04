@@ -1,74 +1,116 @@
-import { 
-  Controller, Get, Post, Put, Param, Body, Delete, 
-  BadRequestException, NotFoundException, UseInterceptors, 
-  ParseIntPipe 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Param,
+  Body,
+  Delete,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from '../../common/multer-options';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Карточки')
+@ApiTags('Cards')
 @Controller('cards')
 export class CardsController {
   constructor(private readonly cardsService: CardsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Отримати всі картки' })
-  @ApiResponse({ status: 200, description: 'Картки успішно отримані' })
+  @ApiOperation({ summary: 'Получить все карточки' })
+  @ApiResponse({ status: 200, description: 'Карточки успешно получены' })
   async getAllCards() {
     return this.cardsService.getAllCards();
   }
 
+  @Post()
+  @ApiOperation({ summary: 'Создать новую карточку' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        description: { type: 'string' },
+        path: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Карточка успешно создана' })
+  @UseInterceptors(FileInterceptor('path', multerOptions('cards')))
+  async createCard(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: any, // Используем `any`, чтобы проверить данные
+  ) {
+    if (!file) {
+      throw new BadRequestException('Файл изображения обязателен');
+    }
+
+
+    const createCardDto: CreateCardDto = {
+      ...body,
+      path: file.path.replace(/\\/g, '/'), // Приведение пути к универсальному виду
+    };
+
+    return this.cardsService.createCard(createCardDto);
+  }
+
   @Get(':id')
-  @ApiOperation({ summary: 'Отримати картку за ID' })
-  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Картка успішно отримана' })
+  @ApiOperation({ summary: 'Получить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Карточка успешно получена' })
   async getCardById(@Param('id', ParseIntPipe) id: number) {
     return this.cardsService.getCardById(id);
   }
 
-  @Post()
-  @ApiOperation({ summary: 'Створити нову картку' })
-  @ApiResponse({ status: 201, description: 'Картка успішно створена' })
-  @UseInterceptors(AnyFilesInterceptor())
-  async createCard(@Body() createCardDto: CreateCardDto) {
-    if (typeof createCardDto === 'string') {
-      try {
-        createCardDto = JSON.parse(createCardDto);
-      } catch (error) {
-        throw new BadRequestException('Невірний формат даних');
-      }
-    }
-    return this.cardsService.createCard(createCardDto);
-  }
-
   @Put(':id')
-  @ApiOperation({ summary: 'Оновити картку за ID' })
-  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Картка успішно оновлена' })
-  @UseInterceptors(AnyFilesInterceptor())
+  @ApiOperation({ summary: 'Обновить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        description: { type: 'string' },
+        path: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Карточка успешно обновлена' })
+  @UseInterceptors(FileInterceptor('path', multerOptions('cards')))
   async updateCard(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateCardDto: UpdateCardDto
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: any,
   ) {
-    if (typeof updateCardDto === 'string') {
-      try {
-        updateCardDto = JSON.parse(updateCardDto);
-      } catch (error) {
-        throw new BadRequestException('Невірний формат даних');
-      }
-    }
-    return this.cardsService.updateCard(id, updateCardDto);
+    console.log('Обновление карточки, входные данные:', body);
+
+    const updateCardDto: UpdateCardDto = {
+      ...body,
+      path: file ? file.path.replace(/\\/g, '/') : undefined,
+    };
+
+    const updatedCard = await this.cardsService.updateCard(id, updateCardDto);
+    return {
+      message: 'Карточка успешно обновлена',
+      data: updatedCard,
+    };
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Видалити картку за ID' })
-  @ApiParam({ name: 'id', description: 'ID картки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Картка успішно видалена' })
+  @ApiOperation({ summary: 'Удалить карточку по ID' })
+  @ApiParam({ name: 'id', description: 'ID карточки', example: 1 })
+  @ApiResponse({ status: 200, description: 'Карточка успешно удалена' })
   async deleteCard(@Param('id', ParseIntPipe) id: number) {
     await this.cardsService.deleteCard(id);
-    return { message: 'Картка успішно видалена' };
+    return { message: 'Карточка успешно удалена' };
   }
 }

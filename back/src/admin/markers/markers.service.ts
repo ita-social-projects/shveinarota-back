@@ -32,7 +32,8 @@ export class MarkersService {
   async getMarkerById(id: number): Promise<Marker> {
     const Marker = await this.MarkerRepository.findOne({ where: { id } });
     if (!Marker) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+      throw new NotFoundException(`Картка з ID ${id} не знайдена`);
+    
     }
     return Marker;
   }
