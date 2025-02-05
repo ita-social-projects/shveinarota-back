@@ -1,20 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { json, urlencoded } from 'express';
+import { json, urlencoded, static as serveStatic } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  // Swagger
+  // Настройка Swagger
   const config = new DocumentBuilder()
     .setTitle('My Project API')
     .setDescription('API Documentation for My Project')
     .setVersion('1.0')
-    .addTag('Markers')  // Исправил тег с 'Categories' на 'Markers'
+    .addTag('Markers')
     .addBearerAuth()
     .build();
 
@@ -30,13 +31,16 @@ async function bootstrap() {
 
   // Включаем глобальную валидацию и преобразование типов
   app.useGlobalPipes(new ValidationPipe({
-    transform: true,  // Включаем преобразование типов
-    whitelist: true,  // Игнорируем невалидные поля
+    transform: true,
+    whitelist: true,
   }));
+
+  // Раздача статических файлов (доступ к /uploads)
+  app.use('/uploads', serveStatic(join(__dirname, '..', 'uploads')));
 
   const PORT = configService.get<number>('PORT') || 3007;
   console.log(`🚀 Server running on port ${PORT}`);
-
+  
   await app.listen(PORT);
 }
 
