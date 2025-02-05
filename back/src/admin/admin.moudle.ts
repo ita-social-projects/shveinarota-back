@@ -6,6 +6,7 @@ import { SlidesModule } from './slides/slides.module'
 import { LinksModule} from './mediaLinks/links.module'
 import { StatisticsModule } from './statistic/statistic.module'
 import { CategoryModule } from './data_guides/category.module'
+import {LogoModule} from './logo/logo.module'
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { CategoryModule } from './data_guides/category.module'
     SlidesModule, // Подключаем модуль для работы с cлайдером
     LinksModule, // Подключаем модуль для работы с сылками на соц сети
     StatisticsModule, // Подключаем модуль для работы с статистикой
-    CategoryModule
+    CategoryModule, // Категории
+    LogoModule // Логотипы
 
   ],
 })
