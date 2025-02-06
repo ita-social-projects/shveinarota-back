@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCardDto {
@@ -11,20 +11,34 @@ export class CreateCardDto {
   title: string;
 
   @ApiProperty({
-    description: 'Описание карточки',
-    example: 'This is a detailed description of the card.',
-    required: false,
+    description: 'Название карточки на английском',
+    example: 'My New Card',
   })
   @IsString()
-  @IsOptional()
-  description?: string;
+  @IsNotEmpty({ message: 'Название карточки (title_en) не может быть пустым' })
+  title_en: string;
+
+  @ApiProperty({
+    description: 'Описание карточки',
+    example: 'This is a detailed description of the card.',
+  })
+  @IsString()
+  @IsNotEmpty({ message: 'Описание карточки (description) не может быть пустым' })
+  description: string;
+
+  @ApiProperty({
+    description: 'Описание карточки на английском',
+    example: 'This is a detailed description of the card.',
+  })
+  @IsString()
+  @IsNotEmpty({ message: 'Описание карточки (description_en) не может быть пустым' })
+  description_en: string;
 
   @ApiProperty({
     description: 'Путь к файлу изображения',
     example: '/uploads/cards/card-image.jpg',
-    required: true, // Теперь обязательное поле
   })
   @IsString()
   @IsNotEmpty({ message: 'Путь к изображению обязателен' })
-  path: string; // Поле сделано обязательным
+  path: string;
 }

@@ -12,11 +12,14 @@ export class Marker {
   lng: number; // Долгота
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  title: string; // Заголовок
+  title?: string; // Заголовок
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  title_en?: string; // Заголовок на английском
 
   @Column({ type: 'varchar', length: 20, nullable: true })
-  phone: string; // Номер телефона
+  phone?: string; // Номер телефона
 
   @Column({ type: 'varchar', length: 255 })
-  path: string; // Путь
+  path?: string; // Путь
 }

@@ -12,8 +12,18 @@ export class UpdateSlideDto {
   @IsOptional()
   title?: string; // Title
 
+  @ApiPropertyOptional({ description: 'Updated title of the slide', example: 'Explore new updates!' })
+  @IsString()
+  @IsOptional()
+  title_en?: string; // Title
+
   @ApiPropertyOptional({ description: 'Updated text content of the slide', example: 'Learn more about our services' })
   @IsString()
   @IsOptional()
   text?: string; // Text
+
+  @ApiPropertyOptional({ description: 'Updated text content of the slide', example: 'Learn more about our services' })
+  @IsString()
+  @IsOptional()
+  text_en?: string; // Text
 }

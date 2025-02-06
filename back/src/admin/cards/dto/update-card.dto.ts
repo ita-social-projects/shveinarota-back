@@ -8,8 +8,17 @@ export class UpdateCardDto {
   })
   @IsString()
   @IsOptional()
-  @IsNotEmpty({ message: 'Название карточки (title) не может быть пустым' })
+  @IsString()
   title?: string;
+
+  @ApiPropertyOptional({
+    description: 'Название карточки',
+    example: 'Updated Card Title',
+  })
+  @IsString()
+  @IsOptional()
+  @IsString()
+  title_en?: string;
 
   @ApiPropertyOptional({
     description: 'Описание карточки',
@@ -18,6 +27,14 @@ export class UpdateCardDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @ApiPropertyOptional({
+    description: 'Описание карточки',
+    example: 'Updated description for the card.',
+  })
+  @IsString()
+  @IsOptional()
+  description_en?: string;
 
   @ApiPropertyOptional({
     description: 'Путь к файлу изображения',

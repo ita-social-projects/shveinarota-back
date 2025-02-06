@@ -12,6 +12,9 @@ export class Link {
   @Column({ type: 'varchar', length: 255 })
   title: string; // Название
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  title_en?: string; // Заголовок на английском
+
   @Column({ type: 'varchar', length: 255, nullable: false })
   url: string; // URL (уникальное поле)
 }

@@ -6,80 +6,74 @@ import {
   Param,
   Body,
   Delete,
-  UploadedFile,
+  ParseIntPipe,
   UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
-import { linksService } from './links.service';
-import { CreatelinkDto } from './dto/create-links.dto';
-import { UpdatelinkDto } from './dto/update-links.dto';
+import { LinksService } from './links.service';
+import { CreateLinkDto } from './dto/create-links.dto';
+import { UpdateLinkDto } from './dto/update-links.dto';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Media Links') // Group under 'Media Links' in Swagger UI
-@Controller('medialinks')
-export class linksController {
-  constructor(private readonly linksService: linksService) {}
+/**
+ * Контроллер для работы с ссылками, поддерживает языковые маршруты (en, uk)
+ */
+@ApiTags('Ссылки')
+@Controller(':lang/medialinks')
+export class LinksController {
+  constructor(private readonly linksService: LinksService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Получить все ссылки' })
-  @ApiResponse({ status: 200, description: 'Ссылки успешно получены' })
-  async getAlllinks() {
-    return this.linksService.getAlllinks();
+  @ApiOperation({ summary: 'Получить все ссылки для указанного языка' })
+  async getLinks(@Param('lang') lang: string) {
+    return lang === 'en' ? this.linksService.getEnLinks() : this.linksService.getUkLinks();
   }
 
-  @Post()
-  @ApiOperation({ summary: 'Создать новую ссылку' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreatelinkDto })
-  @ApiResponse({ status: 201, description: 'Ссылка успешно создана' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('links')))
-  async createlink(
-    @Body() createlinkDto: CreatelinkDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (file) {
-      createlinkDto.path = file.path.replace(/\\/g, '/'); // Универсальный вид пути
-    }
-    return this.linksService.createlink(createlinkDto);
+  @Get('all')
+  @ApiOperation({ summary: 'Получить все ссылки независимо от языка' })
+  async getAllLinks() {
+    return this.linksService.getAllLinks(); // Для получения всех ссылок без учёта языка
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить ссылку по ID' })
   @ApiParam({ name: 'id', description: 'ID ссылки', example: 1 })
   @ApiResponse({ status: 200, description: 'Ссылка успешно получена' })
-  async getlinkById(@Param('id') id: number) {
-    return this.linksService.getlinkById(id);
+  async getLinkById(@Param('id', ParseIntPipe) id: number, @Param('lang') lang: string) {
+    return this.linksService.getLinkById(id);
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Создать новую ссылку' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: CreateLinkDto })
+  @ApiResponse({ status: 201, description: 'Ссылка успешно создана' })
+  @UseInterceptors(FileInterceptor('path', multerOptions('links')))
+  async createLink(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
+    if (!body.title || !body.url) {
+      throw new BadRequestException('Поля title и url обязательны');
+    }
+
+    const createLinkDto: CreateLinkDto = { ...body, path: file ? file.path.replace(/\\/g, '/') : null };
+    return this.linksService.createLink(createLinkDto);
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Обновить ссылку по ID' })
-  @ApiParam({ name: 'id', description: 'ID ссылки', example: 1 })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: UpdatelinkDto })
-  @ApiResponse({ status: 200, description: 'Ссылка успешно обновлена' })
   @UseInterceptors(FileInterceptor('path', multerOptions('links')))
-  async updatelink(
-    @Param('id') id: number,
-    @Body() updatelinkDto: UpdatelinkDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (file) {
-      updatelinkDto.path = file.path.replace(/\\/g, '/'); // Универсальный вид пути
-    }
-    const updatedlink = await this.linksService.updatelink(id, updatelinkDto);
-    return {
-      message: 'Link updated successfully',
-      data: updatedlink,
-    };
+  async updateLink(@Param('id', ParseIntPipe) id: number, @UploadedFile() file: Express.Multer.File, @Body() body: any) {
+    const updateLinkDto: UpdateLinkDto = { ...body, path: file ? file.path.replace(/\\/g, '/') : undefined };
+    return this.linksService.updateLink(id, updateLinkDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить ссылку по ID' })
-  @ApiParam({ name: 'id', description: 'ID ссылки', example: 1 })
-  @ApiResponse({ status: 200, description: 'Ссылка успешно удалена' })
-  async deletelink(@Param('id') id: number) {
-    await this.linksService.deletelink(id);
-    return { message: 'Link deleted successfully' };
+  async deleteLink(@Param('id', ParseIntPipe) id: number) {
+    await this.linksService.deleteLink(id);
+    return { message: 'Ссылка успешно удалена' };
   }
 }

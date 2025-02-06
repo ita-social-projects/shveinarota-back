@@ -14,34 +14,74 @@ export class CardsService {
     private readonly cardRepository: Repository<Card>,
   ) {}
 
+  // ========================
+  // GET запити
+  // ========================
+
+  // Отримати всі картки
   async getAllCards(): Promise<Card[]> {
-    return this.cardRepository.find({ cache: false });
+    return this.cardRepository.find();
   }
 
+  // Отримати всі картки українською мовою
+  async getUkCards(): Promise<Card[]> {
+    return this.cardRepository.find({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        path: true
+      }
+    });
+  }
+
+  // Отримати всі картки англійською мовою
+  async getEnCards(): Promise<Card[]> {
+    return this.cardRepository.find({
+      select: {
+        id: true,
+        title_en: true,
+        description_en: true,
+        path: true
+      }
+    });
+  }
+
+  // Отримати картку за ID
+  async getCardById(id: number): Promise<Card> {
+    const card = await this.cardRepository.findOneBy({ id });
+    if (!card) {
+      throw new NotFoundException(`Картка з ID ${id} не знайдена`);
+    }
+    return card;
+  }
+
+  // ========================
+  // POST запити
+  // ========================
+
+  // Створити нову картку
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
     if (!createCardDto.path) {
-      throw new BadRequestException('Путь к изображению 2312обязателен');
+      throw new BadRequestException('Шлях до зображення є обов’язковим');
     }
 
     const newCard = this.cardRepository.create(createCardDto);
     return this.cardRepository.save(newCard);
   }
 
-  async getCardById(id: number): Promise<Card> {
-    const card = await this.cardRepository.findOneBy({ id });
-    if (!card) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
-    }
-    return card;
-  }
+  // ========================
+  // PUT запити
+  // ========================
 
+  // Оновити картку за ID
   async updateCard(id: number, updateCardDto: UpdateCardDto): Promise<Card> {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+      throw new NotFoundException(`Картка з ID ${id} не знайдена`);
     }
 
-    // Если загружен новый файл, удаляем старый файл
+    // Якщо було завантажено новий файл, видаляємо старий
     if (updateCardDto.path && updateCardDto.path !== card.path) {
       const oldFilePath = path.resolve(card.path);
       try {
@@ -49,22 +89,27 @@ export class CardsService {
           fs.unlinkSync(oldFilePath);
         }
       } catch (err) {
-        console.error(`Ошибка при удалении файла: ${oldFilePath}`, err);
+        console.error(`Помилка при видаленні файлу: ${oldFilePath}`, err);
       }
     }
 
-    // Обновляем данные карточки
+    // Оновлюємо дані картки
     Object.assign(card, updateCardDto);
     return this.cardRepository.save(card);
   }
 
+  // ========================
+  // DELETE запити
+  // ========================
+
+  // Видалити картку за ID
   async deleteCard(id: number): Promise<void> {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+      throw new NotFoundException(`Картка з ID ${id} не знайдена`);
     }
 
-    // Удаляем файл изображения, если он существует
+    // Видаляємо файл зображення, якщо він існує
     if (card.path) {
       const filePath = path.resolve(card.path);
       try {
@@ -72,11 +117,11 @@ export class CardsService {
           fs.unlinkSync(filePath);
         }
       } catch (err) {
-        console.error(`Ошибка при удалении файла: ${filePath}`, err);
+        console.error(`Помилка при видаленні файлу: ${filePath}`, err);
       }
     }
 
-    // Удаляем запись о карточке из базы данных
+    // Видаляємо запис картки з бази даних
     await this.cardRepository.remove(card);
   }
 }

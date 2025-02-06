@@ -8,8 +8,14 @@ export class Card {
   @Column({ type: 'varchar', length: 255 })
   title: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  title_en?: string;
+
+  @Column({ type: 'text', nullable: true})
+  description: string;
+
   @Column({ type: 'text', nullable: true })
-  description?: string;
+  description_en?: string;
 
   @Column({ type: 'varchar', length: 255 })
   path: string;

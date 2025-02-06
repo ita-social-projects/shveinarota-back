@@ -20,6 +20,12 @@ export class UpdateMarkerDto {
   @IsOptional()
   title?: string;
 
+  @IsString()
+  @IsOptional()
+  @IsString()
+  title_en?: string;
+
+
   @ApiPropertyOptional({ description: 'Телефон', example: '+380987654321' })
   @IsString()
   @IsOptional()

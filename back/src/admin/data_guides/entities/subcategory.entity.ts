@@ -9,6 +9,9 @@ export class Subcategory {
   @Column({ type: 'varchar', length: 20, nullable: false })
   subcategory: string;
 
+  @Column({ type: 'varchar', length: 20, nullable: false })
+  subcategory_en: string;
+
   @Column({ type: 'varchar', length: 600, nullable: false })
   url: string;
 
@@ -19,16 +22,28 @@ export class Subcategory {
   authors: string[];
 
   @Column('json')
+  authors_en: string[];
+
+  @Column('json')
   example: string[];
 
   @Column({ type: 'varchar', length: 600, nullable: false })
   details: string;
 
   @Column({ type: 'varchar', length: 600, nullable: false })
+  details_en: string;
+
+  @Column({ type: 'varchar', length: 600, nullable: false })
   summary: string;
 
+  @Column({ type: 'varchar', length: 600, nullable: false })
+  summary_en: string;
+
   @Column({ type: 'varchar', length: 20, nullable: false })
-  categoryname: string; // Дублирующее название категории (для удобства)
+  categoryname: string; 
+
+  @Column({ type: 'varchar', length: 20, nullable: false })
+  categoryname_en: string; 
 
   @ManyToOne(() => Category, (category) => category.subcategories, { nullable: false })
   category: Category; // Связь с категорией

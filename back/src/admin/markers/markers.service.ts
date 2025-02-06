@@ -26,6 +26,32 @@ export class MarkersService {
       throw new BadRequestException('Ошибка при сохранении маркера');
     }
   }
+
+  async getUkMarkers(): Promise<Marker[]> {
+    return this.MarkerRepository.find({
+      select: {
+        id: true,
+        title: true,
+        lat: true,
+        lng: true,
+        phone: true,
+        path:true
+      }
+    });
+  }
+
+  async getEnMarkers(): Promise<Marker[]> {
+    return this.MarkerRepository.find({
+      select: {
+        id: true,
+        title_en: true,
+        lat: true,
+        lng: true,
+        phone: true,
+        path:true
+      }
+    });
+  }
   
   
 

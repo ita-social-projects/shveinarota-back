@@ -15,60 +15,106 @@ export class SubcategoryService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  // Метод для создания подкатегории с привязкой к категории
-  async create(categoryId: number, dto: CreateSubcategoryDto): Promise<Subcategory> {
-    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
-
-    if (!category) {
-      throw new NotFoundException(`Категорія з ID ${categoryId} не знайдена.`);
-    }
-
-    try {
-      const subcategory = this.subcategoryRepository.create({
-        ...dto,
-        category, // Привязываем подкатегорию к категории
-      });
-
-      return await this.subcategoryRepository.save(subcategory);
-    } catch (error) {
-      console.error('Помилка при збереженні підкатегорії:', error);
-      throw new BadRequestException('Не вдалося створити підкатегорію.');
-    }
-  }
-
-  // Метод для получения всех подкатегорий по категории
-  // Метод для получения подкатегории по ID
-  async getSubcategoryById(subcategoryId: number): Promise<Subcategory> {
+  // Отримання підкатегорії українською мовою за ID
+  async getUkSubcategoryById(subcategoryId: number): Promise<any> {
     const subcategory = await this.subcategoryRepository.findOne({
       where: { id: subcategoryId },
-      relations: ['category'], // Подгружаем связанную категорию
+      select: {
+        id: true,
+        subcategory: true,
+        details: true,
+        summary: true,
+        url: true,
+        categoryname: true,
+        lekala: true,
+        authors: true,
+        example: true,
+      },
     });
 
     if (!subcategory) {
       throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
     }
 
+    return { ...subcategory, lekala: this.formatLekala(subcategory.lekala, 'uk') };
+  }
+
+  // Отримання підкатегорії англійською мовою за ID
+  async getEnSubcategoryById(subcategoryId: number): Promise<any> {
+    const subcategory = await this.subcategoryRepository.findOne({
+      where: { id: subcategoryId },
+      select: {
+        id: true,
+        subcategory_en: true,
+        details_en: true,
+        summary_en: true,
+        url: true,
+        categoryname_en: true,
+        lekala: true,
+        authors_en: true,
+        example: true,
+      },
+    });
+
+    if (!subcategory) {
+      throw new NotFoundException(`Subcategory with ID ${subcategoryId} not found.`);
+    }
+
+    return { ...subcategory, lekala: this.formatLekala(subcategory.lekala, 'en') };
+  }
+
+  // Отримання підкатегорії за ID
+  async getSubcategoryById(subcategoryId: number): Promise<Subcategory> {
+    const subcategory = await this.subcategoryRepository.findOne({
+      where: { id: subcategoryId },
+      relations: ['category'],
+    });
+    if (!subcategory) {
+      throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
+    }
     return subcategory;
   }
 
+  // Створення нової підкатегорії
+  async create(categoryId: number, dto: CreateSubcategoryDto): Promise<Subcategory> {
+    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+    if (!category) {
+      throw new NotFoundException(`Категорія з ID ${categoryId} не знайдена.`);
+    }
 
-  // Метод для обновления подкатегории
+    try {
+      const subcategory = this.subcategoryRepository.create({
+        subcategory: dto.subcategory,
+        subcategory_en: dto.subcategory_en,
+        url: dto.url,
+        details: dto.details,
+        details_en: dto.details_en,
+        summary: dto.summary,
+        summary_en: dto.summary_en,
+        categoryname: dto.categoryname,
+        categoryname_en: dto.categoryname_en,
+        lekala: dto.lekala || [],
+        authors: dto.authors || [],
+        authors_en: dto.authors_en || [],
+        example: dto.example || [],
+        category,
+      });
+
+      return await this.subcategoryRepository.save(subcategory);
+    } catch (error) {
+      console.error('Помилка при створенні підкатегорії:', error);
+      throw new BadRequestException('Не вдалося створити підкатегорію.');
+    }
+  }
+
+  // Оновлення підкатегорії
   async update(subcategoryId: number, dto: UpdateSubcategoryDto): Promise<Subcategory> {
     const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
-
     if (!subcategory) {
       throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
     }
 
-    // Обновляем только те поля, которые были переданы в запросе
-    subcategory.subcategory = dto.subcategory ?? subcategory.subcategory;
-    subcategory.url = dto.url ?? subcategory.url;
-    subcategory.details = dto.details ?? subcategory.details;
-    subcategory.summary = dto.summary ?? subcategory.summary;
-    subcategory.categoryname = dto.categoryname ?? subcategory.categoryname;
-    subcategory.lekala = dto.lekala && dto.lekala.length > 0 ? dto.lekala : subcategory.lekala;
-    subcategory.authors = dto.authors && dto.authors.length > 0 ? dto.authors : subcategory.authors;
-    subcategory.example = dto.example && dto.example.length > 0 ? dto.example : subcategory.example;
+    Object.assign(subcategory, dto);
 
     try {
       return await this.subcategoryRepository.save(subcategory);
@@ -78,10 +124,9 @@ export class SubcategoryService {
     }
   }
 
-  // Метод для удаления подкатегории
+  // Видалення підкатегорії
   async delete(subcategoryId: number): Promise<void> {
     const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
-
     if (!subcategory) {
       throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
     }
@@ -92,5 +137,11 @@ export class SubcategoryService {
       console.error('Помилка при видаленні підкатегорії:', error);
       throw new BadRequestException('Не вдалося видалити підкатегорію.');
     }
+  }
+
+  // Форматування об'єкта лекала для відображення у відповідній мові
+  private formatLekala(lekala: any[], lang: 'uk' | 'en') {
+    if (!lekala || lekala.length === 0) return [];
+    return lekala.map(item => ({ path: item.path, text: lang === 'uk' ? item.text : item.text_en }));
   }
 }

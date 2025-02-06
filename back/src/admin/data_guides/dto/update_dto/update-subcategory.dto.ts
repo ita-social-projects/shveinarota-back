@@ -8,15 +8,30 @@ export class UpdateSubcategoryDto {
   @IsOptional()
   subcategory?: string;
 
+  @ApiProperty({ description: 'Назва підкатегорії', example: 'Швейні машини' })
+  @IsString()
+  @IsOptional()
+  subcategory_en?: string;
+
   @ApiProperty({ description: 'Деталі підкатегорії', example: 'Опис особливостей швейних машин' })
   @IsString()
   @IsOptional()
   details?: string;
 
+  @ApiProperty({ description: 'Деталі підкатегорії', example: 'Опис особливостей швейних машин' })
+  @IsString()
+  @IsOptional()
+  details_en?: string;
+
   @ApiProperty({ description: 'Короткий опис підкатегорії', example: 'Коротка інформація про швейні машини' })
   @IsString()
   @IsOptional()
   summary?: string;
+
+  @ApiProperty({ description: 'Короткий опис підкатегорії', example: 'Коротка інформація про швейні машини' })
+  @IsString()
+  @IsOptional()
+  summary_en?: string;
 
   @ApiProperty({ description: 'URL сторінки підкатегорії', example: 'https://example.com/sewing-machines' })
   @IsString()
@@ -29,6 +44,12 @@ export class UpdateSubcategoryDto {
   @IsString({ each: true })
   authors?: string[];
 
+  @ApiProperty({ description: 'Список авторів', example: ['Іван Іванов', 'Марія Петрова'] })
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  authors_en?: string[];
+
   @ApiProperty({
     description: 'Масив об’єктів лекал',
     example: [
@@ -40,7 +61,7 @@ export class UpdateSubcategoryDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => Object)
-  lekala?: { path: string; text: string }[];
+  lekala?: { path: string; text: string; text_en: string;}[];
 
   @ApiProperty({ description: 'Приклади використання', example: ['Приклад 1', 'Приклад 2'] })
   @IsArray()
@@ -52,4 +73,9 @@ export class UpdateSubcategoryDto {
   @IsString()
   @IsOptional()
   categoryname?: string;
+
+  @ApiProperty({ description: 'Назва категорії', example: 'Швейне обладнання' })
+  @IsString()
+  @IsOptional()
+  categoryname_en?: string;
 }
