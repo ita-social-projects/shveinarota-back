@@ -18,106 +18,122 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Slides')
-@Controller(':lang/slides') // Параметр lang для учета языка
+/**
+ * Контролер для керування слайдами. Підтримує мовні маршрути (en, uk).
+ */
+@ApiTags('Слайди')
+@Controller(':lang/slides') // Параметр lang для урахування мови
 export class SlidesController {
   constructor(private readonly slidesService: SlidesService) {}
 
-  // Получение слайдов для указанного языка
+  /**
+   * Отримати всі слайди для вказаної мови.
+   */
   @Get()
-  @ApiOperation({ summary: 'Get all slides for the specified language' })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved all slides for the language' })
+  @ApiOperation({ summary: 'Отримати всі слайди для вказаної мови' })
+  @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
+  @ApiResponse({ status: 200, description: 'Успішно отримано всі слайди для мови' })
   async getSlidesByLang(@Param('lang') lang: string) {
-    // Проверяем язык и возвращаем соответствующие слайды
     return lang === 'en' ? this.slidesService.getEnSlides() : this.slidesService.getUkSlides();
   }
 
-  // Получение всех слайдов без учета языка
+  /**
+   * Отримати всі слайди незалежно від мови.
+   */
   @Get('all')
-  @ApiOperation({ summary: 'Get all slides regardless of language' })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved all slides' })
+  @ApiOperation({ summary: 'Отримати всі слайди незалежно від мови' })
+  @ApiResponse({ status: 200, description: 'Успішно отримано всі слайди' })
   async getAllSlides() {
     return this.slidesService.getAllSlides();
   }
 
-  // Создание нового слайда
+  /**
+   * Створити новий слайд.
+   */
   @Post()
-  @ApiOperation({ summary: 'Create a new slide' })
+  @ApiOperation({ summary: 'Створити новий слайд' })
+  @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateSlideDto })
-  @ApiResponse({ status: 201, description: 'Slide created successfully' })
+  @ApiResponse({ status: 201, description: 'Слайд успішно створено' })
   @UseInterceptors(FileInterceptor('path', multerOptions('slides')))
   async createSlide(
     @Body() createSlideDto: CreateSlideDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!createSlideDto.title) {
-      throw new BadRequestException('Title is required');
+      throw new BadRequestException('Поле title є обов’язковим');
     }
 
     if (!file) {
-      throw new BadRequestException('Slide image file is required');
+      throw new BadRequestException('Файл зображення слайду є обов’язковим');
     }
 
     createSlideDto.path = file.path.replace(/\\/g, '/');
     return this.slidesService.createSlide(createSlideDto);
   }
 
-  // Получение слайда по ID с полной информацией для обоих языков
+  /**
+   * Отримати слайд за ID.
+   */
   @Get(':id')
-  @ApiOperation({ summary: 'Get slide by ID' })
-  @ApiParam({ name: 'id', description: 'Slide ID', example: 1 })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved the slide' })
+  @ApiOperation({ summary: 'Отримати слайд за ID' })
+  @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
+  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
+  @ApiResponse({ status: 200, description: 'Успішно отримано слайд' })
   async getSlideById(@Param('id', ParseIntPipe) id: number) {
-    // Получаем слайд по ID с полной информацией для обоих языков
     const slide = await this.slidesService.getSlideById(id);
     if (!slide) {
-      throw new BadRequestException(`Slide with ID ${id} not found`);
+      throw new BadRequestException(`Слайд з ID ${id} не знайдено`);
     }
 
-    // Возвращаем слайд с полной информацией (для обоих языков)
     return {
       id: slide.id,
       path: slide.path,
-      title_uk: slide.title, // Здесь предполагается, что `title` - это украинская версия
+      title_uk: slide.title, // Вважаємо, що `title` — це українська версія
       title_en: slide.title_en,
-      text_uk: slide.text, // Для текста на украинском
-      text_en: slide.text_en, // Для текста на английском
+      text_uk: slide.text,
+      text_en: slide.text_en,
     };
   }
 
-  // Обновление слайда по ID
+  /**
+   * Оновити слайд за ID.
+   */
   @Put(':id')
-  @ApiOperation({ summary: 'Update a slide by ID' })
-  @ApiParam({ name: 'id', description: 'Slide ID', example: 1 })
+  @ApiOperation({ summary: 'Оновити слайд за ID' })
+  @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
+  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateSlideDto })
-  @ApiResponse({ status: 200, description: 'Slide updated successfully' })
+  @ApiResponse({ status: 200, description: 'Слайд успішно оновлено' })
   @UseInterceptors(FileInterceptor('path', multerOptions('slides')))
   async updateSlide(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateSlideDto: UpdateSlideDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-
     if (file) {
       updateSlideDto.path = file.path.replace(/\\/g, '/');
     }
 
     const updatedSlide = await this.slidesService.updateSlide(id, updateSlideDto);
     return {
-      message: 'Slide updated successfully',
+      message: 'Слайд успішно оновлено',
       data: updatedSlide,
     };
   }
 
-  // Удаление слайда по ID
+  /**
+   * Видалити слайд за ID.
+   */
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a slide by ID' })
-  @ApiParam({ name: 'id', description: 'Slide ID', example: 1 })
-  @ApiResponse({ status: 200, description: 'Slide deleted successfully' })
+  @ApiOperation({ summary: 'Видалити слайд за ID' })
+  @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
+  @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
+  @ApiResponse({ status: 200, description: 'Слайд успішно видалено' })
   async deleteSlide(@Param('id', ParseIntPipe) id: number) {
     await this.slidesService.deleteSlide(id);
-    return { message: 'Slide deleted successfully' };
+    return { message: 'Слайд успішно видалено' };
   }
 }

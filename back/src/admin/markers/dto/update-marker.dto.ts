@@ -3,35 +3,34 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
 export class UpdateMarkerDto {
-  @ApiPropertyOptional({ description: 'Широта', example: 50.4501, type: Number })
-  @Transform(({ value }) => parseFloat(value)) // Конвертация строки в число
+  @ApiPropertyOptional({ description: 'Широта місця розташування', example: 50.4501, type: Number })
+  @Transform(({ value }) => parseFloat(value)) // Конвертація рядка в число
   @IsNumber()
   @IsOptional()
   lat?: number;
 
-  @ApiPropertyOptional({ description: 'Довгота', example: 30.5234, type: Number })
+  @ApiPropertyOptional({ description: 'Довгота місця розташування', example: 30.5234, type: Number })
   @Transform(({ value }) => parseFloat(value))
   @IsNumber()
   @IsOptional()
   lng?: number;
 
-  @ApiPropertyOptional({ description: 'Заголовок', example: 'Оновлений маркер' })
+  @ApiPropertyOptional({ description: 'Назва мітки', example: 'Оновлена мітка' })
   @IsString()
   @IsOptional()
   title?: string;
 
+  @ApiPropertyOptional({ description: 'Назва мітки англійською', example: 'Updated Marker' })
   @IsString()
   @IsOptional()
-  @IsString()
   title_en?: string;
 
-
-  @ApiPropertyOptional({ description: 'Телефон', example: '+380987654321' })
+  @ApiPropertyOptional({ description: 'Контактний телефон', example: '+380987654321' })
   @IsString()
   @IsOptional()
   phone?: string;
 
-  @ApiPropertyOptional({ description: 'Шлях до файлу', example: 'uploads/markers/new_image.png' })
+  @ApiPropertyOptional({ description: 'Шлях до оновленого зображення', example: 'uploads/markers/new_image.png' })
   @IsString()
   @IsOptional()
   path?: string;

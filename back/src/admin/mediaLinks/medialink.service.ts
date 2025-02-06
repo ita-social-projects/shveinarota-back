@@ -1,21 +1,21 @@
 import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Link } from './entities/links.entity';
-import { CreateLinkDto } from './dto/create-links.dto';
-import { UpdateLinkDto } from './dto/update-links.dto';
+import { MediaLink } from './entities/medialink.entity';
+import { CreateMediaLinkDto } from './dto/create-medialink.dto';
+import { UpdateMediaLinkDto } from './dto/update-medialink.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 
 @Injectable()
 export class LinksService {
   constructor(
-    @InjectRepository(Link)
-    private readonly linkRepository: Repository<Link>,
+    @InjectRepository(MediaLink)
+    private readonly linkRepository: Repository<MediaLink>,
   ) {}
 
   // Получение всех ссылок без учета языка
-  async getAllLinks(): Promise<Link[]> {
+  async getAllLinks(): Promise<MediaLink[]> {
     try {
       return await this.linkRepository.find({ cache: false });
     } catch (error) {
@@ -24,7 +24,7 @@ export class LinksService {
   }
 
   // Получение ссылок для украинского языка
-  async getUkLinks(): Promise<Link[]> {
+  async getUkLinks(): Promise<MediaLink[]> {
     try {
       return this.linkRepository.find({
         select: {
@@ -40,7 +40,7 @@ export class LinksService {
   }
 
   // Получение ссылок для английского языка
-  async getEnLinks(): Promise<Link[]> {
+  async getEnLinks(): Promise<MediaLink[]> {
     try {
       return this.linkRepository.find({
         select: {
@@ -56,7 +56,7 @@ export class LinksService {
   }
 
   // Получение ссылки по ID с учётом языка
-  async getLinkById(id: number): Promise<Link> {
+  async getLinkById(id: number): Promise<MediaLink> {
     try {
       const link = await this.linkRepository.findOneBy({ id });
       if (!link) {
@@ -78,13 +78,13 @@ export class LinksService {
   
 
   // Создание новой ссылки
-  async createLink(createLinkDto: CreateLinkDto): Promise<Link> {
-    const newLink = this.linkRepository.create(createLinkDto);
+  async createLink(CreateMediaLinkDto: CreateMediaLinkDto): Promise<MediaLink> {
+    const newLink = this.linkRepository.create(CreateMediaLinkDto);
     try {
       return await this.linkRepository.save(newLink);
     } catch (error) {
-      if (createLinkDto.path) {
-        this.deleteFile(createLinkDto.path);
+      if (CreateMediaLinkDto.path) {
+        this.deleteFile(CreateMediaLinkDto.path);
       }
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
         throw new ConflictException('Link with this URL already exists');
@@ -94,7 +94,7 @@ export class LinksService {
   }
 
   // Обновление ссылки
-  async updateLink(id: number, updateLinkDto: UpdateLinkDto): Promise<Link> {
+  async updateLink(id: number, UpdateMediaLinkDto: UpdateMediaLinkDto): Promise<MediaLink> {
     try {
       const link = await this.linkRepository.findOneBy({ id });
       if (!link) {
@@ -102,16 +102,16 @@ export class LinksService {
       }
 
       // Удаляем старый файл изображения, если загружено новое
-      if (updateLinkDto.path && link.path !== updateLinkDto.path) {
+      if (UpdateMediaLinkDto.path && link.path !== UpdateMediaLinkDto.path) {
         this.deleteFile(link.path);
       }
 
       // Обновляем данные ссылки
-      Object.assign(link, updateLinkDto);
+      Object.assign(link, UpdateMediaLinkDto);
       return await this.linkRepository.save(link);
     } catch (error) {
-      if (updateLinkDto.path) {
-        this.deleteFile(updateLinkDto.path);
+      if (UpdateMediaLinkDto.path) {
+        this.deleteFile(UpdateMediaLinkDto.path);
       }
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
         throw new ConflictException('Link with this URL already exists');

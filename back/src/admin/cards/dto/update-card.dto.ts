@@ -1,35 +1,33 @@
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateCardDto {
   @ApiPropertyOptional({
-    description: 'Название карточки',
-    example: 'Updated Card Title',
+    description: 'Назва картки українською',
+    example: 'Оновлена назва картки',
   })
   @IsString()
   @IsOptional()
-  @IsString()
   title?: string;
 
   @ApiPropertyOptional({
-    description: 'Название карточки',
+    description: 'Назва картки англійською',
     example: 'Updated Card Title',
   })
   @IsString()
   @IsOptional()
-  @IsString()
   title_en?: string;
 
   @ApiPropertyOptional({
-    description: 'Описание карточки',
-    example: 'Updated description for the card.',
+    description: 'Опис картки українською',
+    example: 'Оновлений опис картки.',
   })
   @IsString()
   @IsOptional()
   description?: string;
 
   @ApiPropertyOptional({
-    description: 'Описание карточки',
+    description: 'Опис картки англійською',
     example: 'Updated description for the card.',
   })
   @IsString()
@@ -37,7 +35,7 @@ export class UpdateCardDto {
   description_en?: string;
 
   @ApiPropertyOptional({
-    description: 'Путь к файлу изображения',
+    description: 'Шлях до файлу зображення',
     example: '/uploads/cards/updated-image.jpg',
   })
   @IsString()

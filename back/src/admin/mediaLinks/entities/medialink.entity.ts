@@ -2,10 +2,10 @@ import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
 @Unique(['url']) // Указываем массив полей, которые должны быть уникальными
-export class Link {
+export class MediaLink {
   @PrimaryGeneratedColumn()
   id: number;
-
+  
   @Column({ type: 'varchar', length: 255 })
   path: string; // Путь
 

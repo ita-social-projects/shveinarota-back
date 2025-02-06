@@ -3,7 +3,7 @@ import { CardsModule } from './cards/cards.module';
 import { MarkersModule } from './markers/markers.module';
 import { PartnersModule } from './partners/partners.module';
 import { SlidesModule } from './slides/slides.module'
-import { LinksModule} from './mediaLinks/links.module'
+import { LinksModule} from './mediaLinks/medialink.module'
 import { StatisticsModule } from './statistic/statistic.module'
 import { CategoryModule } from './data_guides/category.module'
 import {LogoModule} from './logo/logo.module'

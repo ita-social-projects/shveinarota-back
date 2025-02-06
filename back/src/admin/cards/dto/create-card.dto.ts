@@ -3,42 +3,42 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCardDto {
   @ApiProperty({
-    description: 'Название карточки',
-    example: 'My New Card',
+    description: 'Назва картки українською',
+    example: 'Моя нова картка',
   })
   @IsString()
-  @IsNotEmpty({ message: 'Название карточки (title) не может быть пустым' })
+  @IsNotEmpty({ message: 'Назва картки (title) не може бути порожньою' })
   title: string;
 
   @ApiProperty({
-    description: 'Название карточки на английском',
+    description: 'Назва картки англійською',
     example: 'My New Card',
   })
   @IsString()
-  @IsNotEmpty({ message: 'Название карточки (title_en) не может быть пустым' })
+  @IsNotEmpty({ message: 'Назва картки (title_en) не може бути порожньою' })
   title_en: string;
 
   @ApiProperty({
-    description: 'Описание карточки',
-    example: 'This is a detailed description of the card.',
+    description: 'Опис картки українською',
+    example: 'Це детальний опис картки.',
   })
   @IsString()
-  @IsNotEmpty({ message: 'Описание карточки (description) не может быть пустым' })
+  @IsNotEmpty({ message: 'Опис картки (description) не може бути порожнім' })
   description: string;
 
   @ApiProperty({
-    description: 'Описание карточки на английском',
+    description: 'Опис картки англійською',
     example: 'This is a detailed description of the card.',
   })
   @IsString()
-  @IsNotEmpty({ message: 'Описание карточки (description_en) не может быть пустым' })
+  @IsNotEmpty({ message: 'Опис картки (description_en) не може бути порожнім' })
   description_en: string;
 
   @ApiProperty({
-    description: 'Путь к файлу изображения',
+    description: 'Шлях до файлу зображення',
     example: '/uploads/cards/card-image.jpg',
   })
   @IsString()
-  @IsNotEmpty({ message: 'Путь к изображению обязателен' })
+  @IsNotEmpty({ message: 'Шлях до зображення є обов’язковим' })
   path: string;
 }

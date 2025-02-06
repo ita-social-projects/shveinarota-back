@@ -17,23 +17,28 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Partners')
-@Controller('partners')
+@ApiTags('Партнери')
+@Controller(':lang/partners')
 export class PartnersController {
   constructor(private readonly partnersService: PartnersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Получить всех партнеров' })
-  @ApiResponse({ status: 200, description: 'Партнеры успешно получены' })
+  @ApiOperation({ summary: 'Отримати всіх партнерів' })
+  @ApiParam({ name: 'lang', description: 'Мова відповіді (uk або en)', example: 'uk' })
+  @ApiResponse({ status: 200, description: 'Список партнерів успішно отримано' })
   async getAllPartners() {
     return this.partnersService.getAllPartners();
   }
 
   @Post()
-  @ApiOperation({ summary: 'Создать нового партнера' })
+  @ApiOperation({ summary: 'Створити нового партнера' })
+  @ApiParam({ name: 'lang', description: 'Мова відповіді (uk або en)', example: 'uk' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreatePartnerDto })
-  @ApiResponse({ status: 201, description: 'Партнер успешно создан' })
+  @ApiBody({
+    description: 'Дані для створення партнера',
+    type: CreatePartnerDto,
+  })
+  @ApiResponse({ status: 201, description: 'Партнера успішно створено' })
   @UseInterceptors(FileInterceptor('path', multerOptions('partners')))
   async createPartner(
     @Body() createPartnerDto: CreatePartnerDto,
@@ -46,19 +51,24 @@ export class PartnersController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Получить партнера по ID' })
-  @ApiParam({ name: 'id', description: 'ID партнера', example: 1 })
-  @ApiResponse({ status: 200, description: 'Партнер успешно получен' })
+  @ApiOperation({ summary: 'Отримати партнера за ID' })
+  @ApiParam({ name: 'lang', description: 'Мова відповіді (uk або en)', example: 'uk' })
+  @ApiParam({ name: 'id', description: 'Ідентифікатор партнера', example: 1 })
+  @ApiResponse({ status: 200, description: 'Партнера успішно отримано' })
   async getPartnerById(@Param('id', ParseIntPipe) id: number) {
     return this.partnersService.getPartnerById(id);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Обновить партнера по ID' })
-  @ApiParam({ name: 'id', description: 'ID партнера', example: 1 })
+  @ApiOperation({ summary: 'Оновити партнера за ID' })
+  @ApiParam({ name: 'lang', description: 'Мова відповіді (uk або en)', example: 'uk' })
+  @ApiParam({ name: 'id', description: 'Ідентифікатор партнера', example: 1 })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: UpdatePartnerDto })
-  @ApiResponse({ status: 200, description: 'Партнер успешно обновлен' })
+  @ApiBody({
+    description: 'Дані для оновлення партнера',
+    type: UpdatePartnerDto,
+  })
+  @ApiResponse({ status: 200, description: 'Партнера успішно оновлено' })
   @UseInterceptors(FileInterceptor('path', multerOptions('partners')))
   async updatePartner(
     @Param('id', ParseIntPipe) id: number,
@@ -72,11 +82,12 @@ export class PartnersController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Удалить партнера по ID' })
-  @ApiParam({ name: 'id', description: 'ID партнера', example: 1 })
-  @ApiResponse({ status: 200, description: 'Партнер успешно удален' })
+  @ApiOperation({ summary: 'Видалити партнера за ID' })
+  @ApiParam({ name: 'lang', description: 'Мова відповіді (uk або en)', example: 'uk' })
+  @ApiParam({ name: 'id', description: 'Ідентифікатор партнера', example: 1 })
+  @ApiResponse({ status: 200, description: 'Партнера успішно видалено' })
   async deletePartner(@Param('id', ParseIntPipe) id: number) {
     await this.partnersService.deletePartner(id);
-    return { message: 'Партнер успешно удален' };
+    return { message: 'Партнера успішно видалено' };
   }
 }
