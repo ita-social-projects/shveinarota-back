@@ -6,13 +6,13 @@ export class Subcategory {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 20, nullable: false })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   subcategory: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: false })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   subcategory_en: string;
 
-  @Column({ type: 'varchar', length: 600, nullable: false })
+  @Column({ type: 'varchar', length: 600, nullable: true })
   url: string;
 
   @Column('json')
@@ -27,24 +27,24 @@ export class Subcategory {
   @Column('json')
   example: string[];
 
-  @Column({ type: 'varchar', length: 600, nullable: false })
+  @Column({ type: 'varchar', length: 600, nullable: true })
   details: string;
 
-  @Column({ type: 'varchar', length: 600, nullable: false })
+  @Column({ type: 'varchar', length: 600, nullable: true })
   details_en: string;
 
-  @Column({ type: 'varchar', length: 600, nullable: false })
+  @Column({ type: 'varchar', length: 600, nullable: true })
   summary: string;
 
-  @Column({ type: 'varchar', length: 600, nullable: false })
+  @Column({ type: 'varchar', length: 600, nullable: true })
   summary_en: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: false })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   categoryname: string; 
 
-  @Column({ type: 'varchar', length: 20, nullable: false })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   categoryname_en: string; 
 
-  @ManyToOne(() => Category, (category) => category.subcategories, { nullable: false })
+  @ManyToOne(() => Category, (category) => category.subcategories, { nullable: true })
   category: Category; // Связь с категорией
 }

@@ -63,6 +63,17 @@ export class SubcategoryService {
     return { ...subcategory, lekala: this.formatLekala(subcategory.lekala, 'en') };
   }
 
+    // Отримання всіх значень підкатегорії за ID
+    async getAllById(subcategoryId: number): Promise<Subcategory> {
+      const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
+      if (!subcategory) {
+        throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена`);
+      }
+      return subcategory;
+    }
+    
+
+
   // Отримання підкатегорії за ID
   async getSubcategoryById(subcategoryId: number): Promise<Subcategory> {
     const subcategory = await this.subcategoryRepository.findOne({
@@ -110,20 +121,29 @@ export class SubcategoryService {
   // Оновлення підкатегорії
   async update(subcategoryId: number, dto: UpdateSubcategoryDto): Promise<Subcategory> {
     const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
+  
     if (!subcategory) {
       throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
     }
-
-    Object.assign(subcategory, dto);
-
-    try {
-      return await this.subcategoryRepository.save(subcategory);
-    } catch (error) {
-      console.error('Помилка при оновленні підкатегорії:', error);
-      throw new BadRequestException('Не вдалося оновити підкатегорію.');
+  
+    // Фільтруємо `undefined`, залишаючи тільки `null` або значення
+    const updatedData = Object.entries(dto).reduce((acc, [key, value]) => {
+      if (value !== undefined) acc[key] = value;
+      return acc;
+    }, {});
+  
+    // Якщо нічого не оновлюється – кидаємо помилку
+    if (Object.keys(updatedData).length === 0) {
+      throw new BadRequestException('Не передано жодного значення для оновлення.');
     }
+  
+    // Використовуємо update, але тільки якщо є дані для оновлення
+    await this.subcategoryRepository.update(subcategoryId, updatedData);
+  
+    return this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
   }
-
+  
+  
   // Видалення підкатегорії
   async delete(subcategoryId: number): Promise<void> {
     const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
