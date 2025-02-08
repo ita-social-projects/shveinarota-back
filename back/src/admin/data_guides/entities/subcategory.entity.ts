@@ -16,7 +16,7 @@ export class Subcategory {
   url: string;
 
   @Column('json')
-  lekala: { path: string; text: string }[];
+  lekala: { path: string; text: string,  text_en: string }[];
 
   @Column('json')
   authors: string[];
@@ -25,7 +25,7 @@ export class Subcategory {
   authors_en: string[];
 
   @Column('json')
-  example: string[];
+  example: { path: string; text: string, text_en: string }[];
 
   @Column({ type: 'varchar', length: 600, nullable: true })
   details: string;

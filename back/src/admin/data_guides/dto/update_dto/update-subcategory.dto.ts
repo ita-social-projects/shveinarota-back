@@ -2,33 +2,47 @@ import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
+class LekalaDto {
+  @ApiProperty({ description: 'Шлях до файлу', example: '/lekala1.pdf' })
+  @IsString()
+  path: string;
+
+  @ApiProperty({ description: 'Текст українською', example: 'Лекало 1' })
+  @IsString()
+  text: string;
+
+  @ApiProperty({ description: 'Текст англійською', example: 'Pattern 1' })
+  @IsString()
+  text_en: string;
+}
+
 export class UpdateSubcategoryDto {
-  @ApiProperty({ description: 'Назва підкатегорії', example: 'Швейні машини' })
+  @ApiProperty({ description: 'Назва підкатегорії українською мовою', example: 'Швейні машини' })
   @IsString()
   @IsOptional()
   subcategory?: string;
 
-  @ApiProperty({ description: 'Назва підкатегорії', example: 'Швейні машини' })
+  @ApiProperty({ description: 'Назва підкатегорії англійською мовою', example: 'Sewing Machines' })
   @IsString()
   @IsOptional()
   subcategory_en?: string;
 
-  @ApiProperty({ description: 'Деталі підкатегорії', example: 'Опис особливостей швейних машин' })
+  @ApiProperty({ description: 'Деталі підкатегорії українською мовою', example: 'Опис особливостей швейних машин' })
   @IsString()
   @IsOptional()
   details?: string;
 
-  @ApiProperty({ description: 'Деталі підкатегорії', example: 'Опис особливостей швейних машин' })
+  @ApiProperty({ description: 'Деталі підкатегорії англійською мовою', example: 'Description of sewing machines features' })
   @IsString()
   @IsOptional()
   details_en?: string;
 
-  @ApiProperty({ description: 'Короткий опис підкатегорії', example: 'Коротка інформація про швейні машини' })
+  @ApiProperty({ description: 'Короткий опис підкатегорії українською мовою', example: 'Коротка інформація про швейні машини' })
   @IsString()
   @IsOptional()
   summary?: string;
 
-  @ApiProperty({ description: 'Короткий опис підкатегорії', example: 'Коротка інформація про швейні машини' })
+  @ApiProperty({ description: 'Короткий опис підкатегорії англійською мовою', example: 'Brief information about sewing machines' })
   @IsString()
   @IsOptional()
   summary_en?: string;
@@ -38,13 +52,13 @@ export class UpdateSubcategoryDto {
   @IsOptional()
   url?: string;
 
-  @ApiProperty({ description: 'Список авторів', example: ['Іван Іванов', 'Марія Петрова'] })
+  @ApiProperty({ description: 'Список авторів українською мовою', example: ['Іван Іванов', 'Марія Петрова'] })
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
   authors?: string[];
 
-  @ApiProperty({ description: 'Список авторів', example: ['Іван Іванов', 'Марія Петрова'] })
+  @ApiProperty({ description: 'Список авторів англійською мовою', example: ['Ivan Ivanov', 'Maria Petrova'] })
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
@@ -53,28 +67,35 @@ export class UpdateSubcategoryDto {
   @ApiProperty({
     description: 'Масив об’єктів лекал',
     example: [
-      { path: '/lekala1.pdf', text: 'Лекало 1' },
-      { path: '/lekala2.pdf', text: 'Лекало 2' },
+      { "path": "/lekala1.pdf", "text": "Лекало 1", "text_en": "Pattern 1" },
+      { "path": "/lekala2.pdf", "text": "Лекало 2", "text_en": "Pattern 2" }
     ],
   })
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })
-  @Type(() => Object)
-  lekala?: { path: string; text: string; text_en: string;}[];
+  @Type(() => LekalaDto)
+  lekala?: LekalaDto[];
 
-  @ApiProperty({ description: 'Приклади використання', example: ['Приклад 1', 'Приклад 2'] })
+  @ApiProperty({
+    description: 'Приклади використання',
+    example: [
+      { "path": "/example1.pdf", "text": "Приклад 1", "text_en": "Example 1" },
+      { "path": "/example2.pdf", "text": "Приклад 2", "text_en": "Example 2" }
+    ],
+  })
   @IsArray()
   @IsOptional()
-  @IsString({ each: true })
-  example?: string[];
+  @ValidateNested({ each: true })
+  @Type(() => LekalaDto)
+  example?: LekalaDto[];
 
-  @ApiProperty({ description: 'Назва категорії', example: 'Швейне обладнання' })
+  @ApiProperty({ description: 'Назва категорії українською мовою', example: 'Швейне обладнання' })
   @IsString()
   @IsOptional()
   categoryname?: string;
 
-  @ApiProperty({ description: 'Назва категорії', example: 'Швейне обладнання' })
+  @ApiProperty({ description: 'Назва категорії англійською мовою', example: 'Sewing Equipment' })
   @IsString()
   @IsOptional()
   categoryname_en?: string;

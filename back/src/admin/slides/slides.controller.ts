@@ -90,9 +90,9 @@ export class SlidesController {
     return {
       id: slide.id,
       path: slide.path,
-      title_uk: slide.title, // Вважаємо, що `title` — це українська версія
+      title: slide.title, // Вважаємо, що `title` — це українська версія
       title_en: slide.title_en,
-      text_uk: slide.text,
+      text: slide.text,
       text_en: slide.text_en,
     };
   }

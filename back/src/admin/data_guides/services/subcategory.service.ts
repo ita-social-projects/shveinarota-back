@@ -15,7 +15,28 @@ export class SubcategoryService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  // Отримання підкатегорії українською мовою за ID
+
+
+    // Отримання всіх значень підкатегорії за ID
+    async getAllById(subcategoryId: number): Promise<Subcategory> {
+      const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
+      if (!subcategory) {
+        throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена`);
+      }
+      return subcategory;
+    }
+    
+     // Форматирование лекал в зависимости от языка
+     private formatLekala(lekala: any[], lang: 'uk' | 'en') {
+      return lekala.map((item) => ({
+        path: item.path,
+        [lang === 'en' ? 'text_en' : 'text']: lang === 'en' ? item.text_en : item.text,
+      }));
+    }
+    
+    
+
+  // ID uk
   async getUkSubcategoryById(subcategoryId: number): Promise<any> {
     const subcategory = await this.subcategoryRepository.findOne({
       where: { id: subcategoryId },
@@ -36,10 +57,14 @@ export class SubcategoryService {
       throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
     }
 
-    return { ...subcategory, lekala: this.formatLekala(subcategory.lekala, 'uk') };
+    return { 
+      ...subcategory, 
+      lekala: this.formatLekala(subcategory.lekala, 'uk'), 
+      example: this.formatLekala(subcategory.example, 'uk') 
+    };
   }
 
-  // Отримання підкатегорії англійською мовою за ID
+  // По ID en
   async getEnSubcategoryById(subcategoryId: number): Promise<any> {
     const subcategory = await this.subcategoryRepository.findOne({
       where: { id: subcategoryId },
@@ -60,31 +85,13 @@ export class SubcategoryService {
       throw new NotFoundException(`Subcategory with ID ${subcategoryId} not found.`);
     }
 
-    return { ...subcategory, lekala: this.formatLekala(subcategory.lekala, 'en') };
+    return { 
+      ...subcategory, 
+      lekala: this.formatLekala(subcategory.lekala, 'en'), 
+      example: this.formatLekala(subcategory.example, 'en') 
+    };
   }
 
-    // Отримання всіх значень підкатегорії за ID
-    async getAllById(subcategoryId: number): Promise<Subcategory> {
-      const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
-      if (!subcategory) {
-        throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена`);
-      }
-      return subcategory;
-    }
-    
-
-
-  // Отримання підкатегорії за ID
-  async getSubcategoryById(subcategoryId: number): Promise<Subcategory> {
-    const subcategory = await this.subcategoryRepository.findOne({
-      where: { id: subcategoryId },
-      relations: ['category'],
-    });
-    if (!subcategory) {
-      throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
-    }
-    return subcategory;
-  }
 
   // Створення нової підкатегорії
   async create(categoryId: number, dto: CreateSubcategoryDto): Promise<Subcategory> {
@@ -159,9 +166,4 @@ export class SubcategoryService {
     }
   }
 
-  // Форматування об'єкта лекала для відображення у відповідній мові
-  private formatLekala(lekala: any[], lang: 'uk' | 'en') {
-    if (!lekala || lekala.length === 0) return [];
-    return lekala.map(item => ({ path: item.path, text: lang === 'uk' ? item.text : item.text_en }));
-  }
 }

@@ -114,25 +114,26 @@ export class CategoryService {
 
   // Оновлення категорії
   async updateCategory(id: number, dto: UpdateCategoryDto): Promise<Category> {
-    if (!dto || !dto.category?.trim()) {
-      throw new BadRequestException('Поле "category" є обов’язковим для заповнення.');
-    }
-
     try {
       const category = await this.categoryRepository.findOne({ where: { id } });
-
+  
       if (!category) {
         throw new NotFoundException(`Категорія з ID ${id} не знайдена.`);
       }
-
-      category.category = dto.category;
-
+  
+      Object.keys(dto).forEach((key) => {
+        if (dto[key] !== undefined) {
+          category[key] = dto[key];
+        }
+      });
+  
       return await this.categoryRepository.save(category);
     } catch (error) {
       console.error(`Помилка при оновленні категорії з ID ${id}:`, error);
       throw new BadRequestException('Не вдалося оновити категорію.');
     }
   }
+  
 
   // Видалення категорії
   async deleteCategory(id: number): Promise<{ message: string }> {

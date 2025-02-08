@@ -2,13 +2,27 @@ import { IsString, IsNotEmpty, IsArray, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
+class LekalaDto {
+  @ApiProperty({ description: 'Шлях до файлу', example: '/lekala1.pdf' })
+  @IsString()
+  path: string;
+
+  @ApiProperty({ description: 'Текст українською', example: 'Лекало 1' })
+  @IsString()
+  text: string;
+
+  @ApiProperty({ description: 'Текст англійською', example: 'Pattern 1' })
+  @IsString()
+  text_en: string;
+}
+
 export class CreateSubcategoryDto {
   @ApiProperty({ description: 'Назва підкатегорії українською мовою', example: 'Швейні машини' })
   @IsString()
   @IsNotEmpty()
   subcategory: string;
 
-  @ApiProperty({ description: 'Назва підкатегорії англійською мовою', example: 'Sewing machines' })
+  @ApiProperty({ description: 'Назва підкатегорії англійською мовою', example: 'Sewing Machines' })
   @IsString()
   @IsNotEmpty()
   subcategory_en: string;
@@ -53,28 +67,33 @@ export class CreateSubcategoryDto {
   @ApiProperty({
     description: 'Масив об’єктів лекал',
     example: [
-      { path: '/lekala1.pdf', text: 'Лекало 1', text_en: 'Pattern 1' },
-      { path: '/lekala2.pdf', text: 'Лекало 2', text_en: 'Pattern 2' },
+      { "path": "/lekala1.pdf", "text": "Лекало 1", "text_en": "Pattern 1" },
+      { "path": "/lekala2.pdf", "text": "Лекало 2", "text_en": "Pattern 2" }
     ],
   })
   @IsArray()
-  @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => Object)
-  lekala: { path: string; text: string; text_en: string; }[];
+  @Type(() => LekalaDto)
+  lekala: LekalaDto[];
 
-  @ApiProperty({ description: 'Приклади використання українською мовою', example: ['Приклад 1', 'Приклад 2'] })
+  @ApiProperty({
+    description: 'Приклади використання',
+    example: [
+      { "path": "/example1.pdf", "text": "Приклад 1", "text_en": "Example 1" },
+      { "path": "/example2.pdf", "text": "Приклад 2", "text_en": "Example 2" }
+    ],
+  })
   @IsArray()
-  @IsNotEmpty()
-  @IsString({ each: true })
-  example: string[];
+  @ValidateNested({ each: true })
+  @Type(() => LekalaDto)
+  example: LekalaDto[];
 
   @ApiProperty({ description: 'Назва категорії українською мовою', example: 'Швейне обладнання' })
   @IsString()
   @IsNotEmpty()
   categoryname: string;
 
-  @ApiProperty({ description: 'Назва категорії англійською мовою', example: 'Sewing equipment' })
+  @ApiProperty({ description: 'Назва категорії англійською мовою', example: 'Sewing Equipment' })
   @IsString()
   @IsNotEmpty()
   categoryname_en: string;
