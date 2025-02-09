@@ -14,16 +14,16 @@ export class LinksService {
     private readonly linkRepository: Repository<MediaLink>,
   ) {}
 
-  // Получение всех ссылок без учета языка
+  // Отримання всіх посилань без урахування мови
   async getAllLinks(): Promise<MediaLink[]> {
     try {
       return await this.linkRepository.find({ cache: false });
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch links');
+      throw new InternalServerErrorException('Не вдалося отримати список посилань');
     }
   }
 
-  // Получение ссылок для украинского языка
+  // Отримання посилань для української мови
   async getUkLinks(): Promise<MediaLink[]> {
     try {
       return this.linkRepository.find({
@@ -35,11 +35,11 @@ export class LinksService {
         }
       });
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch Ukrainian links');
+      throw new InternalServerErrorException('Не вдалося отримати посилання українською мовою');
     }
   }
 
-  // Получение ссылок для английского языка
+  // Отримання посилань для англійської мови
   async getEnLinks(): Promise<MediaLink[]> {
     try {
       return this.linkRepository.find({
@@ -51,33 +51,32 @@ export class LinksService {
         }
       });
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch English links');
+      throw new InternalServerErrorException('Не вдалося отримати посилання англійською мовою');
     }
   }
 
-  // Получение ссылки по ID с учётом языка
+  // Отримання посилання за ID з урахуванням мови
   async getLinkById(id: number): Promise<MediaLink> {
     try {
       const link = await this.linkRepository.findOneBy({ id });
       if (!link) {
-        throw new NotFoundException(`Link with ID ${id} not found`);
+        throw new NotFoundException(`Посилання з ID ${id} не знайдено`);
       }
-  
-      // Возвращаем полные данные для обоих языков
+
+      // Повертаємо повні дані для обох мов
       return {
         id: link.id,
         path: link.path,
-        title: link.title,    // украинский
-        title_en: link.title_en, // английский
+        title: link.title,    // українська
+        title_en: link.title_en, // англійська
         url: link.url,
       };
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch link');
+      throw new InternalServerErrorException('Не вдалося отримати посилання');
     }
   }
-  
 
-  // Создание новой ссылки
+  // Створення нового посилання
   async createLink(CreateMediaLinkDto: CreateMediaLinkDto): Promise<MediaLink> {
     const newLink = this.linkRepository.create(CreateMediaLinkDto);
     try {
@@ -87,26 +86,26 @@ export class LinksService {
         this.deleteFile(CreateMediaLinkDto.path);
       }
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
-        throw new ConflictException('Link with this URL already exists');
+        throw new ConflictException('Посилання з таким URL вже існує');
       }
-      throw new InternalServerErrorException('Failed to create link');
+      throw new InternalServerErrorException('Не вдалося створити посилання');
     }
   }
 
-  // Обновление ссылки
+  // Оновлення посилання
   async updateLink(id: number, UpdateMediaLinkDto: UpdateMediaLinkDto): Promise<MediaLink> {
     try {
       const link = await this.linkRepository.findOneBy({ id });
       if (!link) {
-        throw new NotFoundException(`Link with ID ${id} not found`);
+        throw new NotFoundException(`Посилання з ID ${id} не знайдено`);
       }
 
-      // Удаляем старый файл изображения, если загружено новое
+      // Видаляємо старий файл зображення, якщо завантажено новий
       if (UpdateMediaLinkDto.path && link.path !== UpdateMediaLinkDto.path) {
         this.deleteFile(link.path);
       }
 
-      // Обновляем данные ссылки
+      // Оновлюємо дані посилання
       Object.assign(link, UpdateMediaLinkDto);
       return await this.linkRepository.save(link);
     } catch (error) {
@@ -114,33 +113,33 @@ export class LinksService {
         this.deleteFile(UpdateMediaLinkDto.path);
       }
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
-        throw new ConflictException('Link with this URL already exists');
+        throw new ConflictException('Посилання з таким URL вже існує');
       }
-      throw new InternalServerErrorException('Failed to update link');
+      throw new InternalServerErrorException('Не вдалося оновити посилання');
     }
   }
 
-  // Удаление ссылки
+  // Видалення посилання
   async deleteLink(id: number): Promise<void> {
     try {
       const link = await this.linkRepository.findOneBy({ id });
       if (!link) {
-        throw new NotFoundException(`Link with ID ${id} not found`);
+        throw new NotFoundException(`Посилання з ID ${id} не знайдено`);
       }
 
-      // Удаляем файл с диска
+      // Видаляємо файл з диска
       if (link.path) {
         this.deleteFile(link.path);
       }
 
-      // Удаляем запись из базы данных
+      // Видаляємо запис з бази даних
       await this.linkRepository.remove(link);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to delete link');
+      throw new InternalServerErrorException('Не вдалося видалити посилання');
     }
   }
 
-  // Удаление файла с диска
+  // Видалення файлу з диска
   private deleteFile(filePath: string): void {
     if (!filePath) return;
     const absolutePath = path.resolve(filePath);
@@ -149,7 +148,7 @@ export class LinksService {
         fs.unlinkSync(absolutePath);
       }
     } catch (err) {
-      console.error(`Error deleting file: ${absolutePath}`, err);
+      console.error(`Помилка видалення файлу: ${absolutePath}`, err);
     }
   }
 }

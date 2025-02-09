@@ -18,7 +18,7 @@ export class Marker {
   title_en?: string; // Заголовок на английском
 
   @Column({ type: 'varchar', length: 20, nullable: true })
-  phone?: string; // Номер телефона
+  link?: string; // Номер телефона
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   path?: string; // Путь

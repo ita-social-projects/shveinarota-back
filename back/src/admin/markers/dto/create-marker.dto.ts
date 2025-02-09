@@ -28,7 +28,7 @@ export class CreateMarkerDto {
   @ApiPropertyOptional({ description: 'Контактний телефон', example: '+380123456789' })
   @IsString()
   @IsOptional()
-  phone?: string;
+  link?: string;
 
   @ApiPropertyOptional({ description: 'Шлях до зображення', example: 'uploads/markers/image.png' })
   @IsString()

@@ -22,12 +22,11 @@ export class MarkersService {
     try {
         return await this.MarkerRepository.save(newMarker);
     } catch (error) {
-        console.error('Ошибка при сохранении маркера:', error.message);
-        console.error('Детали ошибки:', error);
-        throw new BadRequestException(`Ошибка при сохранении маркера: ${error.message}`);
+        console.error('Помилка під час збереження маркера:', error.message);
+        console.error('Деталі помилки:', error);
+        throw new BadRequestException(`Помилка під час збереження маркера: ${error.message}`);
     }
-}
-
+  }
 
   async getUkMarkers(): Promise<Marker[]> {
     return this.MarkerRepository.find({
@@ -36,8 +35,8 @@ export class MarkersService {
         title: true,
         lat: true,
         lng: true,
-        phone: true,
-        path:true
+        link: true,
+        path: true
       }
     });
   }
@@ -49,39 +48,36 @@ export class MarkersService {
         title_en: true,
         lat: true,
         lng: true,
-        phone: true,
-        path:true
+        link: true,
+        path: true
       }
     });
   }
   
-  
-
   async getMarkerById(id: number): Promise<Marker> {
-    const Marker = await this.MarkerRepository.findOne({ where: { id } });
-    if (!Marker) {
-      throw new NotFoundException(`Картка з ID ${id} не знайдена`);
-    
+    const marker = await this.MarkerRepository.findOne({ where: { id } });
+    if (!marker) {
+      throw new NotFoundException(`Маркера з ID ${id} не знайдено`);
     }
-    return Marker;
+    return marker;
   }
 
   async updateMarker(id: number, updateMarkerDto: UpdateMarkerDto): Promise<Marker> {
-    const Marker = await this.MarkerRepository.findOne({ where: { id } });
-    if (!Marker) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+    const marker = await this.MarkerRepository.findOne({ where: { id } });
+    if (!marker) {
+      throw new NotFoundException(`Маркера з ID ${id} не знайдено`);
     }
 
-    this.MarkerRepository.merge(Marker, updateMarkerDto);
-    return this.MarkerRepository.save(Marker);
+    this.MarkerRepository.merge(marker, updateMarkerDto);
+    return this.MarkerRepository.save(marker);
   }
 
   async deleteMarker(id: number): Promise<void> {
-    const Marker = await this.MarkerRepository.findOne({ where: { id } });
-    if (!Marker) {
-      throw new NotFoundException(`Карточка с ID ${id} не найдена`);
+    const marker = await this.MarkerRepository.findOne({ where: { id } });
+    if (!marker) {
+      throw new NotFoundException(`Маркера з ID ${id} не знайдено`);
     }
 
-    await this.MarkerRepository.remove(Marker);
+    await this.MarkerRepository.remove(marker);
   }
 }
