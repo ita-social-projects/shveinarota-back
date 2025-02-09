@@ -18,14 +18,16 @@ export class MarkersService {
 
   async createMarker(createMarkerDto: CreateMarkerDto): Promise<Marker> {
     const newMarker = this.MarkerRepository.create(createMarkerDto);
-  
+
     try {
-      return await this.MarkerRepository.save(newMarker);
+        return await this.MarkerRepository.save(newMarker);
     } catch (error) {
-      console.error(error);  // Логирование ошибки
-      throw new BadRequestException('Ошибка при сохранении маркера');
+        console.error('Ошибка при сохранении маркера:', error.message);
+        console.error('Детали ошибки:', error);
+        throw new BadRequestException(`Ошибка при сохранении маркера: ${error.message}`);
     }
-  }
+}
+
 
   async getUkMarkers(): Promise<Marker[]> {
     return this.MarkerRepository.find({

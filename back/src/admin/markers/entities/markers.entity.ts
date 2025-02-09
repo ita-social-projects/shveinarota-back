@@ -20,6 +20,6 @@ export class Marker {
   @Column({ type: 'varchar', length: 20, nullable: true })
   phone?: string; // Номер телефона
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   path?: string; // Путь
 }
