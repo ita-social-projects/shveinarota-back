@@ -17,7 +17,7 @@ export class Marker {
   @Column({ type: 'varchar', length: 255, nullable: true })
   title_en?: string; // Заголовок на английском
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Column({ type: 'varchar', length: 400, nullable: true })
   link?: string; // Номер телефона
 
   @Column({ type: 'varchar', length: 255, nullable: true })
