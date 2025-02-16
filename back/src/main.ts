@@ -6,11 +6,14 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import cookieParser from 'cookie-parser';
-
+import { DataSource } from 'typeorm';
+import { User } from './secure/User/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+  const dataSource = app.get(DataSource);
 
   // Настройка Swagger
   const config = new DocumentBuilder()
@@ -45,6 +48,28 @@ async function bootstrap() {
 
   // Подключение cookie-parser для работы с куками
   app.use(cookieParser());
+
+  // ⚡ Создание дефолтного пользователя, если база данных пустая
+  const userRepository = dataSource.getRepository(User);
+  const userCount = await userRepository.count();
+
+  if (userCount === 0) {
+    const defaultUsername = configService.get<string>('DEFAULT_USERNAME');
+    const defaultPassword = configService.get<string>('DEFAULT_PASSWORD');
+
+    if (!defaultUsername || !defaultPassword) {
+      throw new Error('⚠️ DEFAULT_USERNAME or DEFAULT_PASSWORD is not set in .env');
+    }
+
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+    const user = userRepository.create({
+      username: defaultUsername,
+      password: hashedPassword,
+    });
+
+    await userRepository.save(user);
+    console.log('✅ Дефолтный пользователь создан:');
+  }
 
   const PORT = configService.get<number>('PORT') || 3007;
   console.log(`🚀 Server running on port ${PORT}`);
