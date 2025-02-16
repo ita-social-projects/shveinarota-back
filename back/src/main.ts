@@ -5,6 +5,8 @@ import { json, urlencoded, static as serveStatic } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
+import cookieParser from 'cookie-parser';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,7 +29,10 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '10mb' }));
 
   // Включение CORS
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000', // Укажи фронтенд-URL
+    credentials: true, // Разрешает куки
+  });
 
   // Включаем глобальную валидацию и преобразование типов
   app.useGlobalPipes(new ValidationPipe({
@@ -38,9 +43,12 @@ async function bootstrap() {
   // Раздача статических файлов (доступ к /uploads)
   app.use('/uploads', serveStatic(join(__dirname, '..', 'uploads')));
 
+  // Подключение cookie-parser для работы с куками
+  app.use(cookieParser());
+
   const PORT = configService.get<number>('PORT') || 3007;
   console.log(`🚀 Server running on port ${PORT}`);
-  
+
   await app.listen(PORT);
 }
 
