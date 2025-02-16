@@ -2,13 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded, static as serveStatic } from 'express';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import cookieParser from 'cookie-parser';
 import { DataSource } from 'typeorm';
 import { User } from './secure/User/entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { log } from 'console';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,8 +33,10 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '10mb' }));
 
   // Включение CORS
+  const client = configService.get<string>('CLIENT_NAME')
+
   app.enableCors({
-    origin: 'http://localhost:3000', // Укажи фронтенд-URL
+    origin: client, // Укажи фронтенд-URL
     credentials: true, // Разрешает куки
   });
 
@@ -73,6 +76,8 @@ async function bootstrap() {
 
   const PORT = configService.get<number>('PORT') || 3007;
   console.log(`🚀 Server running on port ${PORT}`);
+  
+  
 
   await app.listen(PORT);
 }
