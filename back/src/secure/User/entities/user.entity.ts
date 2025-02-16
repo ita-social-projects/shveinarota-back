@@ -2,9 +2,9 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity('users')
 export class User {
-  @PrimaryColumn()
+  @PrimaryColumn({ default: 'Admin' }) 
   username: string;
 
-  @Column()
+  @Column({ default: '12345' }) 
   password: string;
 }

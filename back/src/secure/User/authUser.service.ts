@@ -14,8 +14,8 @@ export class AuthUserService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(pass: string): Promise<any> {
-    const user = await this.usersRepository.findOneBy({}); // Используем findOneBy()
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.usersRepository.findOneBy({ username });
   
     if (!user || !(await bcrypt.compare(pass, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
@@ -24,24 +24,30 @@ export class AuthUserService {
   }
   
 
-  async login(password: string): Promise<{ auth_token: string }> {
-    const user = await this.validateUser(password);
+  async login(username: string, password: string): Promise<{ auth_token: string }> {
+    const user = await this.validateUser(username, password);
     const payload = { username: user.username };
     return { auth_token: this.jwtService.sign(payload) };
   }
 
-  async updateUser(username: string, password: string): Promise<User> {
-    const users = await this.usersRepository.find();
-    if (users.length > 0) {
-        await this.usersRepository.remove(users);
-    }
-    const newUser = this.usersRepository.create({
-        username,
-        password: await bcrypt.hash(password, 10)
-    });
+  async updateUser(currentUsername: string, newUsername: string, password: string): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { username: currentUsername } });
 
-    return await this.usersRepository.save(newUser);
-}
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    if (newUsername) {
+        user.username = newUsername; // Оновлюємо ім'я користувача
+    }
+    
+    if (password) {
+        user.password = await bcrypt.hash(password, 10); // Оновлюємо пароль
+    }
+
+    return await this.usersRepository.save(user);
+  }
+
 
 
 
