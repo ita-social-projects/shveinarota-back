@@ -9,18 +9,29 @@ export class JwtAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     
-    // Отримуємо токен із кукі
-    const authToken = request.cookies?.auth_token;
+    // 1️⃣ Получаем токен из cookie
+    let token = request.cookies?.auth_token;
 
-    if (!authToken || typeof authToken !== 'string') {
+    // 2️⃣ Если в cookie нет токена, пробуем взять его из заголовка Authorization
+    if (!token) {
+      const authHeader = request.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1]; // Берем вторую часть после "Bearer "
+      }
+    }
+
+    if (!token) {
+      console.log('No token provided');
       throw new UnauthorizedException('No token provided');
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(authToken.trim());
+      // Проверяем токен
+      const payload = await this.jwtService.verifyAsync(token.trim());
       (request as any).user = payload;
       return true;
     } catch (error) {
+      console.log('Invalid token:', error.message);
       throw new UnauthorizedException('Invalid token');
     }
   }
