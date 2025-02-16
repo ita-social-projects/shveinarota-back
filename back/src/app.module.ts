@@ -5,7 +5,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AdminModule } from './admin/admin.moudle';
 import databaseConfig from './config/database.config';
-import googleAuthConfig from './config/OAuth2.0.condig';
+import googleAuthConfig from './config/OAuth2.0.config';
 import {AuthMoudle } from './secure/auth.module';
 
 @Module({

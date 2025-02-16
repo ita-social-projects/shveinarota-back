@@ -19,15 +19,17 @@ export class AuthGoogleController {
 
   @Get('callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req, @Res({ passthrough: true }) res: Response) {
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
     if (!req.user) {
       return res.status(400).json({ message: 'Google authentication failed' });
     }
 
     const token = await this.authService.generateJwt(req.user);
 
-    // Получаем домен из конфига
+    // Получаем домен и клиент из конфига
     const domain = this.configService.get<string>('database.domain') || 'localhost';
+    const client = this.configService.get<string>('database.client') || 'client32';
+    console.log('🔹 Config in Controller:');
 
     res.cookie('auth_token', token, {
       httpOnly: true,
@@ -38,6 +40,7 @@ export class AuthGoogleController {
       maxAge: 3600000, // 1 час
     });
 
-    return { message: 'Authentication successful' };
+    // Редирект на динамический путь с клиентом
+    return res.redirect(`${client}/dashboard`);
   }
 }
