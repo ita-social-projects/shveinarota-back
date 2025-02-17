@@ -41,7 +41,7 @@ export class AuthUserService {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000, // 1 день
+        maxAge:  60 * 1000, // 1 день
     });
 
     res.send({ message: 'Login successful' });

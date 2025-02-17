@@ -7,8 +7,6 @@ export default () => {
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       name: process.env.DB_NAME,
-      domain: process.env.DOMAIN,
-      client: process.env.CLIENT_NAME
     },
   };
 };

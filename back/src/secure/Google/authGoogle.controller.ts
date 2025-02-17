@@ -30,6 +30,7 @@ export class AuthGoogleController {
     const domain = this.configService.get<string>('database.domain') || 'localhost';
     const client = this.configService.get<string>('database.client') || 'client32';
     console.log('🔹 Config in Controller:');
+  
 
     res.cookie('auth_token', token, {
       httpOnly: true,
