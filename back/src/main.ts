@@ -36,7 +36,6 @@ async function bootstrap() {
   const client = configService.get<string>('CLIENT_NAME')
 
   app.enableCors({
-    origin: client, // Укажи фронтенд-URL
     credentials: true, // Разрешает куки
   });
 
