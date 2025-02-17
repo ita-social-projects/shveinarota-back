@@ -42,6 +42,6 @@ export class AuthGoogleController {
     });
 
     // Редирект на динамический путь с клиентом
-    return res.redirect(`${client}/dashboard`);
+    return res.redirect(`http://localhost:3000/dashboard`);
   }
 }
