@@ -42,6 +42,6 @@ export class AuthGoogleController {
     });
 
     // Редирект на динамический путь с клиентом
-    return res.redirect(`http://localhost:3000/dashboard`);
+    return res.redirect(`https://shveinarota.vercel.app/dashboard`);
   }
 }
