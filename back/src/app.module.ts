@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AdminModule } from './admin/admin.moudle';
+import clientConfig from './config/client.config';
 import databaseConfig from './config/database.config';
 import googleAuthConfig from './config/OAuth2.0.config';
 import {AuthMoudle } from './secure/auth.module';
@@ -12,7 +13,7 @@ import {AuthMoudle } from './secure/auth.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, googleAuthConfig], // Загружаем оба конфига
+      load: [databaseConfig, googleAuthConfig, clientConfig], // Загружаем оба конфига
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

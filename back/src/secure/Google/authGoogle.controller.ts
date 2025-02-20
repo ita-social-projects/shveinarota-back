@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthGoogleService } from './authGoogle.service';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import ms from 'ms';
 
 @Controller('auth/google')
 export class AuthGoogleController {
@@ -27,9 +28,10 @@ export class AuthGoogleController {
     const token = await this.authService.generateJwt(req.user);
 
     // Получаем домен и клиент из конфига
-    const domain = this.configService.get<string>('database.domain') || 'localhost';
-    const client = this.configService.get<string>('database.client') || 'client32';
-    console.log('🔹 Config in Controller:');
+    const domain = this.configService.get<string>('client.domain') || 'localhost';
+    const client = this.configService.get<string>('client.client') || 'client32';
+    const maxage = ms(this.configService.get<string>('client.maxage') || '1h'); 
+
   
 
     res.cookie('auth_token', token, {
@@ -38,10 +40,10 @@ export class AuthGoogleController {
       domain, // Используем домен из конфига
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
-      maxAge: 3600000, // 1 час
+      maxAge: maxage, // 1 час
     });
 
     // Редирект на динамический путь с клиентом
-    return res.redirect(`https://shveinarota.vercel.app/dashboard`);
+    return res.redirect(`${client}/dashboard`);
   }
 }

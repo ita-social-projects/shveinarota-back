@@ -36,7 +36,7 @@ async function bootstrap() {
   const client = configService.get<string>('CLIENT_NAME')
 
   app.enableCors({
-    origin: 'https://shveinarota.vercel.app',
+    origin: `${client}`,
     credentials: true, // Разрешает куки
   });
 
