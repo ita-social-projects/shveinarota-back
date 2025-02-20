@@ -4,6 +4,7 @@ import { AuthGoogleService } from './authGoogle.service';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import ms from 'ms';
+import { log } from 'console';
 
 @Controller('auth/google')
 export class AuthGoogleController {
@@ -30,17 +31,17 @@ export class AuthGoogleController {
     // Получаем домен и клиент из конфига
     const domain = this.configService.get<string>('client.domain') || 'localhost';
     const client = this.configService.get<string>('client.client') || 'client32';
-    const maxage = ms(this.configService.get<string>('client.maxage') || '1h'); 
+    const maxage = ms(this.configService.get<string>('jwt.expiresIn', '1h')); 
 
   
 
     res.cookie('auth_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      domain, // Используем домен из конфига
+      domain, 
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
-      maxAge: maxage, // 1 час
+      maxAge: maxage, 
     });
 
     // Редирект на динамический путь с клиентом

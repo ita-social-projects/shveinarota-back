@@ -1,3 +1,4 @@
+
 export default () => {
   console.log('🔹 ENV VARIABLES in database.config.ts:')
   return {

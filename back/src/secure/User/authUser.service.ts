@@ -44,7 +44,6 @@ export class AuthUserService {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        domain: domain,
         maxAge:  maxage, 
     });
 

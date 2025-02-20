@@ -15,9 +15,9 @@ import { User } from './entities/user.entity';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN', '1h') },
-      }),
+        secret: configService.get<string>('jwt.secret'), 
+        signOptions: { expiresIn: configService.get<string>('jwt.expiresIn', '1h') }, 
+      }),      
     }),
   ],
   providers: [AuthUserService, JwtStrategy],
