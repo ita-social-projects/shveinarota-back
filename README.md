@@ -69,17 +69,17 @@ $ npm run test:cov
 ## Deployment
 
 1. Серверная среда
--- Node.js (версія 18+ для кращої підтримки)
--- npm або yarn для керування залежностями
+- Node.js (версія 18+ для кращої підтримки)
+- npm або yarn для керування залежностями
 2. Система управління процесами (для стабільної роботи)
--- PM2 (якщо запускати напряму)
--- Docker (якщо використовуєш контейнери)
+- PM2 (якщо запускати напряму)
+- Docker (якщо використовуєш контейнери)
 3. База даних (за потреби)
--- MySQL
+- MySQL
 4. Інструменти CI/CD (для автоматичного деплою)
-GitHub Actions / GitLab CI
-Docker + Docker Compose
-Terraform / Ansible (для інфраструктури)
+- GitHub Actions / GitLab CI
+- Docker + Docker Compose
+- Terraform / Ansible (для інфраструктури)
 
 
 ## Resources
