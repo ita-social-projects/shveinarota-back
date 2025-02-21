@@ -31,6 +31,13 @@
 ```bash
 $ npm install
 ```
+## SWAGER
+
+```bash
+link/api
+```
+Db - MYSQL
+
 
 ## Compile and run the project
 
