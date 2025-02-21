@@ -9,10 +9,10 @@ export class JwtAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     
-    // 1️⃣ Получаем токен из cookie
+  
     let token = request.cookies?.auth_token;
 
-    // 2️⃣ Если в cookie нет токена, пробуем взять его из заголовка Authorization
+
     if (!token) {
       const authHeader = request.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {

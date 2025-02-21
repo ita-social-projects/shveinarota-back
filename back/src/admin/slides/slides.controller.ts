@@ -94,7 +94,7 @@ export class SlidesController {
     return {
       id: slide.id,
       path: slide.path,
-      title: slide.title, // Вважаємо, що `title` — це українська версія
+      title: slide.title,
       title_en: slide.title_en,
       text: slide.text,
       text_en: slide.text_en,

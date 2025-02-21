@@ -57,7 +57,7 @@ export class SubcategoryController {
   // =========== Post =========
 
   @Post('category/:categoryId')
-  @UseGuards(JwtAuthGuard) // Защищаем маршрут
+  @UseGuards(JwtAuthGuard) 
   @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Створення нової підкатегорії' })
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
@@ -80,7 +80,7 @@ export class SubcategoryController {
   // =========== Put =========
 
   @Put(':subcategoryId')
-  @UseGuards(JwtAuthGuard) // Защищаем маршрут
+  @UseGuards(JwtAuthGuard) 
   @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Оновлення існуючої підкатегорії' })
   @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
@@ -104,7 +104,7 @@ export class SubcategoryController {
   // =========== Delete =========
 
   @Delete(':subcategoryId')
-  @UseGuards(JwtAuthGuard) // Защищаем маршрут
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Видалення підкатегорії' })
   @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
   @ApiResponse({ status: 200, description: 'Підкатегорію успішно видалено' })
