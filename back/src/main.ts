@@ -56,23 +56,21 @@ async function bootstrap() {
   const userRepository = dataSource.getRepository(User);
   const userCount = await userRepository.count();
 
-  if (userCount === 0) {
-    const defaultUsername = configService.get<string>('DEFAULT_USERNAME');
-    const defaultPassword = configService.get<string>('DEFAULT_PASSWORD');
 
-    if (!defaultUsername || !defaultPassword) {
-      throw new Error('⚠️ DEFAULT_USERNAME or DEFAULT_PASSWORD is not set in .env');
-    }
+if (userCount === 0) {
+  const defaultUsername = configService.get<string>('DEFAULT_USERNAME') || 'admin';
+  const defaultPassword = configService.get<string>('DEFAULT_PASSWORD') || 'admin123';
 
-    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-    const user = userRepository.create({
-      username: defaultUsername,
-      password: hashedPassword,
-    });
+  const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+  const user = userRepository.create({
+    username: defaultUsername,
+    password: hashedPassword,
+  });
 
-    await userRepository.save(user);
-    console.log('✅ Дефолтный пользователь создан:');
-  }
+  await userRepository.save(user);
+  console.log(`✅ Дефолтный пользователь создан`);
+}
+
 
   const PORT = configService.get<number>('PORT') || 3007;
   console.log(`🚀 Server running on port ${PORT}`);
