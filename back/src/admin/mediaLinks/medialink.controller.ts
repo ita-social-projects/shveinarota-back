@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  UseGuards
 } from '@nestjs/common';
 import { LinksService } from './medialink.service';
 import { CreateMediaLinkDto } from './dto/create-medialink.dto';
@@ -17,6 +18,7 @@ import { UpdateMediaLinkDto } from './dto/update-medialink.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
+import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
 /**
  * Контролер для роботи з посиланнями, підтримує мовні маршрути (en, uk)
@@ -51,6 +53,7 @@ export class LinksController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Створити нове посилання' })
   @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiConsumes('multipart/form-data')
@@ -67,6 +70,7 @@ export class LinksController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Оновити посилання за ID' })
   @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiParam({ name: 'id', description: 'ID посилання', example: 1 })
@@ -80,6 +84,7 @@ export class LinksController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Видалити посилання за ID' })
   @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiParam({ name: 'id', description: 'ID посилання', example: 1 })

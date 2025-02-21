@@ -9,6 +9,7 @@ import {
   UploadedFile,
   UseInterceptors,
   ParseIntPipe,
+  UseGuards
 } from '@nestjs/common';
 import { PartnersService } from './partners.service';
 import { CreatePartnerDto } from './dto/create-partner.dto';
@@ -16,6 +17,7 @@ import { UpdatePartnerDto } from './dto/update-partner.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
 @ApiTags('Партнери')
 @Controller(':lang/partners')
@@ -31,6 +33,7 @@ export class PartnersController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Створити нового партнера' })
   @ApiParam({ name: 'lang', description: 'Мова відповіді (uk або en)', example: 'uk' })
   @ApiConsumes('multipart/form-data')
@@ -60,6 +63,7 @@ export class PartnersController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Оновити партнера за ID' })
   @ApiParam({ name: 'lang', description: 'Мова відповіді (uk або en)', example: 'uk' })
   @ApiParam({ name: 'id', description: 'Ідентифікатор партнера', example: 1 })
@@ -82,6 +86,7 @@ export class PartnersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Видалити партнера за ID' })
   @ApiParam({ name: 'lang', description: 'Мова відповіді (uk або en)', example: 'uk' })
   @ApiParam({ name: 'id', description: 'Ідентифікатор партнера', example: 1 })

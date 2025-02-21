@@ -9,6 +9,7 @@ import {
   UploadedFiles,
   UseInterceptors,
   ParseIntPipe,
+  UseGuards
 } from '@nestjs/common';
 import { LogoService } from './logo.service';
 import { CreateLogoDto } from './dto/create-logo.dto';
@@ -16,6 +17,8 @@ import { UpdateLogoDto } from './dto/update-logo.dto';
 import { multerOptions } from '../../common/multer-options';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
+
 
 @ApiTags('Логотипи')
 @Controller(':lang/logos') // Добавлен параметр :lang, но он не используется
@@ -31,6 +34,7 @@ export class LogoController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Створити новий логотип' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateLogoDto })
@@ -58,6 +62,7 @@ export class LogoController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Оновити логотип за ID' })
   @ApiParam({ name: 'id', description: 'ID логотипу', example: 1 })
   @ApiConsumes('multipart/form-data')
@@ -79,6 +84,7 @@ export class LogoController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Видалити логотип за ID' })
   @ApiParam({ name: 'id', description: 'ID логотипу', example: 1 })
   @ApiResponse({ status: 200, description: 'Логотип успішно видалено' })

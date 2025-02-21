@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
@@ -17,10 +18,8 @@ import { UpdateCardDto } from './dto/update-card.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
+import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
-/**
- * Контролер для роботи з картками, підтримує мовні маршрути (en, uk)
- */
 @ApiTags('Картки')
 @Controller(':lang/cards')
 export class CardsController {
@@ -52,6 +51,7 @@ export class CardsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Створити нову картку' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ description: 'Дані для створення картки', type: CreateCardDto })
@@ -71,6 +71,7 @@ export class CardsController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard) // Защищаем маршрут
   @ApiOperation({ summary: 'Оновити картку за ID' })
   @ApiParam({ name: 'id', required: true, description: 'ID картки' })
   @ApiConsumes('multipart/form-data')
@@ -94,6 +95,7 @@ export class CardsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard) // Защищаем маршрут
   @ApiOperation({ summary: 'Видалити картку за ID' })
   @ApiParam({ name: 'id', required: true, description: 'ID картки' })
   @ApiResponse({ status: 200, description: 'Картку успішно видалено' })

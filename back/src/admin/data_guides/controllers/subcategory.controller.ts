@@ -1,12 +1,14 @@
 import { 
   Controller, Post, Param, Req, Get, Put, Delete, BadRequestException, 
-  NotFoundException, ParseIntPipe, Logger, UsePipes, ValidationPipe, Body 
+  NotFoundException, ParseIntPipe, Logger, UsePipes, ValidationPipe, Body,
+  UseGuards
 } from '@nestjs/common';
 import { Request } from 'express';
 import { SubcategoryService } from '../services/subcategory.service';
 import { CreateSubcategoryDto } from '../dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from '../dto/update_dto/update-subcategory.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../../common/guard/JwtAuthGuard'; 
 
 @ApiTags('Підкатегорії')
 @Controller(':lang/subcategories')
@@ -55,6 +57,7 @@ export class SubcategoryController {
   // =========== Post =========
 
   @Post('category/:categoryId')
+  @UseGuards(JwtAuthGuard) // Защищаем маршрут
   @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Створення нової підкатегорії' })
   @ApiParam({ name: 'categoryId', required: true, description: 'ID категорії' })
@@ -74,7 +77,10 @@ export class SubcategoryController {
     }
   }
 
+  // =========== Put =========
+
   @Put(':subcategoryId')
+  @UseGuards(JwtAuthGuard) // Защищаем маршрут
   @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Оновлення існуючої підкатегорії' })
   @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
@@ -98,6 +104,7 @@ export class SubcategoryController {
   // =========== Delete =========
 
   @Delete(':subcategoryId')
+  @UseGuards(JwtAuthGuard) // Защищаем маршрут
   @ApiOperation({ summary: 'Видалення підкатегорії' })
   @ApiParam({ name: 'subcategoryId', required: true, description: 'ID підкатегорії' })
   @ApiResponse({ status: 200, description: 'Підкатегорію успішно видалено' })

@@ -7,7 +7,7 @@ import { LinksModule} from './mediaLinks/medialink.module'
 import { StatisticsModule } from './statistic/statistic.module'
 import { CategoryModule } from './data_guides/category.module'
 import {LogoModule} from './logo/logo.module'
-
+import {SharedModule} from '../common/guard/jwt.module'
 @Module({
   imports: [
     CardsModule, // Подключаем модуль для работы с карточками
@@ -17,7 +17,8 @@ import {LogoModule} from './logo/logo.module'
     LinksModule, // Подключаем модуль для работы с сылками на соц сети
     StatisticsModule, // Подключаем модуль для работы с статистикой
     CategoryModule, // Категории
-    LogoModule // Логотипы
+    LogoModule, // Логотипы
+    SharedModule
 
   ],
 })

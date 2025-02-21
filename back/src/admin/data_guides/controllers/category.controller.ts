@@ -14,6 +14,7 @@ import {
   ParseIntPipe,
   UsePipes,
   ValidationPipe,
+  UseGuards
 } from '@nestjs/common';
 import { CategoryService } from '../services/category.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
@@ -28,6 +29,7 @@ import {
   ApiConsumes,
   ApiBody,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../../common/guard/JwtAuthGuard'; 
 
 @ApiTags('Категорії') // Група в Swagger
 @Controller(':lang/categories')
@@ -74,6 +76,7 @@ export class CategoryController {
 
   //===============POST requests==============
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(AnyFilesInterceptor()) // Обробка form-data
   @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Створення категорії' })
@@ -94,6 +97,7 @@ export class CategoryController {
 
   //======================PUT requests=======================
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(AnyFilesInterceptor())
   @UsePipes(new ValidationPipe({ transform: true }))
   @ApiOperation({ summary: 'Оновлення категорії' })
@@ -120,6 +124,7 @@ export class CategoryController {
 
   //====================DELETE requests=======================
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Видалення категорії' })
   @ApiParam({ name: 'id', required: true, description: 'ID категорії' })
   @ApiResponse({ status: 200, description: 'Категорію успішно видалено' })

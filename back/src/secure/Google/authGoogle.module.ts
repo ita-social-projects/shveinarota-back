@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGoogleController } from './authGoogle.controller';
 import { AuthGoogleService } from './authGoogle.service';
 import { AuthGoogleStrategy } from './authGoogle.strategy';
-import { JwtStrategy } from '../../common/jwt/authGoogle.strategy';
+import { JwtStrategy } from '../../common/strategy/authGoogle.strategy';
 
 @Module({
   imports: [

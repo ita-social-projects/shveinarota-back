@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  UseGuards
 } from '@nestjs/common';
 import { MarkersService } from './markers.service';
 import { CreateMarkerDto } from './dto/create-marker.dto';
@@ -17,6 +18,7 @@ import { UpdateMarkerDto } from './dto/update-marker.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
+import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
 /**
  * Контролер для роботи з маркерами, підтримує мовні маршрути (en, uk)
@@ -47,6 +49,7 @@ export class MarkersController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Створити новий маркер' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateMarkerDto })
@@ -73,6 +76,7 @@ export class MarkersController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Оновити маркер за ID' })
   @ApiParam({ name: 'id', description: 'ID маркера', example: 1 })
   @ApiConsumes('multipart/form-data')
@@ -91,6 +95,7 @@ export class MarkersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Видалити маркер за ID' })
   @ApiParam({ name: 'id', description: 'ID маркера', example: 1 })
   @ApiResponse({ status: 200, description: 'Маркер успішно видалено' })

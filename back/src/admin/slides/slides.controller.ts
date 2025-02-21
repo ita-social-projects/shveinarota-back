@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   BadRequestException,
   ParseIntPipe,
+  UseGuards
 } from '@nestjs/common';
 import { SlidesService } from './slides.service';
 import { CreateSlideDto } from './dto/create-slide.dto';
@@ -17,6 +18,8 @@ import { UpdateSlideDto } from './dto/update-slide.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
+
 
 /**
  * Контролер для керування слайдами. Підтримує мовні маршрути (en, uk).
@@ -51,6 +54,7 @@ export class SlidesController {
    * Створити новий слайд.
    */
   @Post()
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Створити новий слайд' })
   @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiConsumes('multipart/form-data')
@@ -101,6 +105,7 @@ export class SlidesController {
    * Оновити слайд за ID.
    */
   @Put(':id')
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Оновити слайд за ID' })
   @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
@@ -128,6 +133,7 @@ export class SlidesController {
    * Видалити слайд за ID.
    */
   @Delete(':id')
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Видалити слайд за ID' })
   @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiParam({ name: 'id', description: 'ID слайду', example: 1 })
