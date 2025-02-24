@@ -36,8 +36,10 @@ async function bootstrap() {
   const client = configService.get<string>('CLIENT_NAME')
 
   app.enableCors({
-    credentials: true, // Разрешает куки
+    origin: '*', // або '*' для всіх доменів
+    credentials: true, // Дозволяє передавати кукі
   });
+  
 
   // Включаем глобальную валидацию и преобразование типов
   app.useGlobalPipes(new ValidationPipe({
