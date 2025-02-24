@@ -9,7 +9,6 @@ import cookieParser from 'cookie-parser';
 import { DataSource } from 'typeorm';
 import { User } from './secure/User/entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { log } from 'console';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,13 +32,16 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '10mb' }));
 
   // Включение CORS
-  const client = configService.get<string>('CLIENT_NAME')
-
   app.enableCors({
-    origin: '*', // або '*' для всіх доменів
-    credentials: true, // Дозволяє передавати кукі
+    origin: (origin, callback) => {
+      if (!origin || origin.includes('localhost')) {
+        callback(null, true); // Разрешаем локальные запросы
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
   });
-  
 
   // Включаем глобальную валидацию и преобразование типов
   app.useGlobalPipes(new ValidationPipe({
@@ -57,26 +59,22 @@ async function bootstrap() {
   const userRepository = dataSource.getRepository(User);
   const userCount = await userRepository.count();
 
+  if (userCount === 0) {
+    const defaultUsername = configService.get<string>('DEFAULT_USERNAME') || 'admin';
+    const defaultPassword = configService.get<string>('DEFAULT_PASSWORD') || 'admin123';
 
-if (userCount === 0) {
-  const defaultUsername = configService.get<string>('DEFAULT_USERNAME') || 'admin';
-  const defaultPassword = configService.get<string>('DEFAULT_PASSWORD') || 'admin123';
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+    const user = userRepository.create({
+      username: defaultUsername,
+      password: hashedPassword,
+    });
 
-  const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-  const user = userRepository.create({
-    username: defaultUsername,
-    password: hashedPassword,
-  });
-
-  await userRepository.save(user);
-  console.log(`✅ Дефолтный пользователь создан`);
-}
-
+    await userRepository.save(user);
+    console.log(`✅ Дефолтный пользователь создан`);
+  }
 
   const PORT = configService.get<number>('PORT') || 3007;
   console.log(`🚀 Server running on port ${PORT}`);
-  
-  
 
   await app.listen(PORT);
 }
