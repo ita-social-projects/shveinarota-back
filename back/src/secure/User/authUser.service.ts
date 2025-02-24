@@ -33,13 +33,11 @@ export class AuthUserService {
         throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Генерируем JWT-токен
     const payload = { username: validUser.username };
     const authToken = this.jwtService.sign(payload);
     const domain = this.configService.get<string>('client.domain') || 'localhost';
     const maxage = ms(this.configService.get<string>('client.maxage') || '1h'); 
 
-    // Устанавливаем токен в HttpOnly куки
     res.cookie('auth_token', authToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
