@@ -33,7 +33,7 @@ export class AuthGoogleController {
   
 
     res.cookie('auth_token', token, {
-      httpOnly: false,
+      httpOnly: true,
       secure: true,
       sameSite: 'none',
       path: '/',
