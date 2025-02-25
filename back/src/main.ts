@@ -33,7 +33,7 @@ async function bootstrap() {
 
   // Включение CORS
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'https://shveinarota.vercel.app'],
     credentials: true,
   });
 
