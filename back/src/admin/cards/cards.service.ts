@@ -18,12 +18,11 @@ export class CardsService {
   // GET запити
   // ========================
 
-  // Отримати всі картки
+ 
   async getAllCards(): Promise<Card[]> {
     return this.cardRepository.find();
   }
 
-  // Отримати всі картки українською мовою
   async getUkCards(): Promise<Card[]> {
     return this.cardRepository.find({
       select: {
@@ -35,7 +34,6 @@ export class CardsService {
     });
   }
 
-  // Отримати всі картки англійською мовою
   async getEnCards(): Promise<Card[]> {
     return this.cardRepository.find({
       select: {
@@ -47,7 +45,6 @@ export class CardsService {
     });
   }
 
-  // Отримати картку за ID
   async getCardById(id: number): Promise<Card> {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
@@ -60,7 +57,6 @@ export class CardsService {
   // POST запити
   // ========================
 
-  // Створити нову картку
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
     const newCard = this.cardRepository.create(createCardDto);
     return this.cardRepository.save(newCard);
@@ -70,14 +66,12 @@ export class CardsService {
   // PUT запити
   // ========================
 
-  // Оновити картку за ID
   async updateCard(id: number, updateCardDto: UpdateCardDto): Promise<Card> {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
       throw new NotFoundException(`Картка з ID ${id} не знайдена`);
     }
 
-    // Оновлюємо дані картки
     Object.assign(card, updateCardDto);
     return this.cardRepository.save(card);
   }
@@ -86,26 +80,12 @@ export class CardsService {
   // DELETE запити
   // ========================
 
-  // Видалити картку за ID
   async deleteCard(id: number): Promise<void> {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
       throw new NotFoundException(`Картка з ID ${id} не знайдена`);
     }
 
-    // Видаляємо файл зображення, якщо він існує
-    if (card.path) {
-      const filePath = path.resolve(card.path);
-      try {
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      } catch (err) {
-        console.error(`Помилка при видаленні файлу: ${filePath}`, err);
-      }
-    }
-
-    // Видаляємо запис картки з бази даних
     await this.cardRepository.remove(card);
   }
 }

@@ -16,7 +16,6 @@ import { SlidesService } from './slides.service';
 import { CreateSlideDto } from './dto/create-slide.dto';
 import { UpdateSlideDto } from './dto/update-slide.dto';
 import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../../common/multer-options';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
@@ -117,9 +116,6 @@ export class SlidesController {
     };
   }
 
-  /**
-   * Видалити слайд за ID.
-   */
   @Delete(':id')
   @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Видалити слайд за ID' })

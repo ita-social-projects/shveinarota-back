@@ -15,14 +15,13 @@ import {
 import { LogoService } from './logo.service';
 import { CreateLogoDto } from './dto/create-logo.dto';
 import { UpdateLogoDto } from './dto/update-logo.dto';
-import { multerOptions } from '../../common/multer-options';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Логотипи')
-@Controller(':lang/logos') // Добавлен параметр :lang, но он не используется
+@Controller(':lang/logos') 
 export class LogoController {
   constructor(private readonly logoService: LogoService) {}
 
@@ -31,7 +30,7 @@ export class LogoController {
   @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiResponse({ status: 200, description: 'Логотипи успішно отримані' })
   async getAllLogos() {
-    return this.logoService.getAllLogos(); // lang не передается
+    return this.logoService.getAllLogos(); 
   }
 
   @Post()

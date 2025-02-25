@@ -15,7 +15,7 @@ export class AuthUserService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
-    private configService: ConfigService, // Подключаем ConfigService
+    private configService: ConfigService, 
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {

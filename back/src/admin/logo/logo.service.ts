@@ -55,10 +55,6 @@ export class LogoService {
       throw new NotFoundException(`Logo with ID ${id} not found`);
     }
 
-    // Удаляем файлы логотипов
-    this.deleteFile(logo.path1);
-    this.deleteFile(logo.path2);
-
     await this.logoRepository.remove(logo);
   }
 

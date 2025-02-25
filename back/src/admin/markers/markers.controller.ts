@@ -16,13 +16,10 @@ import { MarkersService } from './markers.service';
 import { CreateMarkerDto } from './dto/create-marker.dto';
 import { UpdateMarkerDto } from './dto/update-marker.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../../common/multer-options';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
-/**
- * Контролер для роботи з маркерами, підтримує мовні маршрути (en, uk)
- */
+
 @ApiTags('Маркери')
 @Controller(':lang/markers')
 export class MarkersController {
@@ -54,7 +51,7 @@ export class MarkersController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateMarkerDto })
   @ApiResponse({ status: 201, description: 'Маркер успішно створено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('markers')))
+  @UseInterceptors(AnyFilesInterceptor())
   async createMarker(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
     const missingFields = [];
     if (!body.lat) missingFields.push('lat');
@@ -81,7 +78,7 @@ export class MarkersController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateMarkerDto })
   @ApiResponse({ status: 200, description: 'Маркер успішно оновлено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('markers')))
+  @UseInterceptors(AnyFilesInterceptor())
   async updateMarker(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
     const updateMarkerDto: UpdateMarkerDto = {
       ...body,

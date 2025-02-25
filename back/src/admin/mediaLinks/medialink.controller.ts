@@ -17,12 +17,9 @@ import { CreateMediaLinkDto } from './dto/create-medialink.dto';
 import { UpdateMediaLinkDto } from './dto/update-medialink.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../../common/multer-options';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
-/**
- * Контролер для роботи з посиланнями, підтримує мовні маршрути (en, uk)
- */
+
 @ApiTags('Посилання')
 @Controller(':lang/medialinks')
 export class LinksController {
@@ -79,7 +76,7 @@ export class LinksController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateMediaLinkDto })
   @ApiResponse({ status: 200, description: 'Посилання успішно оновлено' })
-  @UseInterceptors(AnyFilesInterceptor()) // Дужки додано ✅
+  @UseInterceptors(AnyFilesInterceptor())
   async updateLink(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateMediaLinkDto) {
     console.log('Отримане тіло:', body);
   

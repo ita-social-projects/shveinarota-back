@@ -5,9 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Logo } from './entities/logo.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Logo])], // Подключаем сущность Logo
+  imports: [TypeOrmModule.forFeature([Logo])], 
   controllers: [LogoController],
   providers: [LogoService],
-  exports: [LogoService], // Экспортируем сервис, если он понадобится в других модулях
+  exports: [LogoService], 
 })
 export class LogoModule {}

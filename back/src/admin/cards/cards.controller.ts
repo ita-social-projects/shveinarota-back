@@ -16,8 +16,7 @@ import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../../common/multer-options';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
 @ApiTags('Картки')
@@ -57,7 +56,7 @@ export class CardsController {
   @ApiBody({ description: 'Дані для створення картки', type: CreateCardDto })
   @ApiResponse({ status: 201, description: 'Картку успішно створено' })
   @ApiResponse({ status: 400, description: 'Помилка при створенні картки' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('cards')))
+  @UseInterceptors(AnyFilesInterceptor())
   async createCard(@Body() body: any) {
     const parsedBody = typeof body === 'string' ? JSON.parse(body) : body;
     const createCardDto = new CreateCardDto();
@@ -68,7 +67,7 @@ export class CardsController {
   
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard) // Защищаем маршрут
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Оновити картку за ID' })
   @ApiParam({ name: 'id', required: true, description: 'ID картки' })
   @ApiConsumes('multipart/form-data')
@@ -76,7 +75,7 @@ export class CardsController {
   @ApiResponse({ status: 200, description: 'Картку успішно оновлено' })
   @ApiResponse({ status: 400, description: 'Помилка при оновленні картки' })
   @ApiResponse({ status: 404, description: 'Картку не знайдено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('cards')))
+  @UseInterceptors(AnyFilesInterceptor())
   async updateCard(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: any,
@@ -90,7 +89,7 @@ export class CardsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard) // Защищаем маршрут
+  @UseGuards(JwtAuthGuard) 
   @ApiOperation({ summary: 'Видалити картку за ID' })
   @ApiParam({ name: 'id', required: true, description: 'ID картки' })
   @ApiResponse({ status: 200, description: 'Картку успішно видалено' })

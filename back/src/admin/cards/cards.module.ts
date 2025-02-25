@@ -5,9 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Card } from './entities/card.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Card])], // Подключаем сущность Card
+  imports: [TypeOrmModule.forFeature([Card])], 
   controllers: [CardsController],
   providers: [CardsService],
-  exports: [CardsService], // Экспортируем сервис, если он понадобится в других модулях
+  exports: [CardsService], 
 })
 export class CardsModule {}
