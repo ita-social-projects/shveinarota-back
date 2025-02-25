@@ -29,13 +29,13 @@ export class AuthGoogleController {
     const token = await this.authService.generateJwt(req.user);
 
     // Получаем домен и клиент из конфига
-    const domain = this.configService.get<string>('client.domain') || 'localhost';
+    const authToken = this.configService.get<string>('jwt.secret');
     const client = this.configService.get<string>('client.client') || 'client32';
     const maxage = ms(this.configService.get<string>('jwt.expiresIn', '1h')); 
 
   
 
-    res.cookie('auth_token', token, {
+    res.cookie('auth_token', authToken, {
       httpOnly: false,
       secure: true,
       sameSite: 'none',
