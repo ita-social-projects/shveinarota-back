@@ -41,7 +41,7 @@ export class AuthUserService {
 
     // Устанавливаем токен в HttpOnly куки
     res.cookie('auth_token', authToken, {
-        httpOnly: true,
+        httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge:  maxage, 
