@@ -40,8 +40,8 @@ export class AuthUserService {
 
     res.cookie('auth_token', authToken, {
         httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: true,
+        sameSite: 'none',
         maxAge:  maxage, 
     });
 

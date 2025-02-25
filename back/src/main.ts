@@ -33,13 +33,7 @@ async function bootstrap() {
 
   // Включение CORS
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin || origin.includes('localhost')) {
-        callback(null, true); // Разрешаем локальные запросы
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: ['http://localhost:3000'],
     credentials: true,
   });
 
