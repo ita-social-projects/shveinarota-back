@@ -14,7 +14,7 @@ import {
 import { PartnersService } from './partners.service';
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
@@ -42,16 +42,13 @@ export class PartnersController {
     type: CreatePartnerDto,
   })
   @ApiResponse({ status: 201, description: 'Партнера успішно створено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('partners')))
+  @UseInterceptors(AnyFilesInterceptor())
   async createPartner(
-    @Body() createPartnerDto: CreatePartnerDto,
-    @UploadedFile() file: Express.Multer.File,
+    @Body() createPartnerDto: CreatePartnerDto, 
   ) {
-    if (file) {
-      createPartnerDto.path = file.path.replace(/\\/g, '/');
-    }
     return this.partnersService.createPartner(createPartnerDto);
   }
+  
 
   @Get(':id')
   @ApiOperation({ summary: 'Отримати партнера за ID' })
@@ -73,17 +70,14 @@ export class PartnersController {
     type: UpdatePartnerDto,
   })
   @ApiResponse({ status: 200, description: 'Партнера успішно оновлено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('partners')))
+  @UseInterceptors(AnyFilesInterceptor()) 
   async updatePartner(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updatePartnerDto: UpdatePartnerDto,
-    @UploadedFile() file: Express.Multer.File,
+    @Body() updatePartnerDto: UpdatePartnerDto, 
   ) {
-    if (file) {
-      updatePartnerDto.path = file.path.replace(/\\/g, '/');
-    }
     return this.partnersService.updatePartner(id, updatePartnerDto);
   }
+
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard) 

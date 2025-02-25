@@ -64,9 +64,6 @@ export class MarkersService {
 
   async updateMarker(id: number, updateMarkerDto: UpdateMarkerDto): Promise<Marker> {
     const marker = await this.MarkerRepository.findOne({ where: { id } });
-    if (!marker) {
-      throw new NotFoundException(`Маркера з ID ${id} не знайдено`);
-    }
 
     this.MarkerRepository.merge(marker, updateMarkerDto);
     return this.MarkerRepository.save(marker);

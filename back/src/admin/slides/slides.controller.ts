@@ -15,7 +15,7 @@ import {
 import { SlidesService } from './slides.service';
 import { CreateSlideDto } from './dto/create-slide.dto';
 import { UpdateSlideDto } from './dto/update-slide.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
@@ -53,29 +53,21 @@ export class SlidesController {
   /**
    * Створити новий слайд.
    */
-  @Post()
-  @UseGuards(JwtAuthGuard) 
-  @ApiOperation({ summary: 'Створити новий слайд' })
-  @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreateSlideDto })
-  @ApiResponse({ status: 201, description: 'Слайд успішно створено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('slides')))
-  async createSlide(
-    @Body() createSlideDto: CreateSlideDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (!createSlideDto.title) {
-      throw new BadRequestException('Поле title є обов’язковим');
-    }
-
-    if (!file) {
-      throw new BadRequestException('Файл зображення слайду є обов’язковим');
-    }
-
-    createSlideDto.path = file.path.replace(/\\/g, '/');
-    return this.slidesService.createSlide(createSlideDto);
-  }
+      @Post()
+      @UseGuards(JwtAuthGuard) 
+      @ApiOperation({ summary: 'Створити новий слайд' })
+      @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
+      @ApiConsumes('multipart/form-data')
+      @ApiBody({ type: CreateSlideDto })
+      @ApiResponse({ status: 201, description: 'Слайд успішно створено' })
+      @UseInterceptors(AnyFilesInterceptor()) 
+      async createSlide(
+        @Body() createSlideDto: CreateSlideDto,
+        @UploadedFile() file: Express.Multer.File,
+      ) { 
+        return this.slidesService.createSlide(createSlideDto);
+      }
+  
 
   /**
    * Отримати слайд за ID.
@@ -112,20 +104,16 @@ export class SlidesController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateSlideDto })
   @ApiResponse({ status: 200, description: 'Слайд успішно оновлено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('slides')))
+  @UseInterceptors(AnyFilesInterceptor())
   async updateSlide(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateSlideDto: UpdateSlideDto,
-    @UploadedFile() file?: Express.Multer.File,
   ) {
-    if (file) {
-      updateSlideDto.path = file.path.replace(/\\/g, '/');
-    }
+    
 
     const updatedSlide = await this.slidesService.updateSlide(id, updateSlideDto);
     return {
       message: 'Слайд успішно оновлено',
-      data: updatedSlide,
     };
   }
 

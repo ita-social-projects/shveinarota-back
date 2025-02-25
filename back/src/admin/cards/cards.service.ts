@@ -62,10 +62,6 @@ export class CardsService {
 
   // Створити нову картку
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
-    if (!createCardDto.path) {
-      throw new BadRequestException('Шлях до зображення є обов’язковим');
-    }
-
     const newCard = this.cardRepository.create(createCardDto);
     return this.cardRepository.save(newCard);
   }
@@ -79,18 +75,6 @@ export class CardsService {
     const card = await this.cardRepository.findOneBy({ id });
     if (!card) {
       throw new NotFoundException(`Картка з ID ${id} не знайдена`);
-    }
-
-    // Якщо було завантажено новий файл, видаляємо старий
-    if (updateCardDto.path && updateCardDto.path !== card.path) {
-      const oldFilePath = path.resolve(card.path);
-      try {
-        if (fs.existsSync(oldFilePath)) {
-          fs.unlinkSync(oldFilePath);
-        }
-      } catch (err) {
-        console.error(`Помилка при видаленні файлу: ${oldFilePath}`, err);
-      }
     }
 
     // Оновлюємо дані картки

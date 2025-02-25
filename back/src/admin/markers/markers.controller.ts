@@ -69,7 +69,6 @@ export class MarkersController {
       ...body,
       lat: parseFloat(body.lat),
       lng: parseFloat(body.lng),
-      path: file ? file.path.replace(/\\/g, '/') : null,
     };
 
     return this.markersService.createMarker(createMarkerDto);
@@ -83,12 +82,11 @@ export class MarkersController {
   @ApiBody({ type: UpdateMarkerDto })
   @ApiResponse({ status: 200, description: 'Маркер успішно оновлено' })
   @UseInterceptors(FileInterceptor('path', multerOptions('markers')))
-  async updateMarker(@Param('id', ParseIntPipe) id: number, @UploadedFile() file: Express.Multer.File, @Body() body: any) {
+  async updateMarker(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
     const updateMarkerDto: UpdateMarkerDto = {
       ...body,
       lat: body.lat ? parseFloat(body.lat) : undefined,
       lng: body.lng ? parseFloat(body.lng) : undefined,
-      path: file ? file.path.replace(/\\/g, '/') : undefined,
     };
 
     return this.markersService.updateMarker(id, updateMarkerDto);

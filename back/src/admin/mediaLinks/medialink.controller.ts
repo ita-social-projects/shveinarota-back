@@ -16,7 +16,7 @@ import { LinksService } from './medialink.service';
 import { CreateMediaLinkDto } from './dto/create-medialink.dto';
 import { UpdateMediaLinkDto } from './dto/update-medialink.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from '../../common/multer-options';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
 
@@ -53,21 +53,23 @@ export class LinksController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard) 
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Створити нове посилання' })
   @ApiParam({ name: 'lang', description: 'Мова (uk або en)', example: 'uk' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateMediaLinkDto })
   @ApiResponse({ status: 201, description: 'Посилання успішно створено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('links')))
-  async createLink(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
+  @UseInterceptors(AnyFilesInterceptor()) // Викликаємо інтерсептор
+  async createLink(@Body() body: CreateMediaLinkDto) { // Додаємо @Body()
+    console.log('Отримане тіло:', body);
+
     if (!body.title || !body.url) {
       throw new BadRequestException('Поля title та url є обов’язковими');
     }
 
-    const CreateMediaLinkDto: CreateMediaLinkDto = { ...body, path: file ? file.path.replace(/\\/g, '/') : null };
-    return this.linksService.createLink(CreateMediaLinkDto);
+    return this.linksService.createLink(body);
   }
+
 
   @Put(':id')
   @UseGuards(JwtAuthGuard) 
@@ -77,11 +79,17 @@ export class LinksController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateMediaLinkDto })
   @ApiResponse({ status: 200, description: 'Посилання успішно оновлено' })
-  @UseInterceptors(FileInterceptor('path', multerOptions('links')))
-  async updateLink(@Param('id', ParseIntPipe) id: number, @UploadedFile() file: Express.Multer.File, @Body() body: any) {
-    const UpdateMediaLinkDto: UpdateMediaLinkDto = { ...body, path: file ? file.path.replace(/\\/g, '/') : undefined };
-    return this.linksService.updateLink(id, UpdateMediaLinkDto);
+  @UseInterceptors(AnyFilesInterceptor()) // Дужки додано ✅
+  async updateLink(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateMediaLinkDto) {
+    console.log('Отримане тіло:', body);
+  
+    if (!body.title || !body.url) {
+      throw new BadRequestException('Поля title та url є обов’язковими');
+    }
+  
+    return this.linksService.updateLink(id, body);
   }
+  
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard) 

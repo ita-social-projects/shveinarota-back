@@ -9,7 +9,8 @@ import {
   UploadedFiles,
   UseInterceptors,
   ParseIntPipe,
-  UseGuards
+  UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { LogoService } from './logo.service';
 import { CreateLogoDto } from './dto/create-logo.dto';
@@ -18,7 +19,7 @@ import { multerOptions } from '../../common/multer-options';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
-
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Логотипи')
 @Controller(':lang/logos') // Добавлен параметр :lang, но он не используется
@@ -39,19 +40,18 @@ export class LogoController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateLogoDto })
   @ApiResponse({ status: 201, description: 'Логотип успішно створено' })
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'path1', maxCount: 1 },
-    { name: 'path2', maxCount: 1 },
-  ], multerOptions('logos')))
-  async createLogo(
-    @Body() createLogoDto: CreateLogoDto,
-    @UploadedFiles() files: { path1?: Express.Multer.File[], path2?: Express.Multer.File[] },
-  ) {
-    if (files?.path1?.[0]) createLogoDto.path1 = files.path1[0].path.replace(/\\/g, '/');
-    if (files?.path2?.[0]) createLogoDto.path2 = files.path2[0].path.replace(/\\/g, '/');
-
+  @UseInterceptors(AnyFilesInterceptor()) 
+  async createLogo(@Body() createLogoDto: CreateLogoDto) {
+  
+    if (!createLogoDto.path1) {
+      throw new BadRequestException('Поле path1 є обов’язковим');
+    }
+  
     return this.logoService.createLogo(createLogoDto);
   }
+  
+
+  
 
   @Get(':id')
   @ApiOperation({ summary: 'Отримати логотип за ID' })
@@ -68,20 +68,20 @@ export class LogoController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateLogoDto })
   @ApiResponse({ status: 200, description: 'Логотип успішно оновлено' })
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'path1', maxCount: 1 },
-    { name: 'path2', maxCount: 1 },
-  ], multerOptions('logos')))
+  @UseInterceptors(AnyFilesInterceptor()) 
   async updateLogo(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateLogoDto: UpdateLogoDto,
-    @UploadedFiles() files: { path1?: Express.Multer.File[], path2?: Express.Multer.File[] },
+    @Param('id') id: number, 
+    @Body() updateLogo: UpdateLogoDto
   ) {
-    if (files?.path1?.[0]) updateLogoDto.path1 = files.path1[0].path.replace(/\\/g, '/');
-    if (files?.path2?.[0]) updateLogoDto.path2 = files.path2[0].path.replace(/\\/g, '/');
-
-    return this.logoService.updateLogo(id, updateLogoDto);
+  
+    if (!updateLogo.path1) {
+      throw new BadRequestException('Поле path1 є обов’язковим');
+    }
+  
+    return this.logoService.updateLogo(id, updateLogo);
   }
+  
+  
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)

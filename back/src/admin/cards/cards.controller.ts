@@ -58,17 +58,14 @@ export class CardsController {
   @ApiResponse({ status: 201, description: 'Картку успішно створено' })
   @ApiResponse({ status: 400, description: 'Помилка при створенні картки' })
   @UseInterceptors(FileInterceptor('path', multerOptions('cards')))
-  async createCard(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
-    if (!file) {
-      throw new BadRequestException('Файл є обов’язковим.');
-    }
-
+  async createCard(@Body() body: any) {
     const parsedBody = typeof body === 'string' ? JSON.parse(body) : body;
     const createCardDto = new CreateCardDto();
-    Object.assign(createCardDto, parsedBody, { path: file.path.replace(/\\/g, '/') });
-
+    Object.assign(createCardDto, parsedBody);
+  
     return this.cardsService.createCard(createCardDto);
   }
+  
 
   @Put(':id')
   @UseGuards(JwtAuthGuard) // Защищаем маршрут
@@ -82,13 +79,11 @@ export class CardsController {
   @UseInterceptors(FileInterceptor('path', multerOptions('cards')))
   async updateCard(
     @Param('id', ParseIntPipe) id: number,
-    @UploadedFile() file: Express.Multer.File,
     @Body() body: any,
   ) {
     const parsedBody = typeof body === 'string' ? JSON.parse(body) : body;
     const updateCardDto: UpdateCardDto = {
-      ...parsedBody,
-      path: file ? file.path.replace(/\\/g, '/') : undefined,
+      ...parsedBody
     };
 
     return this.cardsService.updateCard(id, updateCardDto);
