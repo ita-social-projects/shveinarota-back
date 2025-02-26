@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, Put, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, Put, Res, Get } from '@nestjs/common';
 import { AuthUserService } from './authUser.service';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard';
 import { User } from './entities/user.entity';
@@ -8,12 +8,18 @@ import { Response } from 'express';
 export class AuthUserController {
   constructor(private authService: AuthUserService) {}
 
+  @Post('validate')
+  @UseGuards(JwtAuthGuard)
+  async validate() {
+    return { message: 'Successful' }; 
+  }
+
   @Post('login')
   async login(
     @Body() body: { username: string; password: string },
-    @Res() res: Response, // Добавляем @Res() в метод контроллера
+    @Res({ passthrough: true }) res: Response,
   ) {
-    return this.authService.login(body.username, body.password, res); // Передаем res в сервис
+    return this.authService.login(body.username, body.password, res);
   }
 
   @Put()

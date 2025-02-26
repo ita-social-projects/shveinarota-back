@@ -10,6 +10,7 @@ import { DataSource } from 'typeorm';
 import { User } from './secure/User/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
@@ -31,9 +32,12 @@ async function bootstrap() {
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ extended: true, limit: '10mb' }));
 
-  // Включение CORS
+  // Включение CORS\
+  const client = configService.get<string>('client.client');
+
+
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://shveinarota.vercel.app'],
+    origin: ['http://localhost:3000', `${client}`],
     credentials: true,
   });
 
@@ -49,7 +53,7 @@ async function bootstrap() {
   // Подключение cookie-parser для работы с куками
   app.use(cookieParser());
 
-  // ⚡ Создание дефолтного пользователя, если база данных пустая
+  // Создание дефолтного пользователя, если база данных пустая
   const userRepository = dataSource.getRepository(User);
   const userCount = await userRepository.count();
 
@@ -64,11 +68,9 @@ async function bootstrap() {
     });
 
     await userRepository.save(user);
-    console.log(`✅ Дефолтный пользователь создан`);
   }
 
   const PORT = configService.get<number>('PORT') || 3007;
-  console.log(`🚀 Server running on port ${PORT}`);
 
   await app.listen(PORT);
 }
