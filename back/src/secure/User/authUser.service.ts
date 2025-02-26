@@ -41,6 +41,7 @@ export class AuthUserService {
     res.cookie('auth_token', authToken, {
         httpOnly: true,
         secure: true,
+        domain:'localhost',
         sameSite: 'none',
         maxAge:  maxage, 
     });
