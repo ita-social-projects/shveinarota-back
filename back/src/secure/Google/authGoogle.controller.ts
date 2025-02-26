@@ -33,11 +33,11 @@ export class AuthGoogleController {
   
 
     res.cookie('auth_token', token, {
-      httpOnly: true,       
-        // secure: true,       
-        // sameSite: 'none',  
-      sameSite: 'lax',     
-      maxAge: maxage,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+      maxAge: maxage, 
     });
 
     // Редирект на динамический путь с клиентом
