@@ -8,7 +8,7 @@ import { Response } from 'express';
 export class AuthUserController {
   constructor(private authService: AuthUserService) {}
 
-  @Post('validate')
+  @Get('validate')
   @UseGuards(JwtAuthGuard)
   async validate() {
     return { message: 'Successful' }; 
