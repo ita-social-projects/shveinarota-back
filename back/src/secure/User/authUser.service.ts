@@ -39,7 +39,8 @@ export class AuthUserService {
     const maxage = ms(this.configService.get<string>('client.maxage') || '1h'); 
 
     res.cookie('auth_token', authToken, {
-        domain:'localhost',
+        httpOnly: false,
+        secure: true,
         sameSite: 'none',
         maxAge:  maxage, 
     });

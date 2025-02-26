@@ -36,7 +36,6 @@ export class AuthGoogleController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
-      domain:'localhost',
       path: '/',
       maxAge: maxage, 
     });
