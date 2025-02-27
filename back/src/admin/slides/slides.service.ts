@@ -60,9 +60,7 @@ export class SlidesService {
     try {
       return await this.slideRepository.save(newSlide);
     } catch (error) {
-      if (createSlideDto.path) {
-        this.deleteFile(createSlideDto.path);
-      }
+      
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
         throw new ConflictException('Slide with this URL already exists');
       }
@@ -103,18 +101,13 @@ export class SlidesService {
         throw new NotFoundException(`Slide with ID ${id} not found`);
       }
 
-      // Удаляем старый файл изображения, если загружено новое
-      if (updateSlideDto.path && slide.path !== updateSlideDto.path) {
-        this.deleteFile(slide.path);
-      }
+      
 
       // Обновляем данные слайда
       Object.assign(slide, updateSlideDto);
       return await this.slideRepository.save(slide);
     } catch (error) {
-      if (updateSlideDto.path) {
-        this.deleteFile(updateSlideDto.path);
-      }
+      
       if (error.code === 'ER_DUP_ENTRY' || error.errno === 1062) {
         throw new ConflictException('Slide with this URL already exists');
       }
@@ -130,10 +123,7 @@ export class SlidesService {
         throw new NotFoundException(`Slide with ID ${id} not found`);
       }
 
-      // Удаляем файл изображения с диска
-      if (slide.path) {
-        this.deleteFile(slide.path);
-      }
+      
 
       // Удаляем запись о слайде из базы данных
       await this.slideRepository.remove(slide);
@@ -142,16 +132,5 @@ export class SlidesService {
     }
   }
 
-  // Метод для удаления файла с диска
-  private deleteFile(filePath: string): void {
-    if (!filePath) return;
-    const absolutePath = path.resolve(filePath);
-    try {
-      if (fs.existsSync(absolutePath)) {
-        fs.unlinkSync(absolutePath);
-      }
-    } catch (err) {
-      console.error(`Ошибка при удалении файла: ${absolutePath}`, err);
-    }
-  }
+ 
 }

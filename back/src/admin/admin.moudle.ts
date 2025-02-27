@@ -8,6 +8,8 @@ import { StatisticsModule } from './statistic/statistic.module'
 import { CategoryModule } from './data_guides/category.module'
 import {LogoModule} from './logo/logo.module'
 import {SharedModule} from '../common/guard/jwt.module'
+import {PlotsModule} from './plot_slides/plots.module'
+
 @Module({
   imports: [
     CardsModule, // Подключаем модуль для работы с карточками
@@ -18,7 +20,8 @@ import {SharedModule} from '../common/guard/jwt.module'
     StatisticsModule, // Подключаем модуль для работы с статистикой
     CategoryModule, // Категории
     LogoModule, // Логотипы
-    SharedModule
+    SharedModule,
+    PlotsModule
 
   ],
 })
