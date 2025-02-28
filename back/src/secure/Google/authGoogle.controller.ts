@@ -40,6 +40,6 @@ export class AuthGoogleController {
       maxAge: maxage, 
     });
 
-    res.send({ message: 'Success' });
+    return res.redirect(`${client}/auth/callback?logged=${true}`);
   }
 }
