@@ -40,7 +40,6 @@ export class AuthGoogleController {
       maxAge: maxage, 
     });
 
-    // Редирект на динамический путь с клиентом
-    return res.redirect(`${client}/dashboard`);
+    res.send({ message: 'Success' });
   }
 }

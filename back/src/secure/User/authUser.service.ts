@@ -46,8 +46,6 @@ export class AuthUserService {
   });
   
   
-  
-
     res.send({ message: 'Success' });
 }
 
