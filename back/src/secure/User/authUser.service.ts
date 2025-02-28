@@ -36,16 +36,19 @@ export class AuthUserService {
     const payload = { username: validUser.username };
     const authToken = this.jwtService.sign(payload);
     const domain = this.configService.get<string>('client.domain') || 'localhost';
-    const maxage = ms(this.configService.get<string>('client.maxage') || '1h'); 
+    const maxage = ms(this.configService.get<string>('jwt.expiresIn') || '1h'); 
 
     res.cookie('auth_token', authToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge:  maxage, 
-    });
+      httpOnly: true,      // Доступ только серверу, защищает от XSS-атак
+      secure: true,        // Только по HTTPS
+      sameSite: 'none',    // Позволяет отправлять куки с разных доменов
+      maxAge: maxage,  // 7 дней
+  });
+  
+  
+  
 
-    res.send({ message: 'Login successful' });
+    res.send({ auth_token: `${authToken}` });
 }
 
   

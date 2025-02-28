@@ -15,7 +15,7 @@ interface GoogleProfile {
 export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     private authService: AuthGoogleService,
-    private configService: ConfigService, // Используем ConfigService для конфигов
+    private configService: ConfigService, 
   ) {
     super({
       clientID: configService.get<string>('googleAuth.clientId'),
@@ -25,7 +25,7 @@ export class AuthGoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
-  // Валидируем пользователя
+
   async validate(accessToken: string, refreshToken: string, profile: GoogleProfile, done: VerifyCallback): Promise<any> {
     try {
       const user = await this.authService.validateUser(profile);

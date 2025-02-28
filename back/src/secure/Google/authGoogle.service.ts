@@ -16,11 +16,10 @@ export class AuthGoogleService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {
-    // Получаем значения из конфигурации
+
     this.allowedEmail = this.configService.get<string>('ALLOWED_GOOGLE_EMAIL', '');
     this.jwtExpiresIn = this.configService.get<string>('jwt.expiresIn', '1h');
 
-    // Проверка наличия критичных значений конфигурации
     if (!this.allowedEmail) {
       throw new UnauthorizedException('Allowed Google email not configured');
     }
@@ -29,7 +28,7 @@ export class AuthGoogleService {
   async validateUser(profile: GoogleProfile) {
     const email = profile.emails[0].value;
 
-    // Проверяем, что email соответствует разрешенному
+
     if (email !== this.allowedEmail) {
       throw new UnauthorizedException('Access Denied');
     }
@@ -40,7 +39,7 @@ export class AuthGoogleService {
   async generateJwt(user: { email: string; name: string }) {
     return this.jwtService.signAsync(
       { email: user.email, name: user.name },
-      { expiresIn: this.jwtExpiresIn }, // Устанавливаем срок действия токена
+      { expiresIn: this.jwtExpiresIn }, 
     );
   }
 }
