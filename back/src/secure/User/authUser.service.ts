@@ -48,7 +48,7 @@ export class AuthUserService {
   
   
 
-    res.send({ auth_token: `${authToken}` });
+    res.send({ message: 'Success' });
 }
 
   
