@@ -93,6 +93,11 @@ export class CreateSubcategoryDto {
   @IsNotEmpty()
   categoryname: string;
 
+  @ApiProperty({ description: 'Превью', example: 'htttp/img.png' })
+  @IsString()
+  @IsNotEmpty()
+  preview: string;
+
   @ApiProperty({ description: 'Назва категорії англійською мовою', example: 'Sewing Equipment' })
   @IsString()
   @IsNotEmpty()

@@ -50,6 +50,7 @@ export class SubcategoryService {
         lekala: true,
         authors: true,
         example: true,
+        preview: true,
       },
     });
 
@@ -78,6 +79,7 @@ export class SubcategoryService {
         lekala: true,
         authors_en: true,
         example: true,
+        preview: true,
       },
     });
 
@@ -115,6 +117,7 @@ export class SubcategoryService {
         authors: dto.authors || [],
         authors_en: dto.authors_en || [],
         example: dto.example || [],
+        preview: dto.preview,
         category,
       });
 

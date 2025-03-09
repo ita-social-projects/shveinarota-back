@@ -95,6 +95,11 @@ export class UpdateSubcategoryDto {
   @IsOptional()
   categoryname?: string;
 
+  @ApiProperty({ description: 'Превью', example: 'htttp/img.png'  })
+  @IsString()
+  @IsOptional()
+  preview?: string;
+
   @ApiProperty({ description: 'Назва категорії англійською мовою', example: 'Sewing Equipment' })
   @IsString()
   @IsOptional()

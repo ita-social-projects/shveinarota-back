@@ -45,6 +45,9 @@ export class Subcategory {
   @Column({ type: 'varchar', length: 20, nullable: true })
   categoryname_en: string; 
 
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  preview: string; 
+
   @ManyToOne(() => Category, (category) => category.subcategories, { nullable: true })
   category: Category; // Связь с категорией
 }

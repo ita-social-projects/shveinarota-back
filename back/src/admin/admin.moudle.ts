@@ -9,6 +9,7 @@ import { CategoryModule } from './data_guides/category.module'
 import {LogoModule} from './logo/logo.module'
 import {SharedModule} from '../common/guard/jwt.module'
 import {PlotsModule} from './plot_slides/plots.module'
+import {TeamModule} from './team_members/team.module'
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import {PlotsModule} from './plot_slides/plots.module'
     CategoryModule, // Категории
     LogoModule, // Логотипы
     SharedModule,
-    PlotsModule
+    PlotsModule,
+    TeamModule
 
   ],
 })
