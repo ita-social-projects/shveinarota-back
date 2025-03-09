@@ -9,6 +9,7 @@ import { Slide } from '../slides/entities/slide.entity';
 import { Category } from '../data_guides/entities/category.entity'
 import { Subcategory } from '../data_guides/entities/subcategory.entity'
 import { Plot } from '../plot_slides/entities/plot.entity'
+import { Team } from '../team_members/entities/team.entity';
 
 @Injectable()
 export class StatisticsService {
@@ -21,9 +22,21 @@ export class StatisticsService {
     @InjectRepository(Category) private CategoryRepository: Repository<Category>,
     @InjectRepository(Subcategory) private SubcategoryRepository: Repository<Subcategory>, 
     @InjectRepository(Plot) private PlotRepository: Repository<Plot>,
+    @InjectRepository(Team) private TeamRepository: Repository<Team>,
   ) {}  
 
-  async getCounts(): Promise<{ Marker: number; card: number; MediaLinks: number; Partners: number; Slide: number; Category: number; Subcategory: number; Plot: number }> {
+  async getCounts(): Promise<{ 
+    Marker: number; 
+    card: number; 
+    MediaLinks: number; 
+    Partners: number; 
+    Slide: number; 
+    Category: number; 
+    Subcategory: number; 
+    Plot: number, 
+    Team: number,
+    }> {
+
     const MarkerCount = await this.MarkerRepository.count();
     const cardCount = await this.cardRepository.count();
     const MediaLinkCount = await this.MediaLinkRepository.count();
@@ -32,6 +45,7 @@ export class StatisticsService {
     const CategoryCount = await this.CategoryRepository.count();
     const SubcategoryCount = await this.SubcategoryRepository.count();
     const PlotCount = await this.PlotRepository.count();
+    const TeamCount = await this.TeamRepository.count();
 
     return { 
       Marker: MarkerCount, 
@@ -42,6 +56,7 @@ export class StatisticsService {
       Category: CategoryCount, 
       Subcategory: SubcategoryCount,
       Plot: PlotCount,
+      Team: TeamCount,
     };
   }
 }
