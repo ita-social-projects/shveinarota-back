@@ -6,4 +6,8 @@ export class UpdatePartnerDto {
   @IsString()
   @IsOptional()
   path: string; // Оновлений шлях до файлу
+  @ApiPropertyOptional({ description: 'Оновлений link до логотипу партнера', example: 'uploads/partners/new_logo.png' })
+  @IsString()
+  @IsOptional()
+  link: string; // Оновлений шлях до файлу
 }
