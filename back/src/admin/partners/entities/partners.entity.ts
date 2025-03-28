@@ -7,4 +7,7 @@ export class Partner {
 
   @Column({ type: 'varchar', length: 255 })
   path: string; // Путь
+
+  @Column({ type: 'varchar', length: 255 })
+  link: string; // Линк
 }
