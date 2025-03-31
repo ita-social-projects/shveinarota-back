@@ -55,17 +55,18 @@ export class AuthUserService {
     const user = await this.usersRepository.findOne({ where: { username: currentUsername } });
 
     if (!user) {
-      throw new Error('User not found');
+        throw new Error('User not found');
     }
 
-    if (newUsername) {
-      user.username = newUsername;
-    }
+    // Удаляем старую запись
+    await this.usersRepository.remove(user);
 
-    if (password) {
-      user.password = await bcrypt.hash(password, 10);
-    }
+    // Создаем нового пользователя с обновленными данными
+    const newUser = this.usersRepository.create({
+        username: newUsername,
+        password: await bcrypt.hash(password, 10),
+    });
 
-    return await this.usersRepository.save(user);
+    return await this.usersRepository.save(newUser);
   }
 }
