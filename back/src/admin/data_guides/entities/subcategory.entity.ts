@@ -27,16 +27,16 @@ export class Subcategory {
   @Column('json')
   example: { path: string; text: string, text_en: string }[];
 
-  @Column({ type: 'varchar', length: 1000, nullable: true })
+  @Column({ type: 'text', nullable: true })
   details: string;
 
-  @Column({ type: 'varchar', length: 1000, nullable: true })
+  @Column({ type: 'text', nullable: true })
   details_en: string;
 
-  @Column({ type: 'varchar', length: 1000, nullable: true })
+  @Column({ type: 'text', nullable: true })
   summary: string;
 
-  @Column({ type: 'varchar', length: 1000, nullable: true })
+  @Column({ type: 'text', nullable: true })
   summary_en: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
