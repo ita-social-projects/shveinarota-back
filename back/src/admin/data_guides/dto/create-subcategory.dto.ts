@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  ValidateNested,
+  ArrayNotEmpty,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -17,48 +23,87 @@ class LekalaDto {
 }
 
 export class CreateSubcategoryDto {
-  @ApiProperty({ description: 'Назва підкатегорії українською мовою', example: 'Швейні машини' })
+  @ApiProperty({
+    description: 'Назва підкатегорії українською мовою',
+    example: 'Швейні машини',
+  })
   @IsString()
   @IsNotEmpty()
   subcategory: string;
 
-  @ApiProperty({ description: 'Назва підкатегорії англійською мовою', example: 'Sewing Machines' })
+  @ApiProperty({
+    description: 'Назва підкатегорії англійською мовою',
+    example: 'Sewing Machines',
+  })
   @IsString()
   @IsNotEmpty()
   subcategory_en: string;
 
-  @ApiProperty({ description: 'Деталі підкатегорії українською мовою', example: 'Опис особливостей швейних машин' })
+  @ApiProperty({
+    description: 'Деталі підкатегорії українською мовою',
+    example: 'Опис особливостей швейних машин',
+  })
   @IsString()
   @IsNotEmpty()
   details: string;
 
-  @ApiProperty({ description: 'Деталі підкатегорії англійською мовою', example: 'Description of sewing machines features' })
+  @ApiProperty({
+    description: 'Деталі підкатегорії англійською мовою',
+    example: 'Description of sewing machines features',
+  })
   @IsString()
   @IsNotEmpty()
   details_en: string;
 
-  @ApiProperty({ description: 'Короткий опис підкатегорії українською мовою', example: 'Коротка інформація про швейні машини' })
+  @ApiProperty({
+    description: 'Короткий опис підкатегорії українською мовою',
+    example: 'Коротка інформація про швейні машини',
+  })
   @IsString()
   @IsNotEmpty()
   summary: string;
 
-  @ApiProperty({ description: 'Короткий опис підкатегорії англійською мовою', example: 'Brief information about sewing machines' })
+  @ApiProperty({
+    description: 'Короткий опис підкатегорії англійською мовою',
+    example: 'Brief information about sewing machines',
+  })
   @IsString()
   @IsNotEmpty()
   summary_en: string;
 
-  @ApiProperty({ description: 'URL сторінки підкатегорії', example: 'https://example.com/sewing-machines' })
-  @IsString()
-  @IsNotEmpty()
-  url: string;
+  @ApiProperty({
+    description: 'Список відео українською мовою',
+    example: ['https://example.com/video1', 'https://example.com/video2'],
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  url: string[];
 
-  @ApiProperty({ description: 'Список авторів українською мовою', example: ['Іван Іванов', 'Марія Петрова'] })
+  @ApiProperty({
+    description: 'Список відео англійською мовою',
+    example: ['https://example.com/video1', 'https://example.com/video2'],
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  url_en: string[];
+
+  @ApiProperty({
+    description: 'Список авторів українською мовою',
+    example: ['Іван Іванов', 'Марія Петрова'],
+  })
   @IsArray()
   @IsNotEmpty()
   @IsString({ each: true })
   authors: string[];
 
-  @ApiProperty({ description: 'Список авторів англійською мовою', example: ['Ivan Ivanov', 'Maria Petrova'] })
+  @ApiProperty({
+    description: 'Список авторів англійською мовою',
+    example: ['Ivan Ivanov', 'Maria Petrova'],
+  })
   @IsArray()
   @IsNotEmpty()
   @IsString({ each: true })
@@ -67,8 +112,8 @@ export class CreateSubcategoryDto {
   @ApiProperty({
     description: 'Масив об’єктів лекал',
     example: [
-      { "path": "/lekala1.pdf", "text": "Лекало 1", "text_en": "Pattern 1" },
-      { "path": "/lekala2.pdf", "text": "Лекало 2", "text_en": "Pattern 2" }
+      { path: '/lekala1.pdf', text: 'Лекало 1', text_en: 'Pattern 1' },
+      { path: '/lekala2.pdf', text: 'Лекало 2', text_en: 'Pattern 2' },
     ],
   })
   @IsArray()
@@ -79,8 +124,8 @@ export class CreateSubcategoryDto {
   @ApiProperty({
     description: 'Приклади використання',
     example: [
-      { "path": "/example1.pdf", "text": "Приклад 1", "text_en": "Example 1" },
-      { "path": "/example2.pdf", "text": "Приклад 2", "text_en": "Example 2" }
+      { path: '/example1.pdf', text: 'Приклад 1', text_en: 'Example 1' },
+      { path: '/example2.pdf', text: 'Приклад 2', text_en: 'Example 2' },
     ],
   })
   @IsArray()
@@ -88,7 +133,10 @@ export class CreateSubcategoryDto {
   @Type(() => LekalaDto)
   example: LekalaDto[];
 
-  @ApiProperty({ description: 'Назва категорії українською мовою', example: 'Швейне обладнання' })
+  @ApiProperty({
+    description: 'Назва категорії українською мовою',
+    example: 'Швейне обладнання',
+  })
   @IsString()
   @IsNotEmpty()
   categoryname: string;
@@ -98,7 +146,10 @@ export class CreateSubcategoryDto {
   @IsNotEmpty()
   preview: string;
 
-  @ApiProperty({ description: 'Назва категорії англійською мовою', example: 'Sewing Equipment' })
+  @ApiProperty({
+    description: 'Назва категорії англійською мовою',
+    example: 'Sewing Equipment',
+  })
   @IsString()
   @IsNotEmpty()
   categoryname_en: string;

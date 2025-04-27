@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import { Category } from "./category.entity";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Category } from './category.entity';
 
 @Entity()
 export class Subcategory {
@@ -12,11 +12,14 @@ export class Subcategory {
   @Column({ type: 'varchar', length: 20, nullable: true })
   subcategory_en: string;
 
-  @Column({ type: 'varchar', length: 600, nullable: true })
-  url: string;
+  @Column('json', { nullable: true })
+  url: string[];
+
+  @Column('json', { nullable: true })
+  url_en: string[];
 
   @Column('json')
-  lekala: { path: string; text: string,  text_en: string }[];
+  lekala: { path: string; text: string; text_en: string }[];
 
   @Column('json')
   authors: string[];
@@ -25,7 +28,7 @@ export class Subcategory {
   authors_en: string[];
 
   @Column('json')
-  example: { path: string; text: string, text_en: string }[];
+  example: { path: string; text: string; text_en: string }[];
 
   @Column({ type: 'text', nullable: true })
   details: string;
@@ -40,14 +43,16 @@ export class Subcategory {
   summary_en: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
-  categoryname: string; 
+  categoryname: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
-  categoryname_en: string; 
+  categoryname_en: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  preview: string; 
+  preview: string;
 
-  @ManyToOne(() => Category, (category) => category.subcategories, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.subcategories, {
+    nullable: true,
+  })
   category: Category; // Связь с категорией
 }

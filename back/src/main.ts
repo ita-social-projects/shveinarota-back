@@ -2,14 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded, static as serveStatic } from 'express';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import cookieParser from 'cookie-parser';
 import { DataSource } from 'typeorm';
 import { User } from './secure/User/entities/user.entity';
 import * as bcrypt from 'bcrypt';
-
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -35,17 +34,18 @@ async function bootstrap() {
   // Включение CORS\
   const client = configService.get<string>('client.client');
 
-
   app.enableCors({
     origin: ['http://localhost:3000', `${client}`],
     credentials: true,
   });
 
   // Включаем глобальную валидацию и преобразование типов
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
 
   // Раздача статических файлов (доступ к /uploads)
   app.use('/uploads', serveStatic(join(__dirname, '..', 'uploads')));
@@ -58,8 +58,10 @@ async function bootstrap() {
   const userCount = await userRepository.count();
 
   if (userCount === 0) {
-    const defaultUsername = configService.get<string>('DEFAULT_USERNAME') || 'admin';
-    const defaultPassword = configService.get<string>('DEFAULT_PASSWORD') || 'admin123';
+    const defaultUsername =
+      configService.get<string>('DEFAULT_USERNAME') || 'admin';
+    const defaultPassword =
+      configService.get<string>('DEFAULT_PASSWORD') || 'admin123';
 
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
     const user = userRepository.create({

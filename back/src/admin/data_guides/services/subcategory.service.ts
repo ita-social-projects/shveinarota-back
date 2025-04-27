@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subcategory } from '../entities/subcategory.entity';
@@ -15,26 +19,27 @@ export class SubcategoryService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-
-
-    // Отримання всіх значень підкатегорії за ID
-    async getAllById(subcategoryId: number): Promise<Subcategory> {
-      const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
-      if (!subcategory) {
-        throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена`);
-      }
-      return subcategory;
+  // Отримання всіх значень підкатегорії за ID
+  async getAllById(subcategoryId: number): Promise<Subcategory> {
+    const subcategory = await this.subcategoryRepository.findOne({
+      where: { id: subcategoryId },
+    });
+    if (!subcategory) {
+      throw new NotFoundException(
+        `Підкатегорія з ID ${subcategoryId} не знайдена`,
+      );
     }
-    
-     // Форматирование лекал в зависимости от языка
-     private formatLekala(lekala: any[], lang: 'uk' | 'en') {
-      return lekala.map((item) => ({
-        path: item.path,
-        [lang === 'en' ? 'text_en' : 'text']: lang === 'en' ? item.text_en : item.text,
-      }));
-    }
-    
-    
+    return subcategory;
+  }
+
+  // Форматирование лекал в зависимости от языка
+  private formatLekala(lekala: any[], lang: 'uk' | 'en') {
+    return lekala.map((item) => ({
+      path: item.path,
+      [lang === 'en' ? 'text_en' : 'text']:
+        lang === 'en' ? item.text_en : item.text,
+    }));
+  }
 
   // ID uk
   async getUkSubcategoryById(subcategoryId: number): Promise<any> {
@@ -55,13 +60,15 @@ export class SubcategoryService {
     });
 
     if (!subcategory) {
-      throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
+      throw new NotFoundException(
+        `Підкатегорія з ID ${subcategoryId} не знайдена.`,
+      );
     }
 
-    return { 
-      ...subcategory, 
-      lekala: this.formatLekala(subcategory.lekala, 'uk'), 
-      example: this.formatLekala(subcategory.example, 'uk') 
+    return {
+      ...subcategory,
+      lekala: this.formatLekala(subcategory.lekala, 'uk'),
+      example: this.formatLekala(subcategory.example, 'uk'),
     };
   }
 
@@ -74,7 +81,7 @@ export class SubcategoryService {
         subcategory_en: true,
         details_en: true,
         summary_en: true,
-        url: true,
+        url_en: true,
         categoryname_en: true,
         lekala: true,
         authors_en: true,
@@ -84,20 +91,26 @@ export class SubcategoryService {
     });
 
     if (!subcategory) {
-      throw new NotFoundException(`Subcategory with ID ${subcategoryId} not found.`);
+      throw new NotFoundException(
+        `Subcategory with ID ${subcategoryId} not found.`,
+      );
     }
 
-    return { 
-      ...subcategory, 
-      lekala: this.formatLekala(subcategory.lekala, 'en'), 
-      example: this.formatLekala(subcategory.example, 'en') 
+    return {
+      ...subcategory,
+      lekala: this.formatLekala(subcategory.lekala, 'en'),
+      example: this.formatLekala(subcategory.example, 'en'),
     };
   }
 
-
   // Створення нової підкатегорії
-  async create(categoryId: number, dto: CreateSubcategoryDto): Promise<Subcategory> {
-    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+  async create(
+    categoryId: number,
+    dto: CreateSubcategoryDto,
+  ): Promise<Subcategory> {
+    const category = await this.categoryRepository.findOne({
+      where: { id: categoryId },
+    });
     if (!category) {
       throw new NotFoundException(`Категорія з ID ${categoryId} не знайдена.`);
     }
@@ -107,6 +120,7 @@ export class SubcategoryService {
         subcategory: dto.subcategory,
         subcategory_en: dto.subcategory_en,
         url: dto.url,
+        url_en: dto.url,
         details: dto.details,
         details_en: dto.details_en,
         summary: dto.summary,
@@ -129,36 +143,48 @@ export class SubcategoryService {
   }
 
   // Оновлення підкатегорії
-  async update(subcategoryId: number, dto: UpdateSubcategoryDto): Promise<Subcategory> {
-    const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
-  
+  async update(
+    subcategoryId: number,
+    dto: UpdateSubcategoryDto,
+  ): Promise<Subcategory> {
+    const subcategory = await this.subcategoryRepository.findOne({
+      where: { id: subcategoryId },
+    });
+
     if (!subcategory) {
-      throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
+      throw new NotFoundException(
+        `Підкатегорія з ID ${subcategoryId} не знайдена.`,
+      );
     }
-  
+
     // Фільтруємо `undefined`, залишаючи тільки `null` або значення
     const updatedData = Object.entries(dto).reduce((acc, [key, value]) => {
       if (value !== undefined) acc[key] = value;
       return acc;
     }, {});
-  
+
     // Якщо нічого не оновлюється – кидаємо помилку
     if (Object.keys(updatedData).length === 0) {
-      throw new BadRequestException('Не передано жодного значення для оновлення.');
+      throw new BadRequestException(
+        'Не передано жодного значення для оновлення.',
+      );
     }
-  
+
     // Використовуємо update, але тільки якщо є дані для оновлення
     await this.subcategoryRepository.update(subcategoryId, updatedData);
-  
+
     return this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
   }
-  
-  
+
   // Видалення підкатегорії
   async delete(subcategoryId: number): Promise<void> {
-    const subcategory = await this.subcategoryRepository.findOne({ where: { id: subcategoryId } });
+    const subcategory = await this.subcategoryRepository.findOne({
+      where: { id: subcategoryId },
+    });
     if (!subcategory) {
-      throw new NotFoundException(`Підкатегорія з ID ${subcategoryId} не знайдена.`);
+      throw new NotFoundException(
+        `Підкатегорія з ID ${subcategoryId} не знайдена.`,
+      );
     }
 
     try {
@@ -168,5 +194,4 @@ export class SubcategoryService {
       throw new BadRequestException('Не вдалося видалити підкатегорію.');
     }
   }
-
 }
