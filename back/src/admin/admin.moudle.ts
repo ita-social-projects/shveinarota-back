@@ -11,6 +11,7 @@ import { SharedModule } from '../common/guard/jwt.module';
 import { PlotsModule } from './plot_slides/plots.module';
 import { TeamModule } from './team_members/team.module';
 import { PaymentsModule } from './payment/payment.module';
+import { QuestionModule } from './questions/questions.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PaymentsModule } from './payment/payment.module';
     PlotsModule,
     TeamModule,
     PaymentsModule,
+    QuestionModule,
   ],
 })
 export class AdminModule {}
