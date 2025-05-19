@@ -46,6 +46,7 @@ export class PaymentController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Створити нову оплату' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ description: 'Дані для створення оплати', type: CreatePaymentDto })
@@ -61,6 +62,7 @@ export class PaymentController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Оновити оплату за ID' })
   @ApiParam({ name: 'id', required: true, description: 'ID оплати' })
   @ApiConsumes('multipart/form-data')
@@ -82,6 +84,7 @@ export class PaymentController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Видалити оплату за ID' })
   @ApiParam({ name: 'id', required: true, description: 'ID оплати' })
   @ApiResponse({ status: 200, description: 'Оплату з успішно видалено' })
