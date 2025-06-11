@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Partner } from './entities/partners.entity';
+import { BadRequestException } from '@nestjs/common';
 import { CreatePartnerDto } from './dto/create-partner.dto';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
 import * as fs from 'fs';
@@ -31,7 +32,10 @@ export class PartnersService {
     return Partner;
   }
 
-  async updatePartner(id: number, updatePartnerDto: UpdatePartnerDto): Promise<Partner> {
+  async updatePartner(
+    id: number,
+    updatePartnerDto: UpdatePartnerDto,
+  ): Promise<Partner> {
     const Partner = await this.PartnerRepository.findOneBy({ id });
     if (!Partner) {
       throw new NotFoundException(`Partner with ID ${id} not found`);
@@ -74,5 +78,24 @@ export class PartnersService {
 
     // Удаляем запись о карточке из базы данных
     await this.PartnerRepository.remove(Partner);
+  }
+
+  async reorder(ids: number[]): Promise<{ id: number; position: number }[]> {
+    const partners = await this.PartnerRepository.findByIds(ids);
+
+    if (partners.length !== ids.length) {
+      throw new BadRequestException('Некоторые ID не найдены');
+    }
+
+    const updatePromises = ids.map((id, index) =>
+      this.PartnerRepository.update(id, { position: index + 1 }),
+    );
+    await Promise.all(updatePromises);
+
+    const updated = await this.PartnerRepository.findByIds(ids);
+
+    return updated
+      .map(({ id, position }) => ({ id, position }))
+      .sort((a, b) => a.position - b.position);
   }
 }

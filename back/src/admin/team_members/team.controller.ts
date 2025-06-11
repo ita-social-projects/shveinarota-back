@@ -4,6 +4,7 @@ import {
   Post,
   Put,
   Param,
+  Patch,
   Body,
   Delete,
   ParseIntPipe,
@@ -15,6 +16,7 @@ import {
 import { TeamsService } from './team.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { ReorderTeamsDto } from './dto/reorder-teams.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard'; 
@@ -98,4 +100,23 @@ export class TeamsController {
     await this.TeamsService.deleteTeam(id);
     return { message: 'члена успішно видалено' };
   }
+
+
+  @Patch('reorder')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Пріоритет членів команди — пересортування' })
+  @ApiBody({
+    description: 'Новий порядок команд за масивом їхніх ID',
+    type: ReorderTeamsDto,
+    examples: {
+      example1: {
+        summary: 'Поставити команду з ID 5 на перше місце',
+        value: { ids: [5, 2, 8, 1] },
+      },
+    },
+  })
+  async reorder(@Body() dto: ReorderTeamsDto) {
+    return this.TeamsService.reorder(dto.ids);
+  }
+
 }

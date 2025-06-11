@@ -10,4 +10,7 @@ export class Partner {
 
   @Column({ type: 'varchar', length: 255 })
   link: string; // Линк
+
+  @Column({ default: 0 })
+  position: number;
 }

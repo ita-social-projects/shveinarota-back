@@ -19,4 +19,7 @@ export class Team {
 
   @Column({ type: 'varchar', length: 255 })
   path: string;
+
+  @Column({ default: 0 })
+  position: number;
 }
