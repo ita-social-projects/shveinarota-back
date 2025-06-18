@@ -26,7 +26,7 @@ import { JwtAuthGuard } from '../../common/guard/JwtAuthGuard';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Картки Workshop')
-@Controller(':lang/workshop-cards')
+@Controller(':lang/workshopCards')
 export class WorkShopCardsController {
   constructor(private readonly workShopCardsService: WorkShopCardsService) {}
 

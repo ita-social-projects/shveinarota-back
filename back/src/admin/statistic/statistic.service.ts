@@ -53,7 +53,7 @@ export class StatisticsService {
     const SubcategoryCount = await this.SubcategoryRepository.count();
     const PlotCount = await this.PlotRepository.count();
     const TeamCount = await this.TeamRepository.count();
-    const workShopCardsCount = await this.workShopCards.count();
+    const workShopCardsCount = await this.workShopCardsRepository.count();
 
     return {
       Marker: MarkerCount,
