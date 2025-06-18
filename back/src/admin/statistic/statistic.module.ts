@@ -7,15 +7,27 @@ import { Card } from '../cards/entities/card.entity';
 import { MediaLink } from '../mediaLinks/entities/medialink.entity';
 import { Partner } from '../partners/entities/partners.entity';
 import { Slide } from '../slides/entities/slide.entity';
-import { Category } from '../data_guides/entities/category.entity'
-import { Subcategory } from '../data_guides/entities/subcategory.entity'
-import { Plot } from '../plot_slides/entities/plot.entity'
+import { Category } from '../data_guides/entities/category.entity';
+import { Subcategory } from '../data_guides/entities/subcategory.entity';
+import { Plot } from '../plot_slides/entities/plot.entity';
 import { Team } from '../team_members/entities/team.entity';
-
-
+import { workShopCards } from '../workShopCards/entities/workShopCards.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Marker, Card, MediaLink, Partner, Slide, Category, Subcategory, Plot, Team])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Marker,
+      Card,
+      MediaLink,
+      Partner,
+      Slide,
+      Category,
+      Subcategory,
+      Plot,
+      Team,
+      workShopCards,
+    ]),
+  ],
   controllers: [StatisticsController],
   providers: [StatisticsService],
 })
