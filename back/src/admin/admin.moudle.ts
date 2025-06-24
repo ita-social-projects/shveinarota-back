@@ -13,6 +13,7 @@ import { TeamModule } from './team_members/team.module';
 import { PaymentsModule } from './payment/payment.module';
 import { QuestionModule } from './questions/questions.module';
 import { WorkShopCardsModule } from './workShopCards/workShopCards.module';
+import { NewsModule } from './data_news/news.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { WorkShopCardsModule } from './workShopCards/workShopCards.module';
     PaymentsModule,
     QuestionModule,
     WorkShopCardsModule,
+    NewsModule,
   ],
 })
 export class AdminModule {}
