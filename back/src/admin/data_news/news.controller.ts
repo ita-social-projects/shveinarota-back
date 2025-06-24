@@ -31,7 +31,7 @@ export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 
   @Post()
-
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Створити нову новину' })
   @ApiParam({ name: 'lang', description: 'Мова (uk|en)', example: 'uk' })
   @ApiBody({ type: CreateNewsDto })
@@ -70,7 +70,7 @@ export class NewsController {
   }
 
   @Patch(':id')
-  
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Оновити новину за ID' })
   @ApiParam({ name: 'lang', description: 'Мова (uk|en)', example: 'uk' })
   @ApiParam({ name: 'id', description: 'ID новини', example: 1 })
@@ -85,7 +85,7 @@ export class NewsController {
   }
 
   @Delete(':id')
- 
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Видалити новину за ID' })
   @ApiParam({ name: 'lang', description: 'Мова (uk|en)', example: 'uk' })
   @ApiParam({ name: 'id', description: 'ID новини', example: 1 })
